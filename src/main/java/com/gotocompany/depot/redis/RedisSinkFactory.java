@@ -9,6 +9,7 @@ import com.gotocompany.depot.message.MessageSchema;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.StatsDReporter;
+import com.gotocompany.depot.redis.client.RedisClient;
 import com.gotocompany.depot.redis.client.RedisClientFactory;
 import com.gotocompany.depot.redis.parsers.RedisEntryParser;
 import com.gotocompany.depot.redis.parsers.RedisEntryParserFactory;
@@ -76,8 +77,10 @@ public class RedisSinkFactory {
      * @return RedisSink
      */
     public Sink create() {
+        RedisClient redisClient = RedisClientFactory.getClient(sinkConfig, statsDReporter);
+        redisClient.init();
         return new RedisSink(
-                RedisClientFactory.getClient(sinkConfig, statsDReporter),
+                redisClient,
                 redisParser,
                 new Instrumentation(statsDReporter, RedisSink.class));
     }

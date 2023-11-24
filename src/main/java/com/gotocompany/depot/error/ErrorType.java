@@ -7,6 +7,7 @@ public enum ErrorType {
     SINK_4XX_ERROR,
     SINK_5XX_ERROR,
     SINK_RETRYABLE_ERROR,
+    SINK_NON_RETRYABLE_ERROR,
     SINK_UNKNOWN_ERROR,
     DEFAULT_ERROR //Deprecated
 }

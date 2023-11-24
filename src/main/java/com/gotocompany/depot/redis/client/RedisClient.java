@@ -11,4 +11,6 @@ import java.util.List;
  */
 public interface RedisClient extends Closeable {
     List<RedisResponse> send(List<RedisRecord> records);
+
+    void init();
 }

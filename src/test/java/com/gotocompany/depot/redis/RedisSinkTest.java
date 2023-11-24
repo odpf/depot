@@ -145,4 +145,25 @@ public class RedisSinkTest {
         Assert.assertEquals("failed at 3", sinkResponse.getErrorsFor(3).getException().getMessage());
         Assert.assertEquals("failed at 4", sinkResponse.getErrorsFor(4).getException().getMessage());
     }
+
+    @Test
+    public void shouldReturnNonRetryableErrors() {
+        List<Message> messages = new ArrayList<>();
+        List<RedisRecord> records = new ArrayList<>();
+        records.add(new RedisRecord(new RedisListEntry("key1", "val1", null), 0L, null, null, true));
+        records.add(new RedisRecord(new RedisListEntry("key1", "val1", null), 1L, null, null, true));
+        records.add(new RedisRecord(new RedisListEntry("key1", "val1", null), 2L, null, null, true));
+        records.add(new RedisRecord(new RedisListEntry("key1", "val1", null), 3L, null, null, true));
+        records.add(new RedisRecord(new RedisListEntry("key1", "val1", null), 4L, null, null, true));
+        when(redisParser.convert(messages)).thenReturn(records);
+        List<RedisRecord> validRecords = records.stream().filter(RedisRecord::isValid).collect(Collectors.toList());
+        when(redisClient.send(validRecords)).thenThrow(new ClassCastException("[B cannot be cast to java.util.List"));
+        RedisSink redisSink = new RedisSink(redisClient, redisParser, instrumentation);
+        SinkResponse sinkResponse = redisSink.pushToSink(messages);
+        Assert.assertEquals(5, sinkResponse.getErrors().size());
+        Assert.assertEquals(ErrorType.SINK_NON_RETRYABLE_ERROR, sinkResponse.getErrorsFor(0).getErrorType());
+        Assert.assertEquals(ErrorType.SINK_NON_RETRYABLE_ERROR, sinkResponse.getErrorsFor(2).getErrorType());
+        Assert.assertEquals("[B cannot be cast to java.util.List", sinkResponse.getErrorsFor(3).getException().getMessage());
+        Assert.assertEquals("[B cannot be cast to java.util.List", sinkResponse.getErrorsFor(4).getException().getMessage());
+    }
 }
