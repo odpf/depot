@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'com.gotocompany'
-version '0.7.3'
+version '0.7.4'
 
 repositories {
     mavenLocal()
@@ -177,7 +177,7 @@ publishing {
 }
 
 signing {
-   sign publishing.publications.maven
+    sign publishing.publications.maven
 }
 
 nexusPublishing {
