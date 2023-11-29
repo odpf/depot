@@ -3,7 +3,7 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.17'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.7"
         classpath "org.ajoberstar:gradle-git:1.6.0"
     }
@@ -14,7 +14,7 @@ plugins {
     id 'idea'
     id 'checkstyle'
     id 'jacoco'
-    id "com.google.protobuf" version "0.8.17"
+    id "com.google.protobuf" version "0.9.4"
     id 'io.franzbecker.gradle-lombok' version '5.0.0'
     id 'maven-publish'
     id 'signing'
@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'com.gotocompany'
-version '0.7.4'
+version '0.8.0'
 
 repositories {
     mavenLocal()
@@ -30,9 +30,9 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.23.2'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.25.0'
     implementation group: 'com.datadoghq', name: 'java-dogstatsd-client', version: '2.13.0'
-    implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.23.2'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.25.0'
     implementation group: 'com.gotocompany', name: 'stencil', version: '0.6.0' exclude group: 'org.slf4j'
     implementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.9'
     implementation (group: 'com.google.cloud', name: 'google-cloud-bigquerystorage', version: '2.39.1') {
@@ -106,11 +106,11 @@ targetCompatibility = JavaVersion.VERSION_1_8
 protobuf {
     generatedFilesBaseDir = "$projectDir/src/generated"
     protoc {
-        artifact = "com.google.protobuf:protoc:3.1.0"
+        artifact = "com.google.protobuf:protoc:3.25.0"
     }
     plugins {
         grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.0.3"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
         }
     }
     generateProtoTasks {
@@ -177,7 +177,7 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.maven
+   sign publishing.publications.maven
 }
 
 nexusPublishing {
