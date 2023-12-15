@@ -32,6 +32,14 @@ public interface RedisSinkConfig extends SinkConfig {
     @ConverterClass(EmptyStringToNull.class)
     String getSinkRedisAuthPassword();
 
+    @Key("SINK_REDIS_CONNECTION_TIMEOUT_MS")
+    @DefaultValue("5000")
+    int getSinkRedisConnectionTimeoutMs();
+
+    @Key("SINK_REDIS_SOCKET_TIMEOUT_MS")
+    @DefaultValue("10000")
+    int getSinkRedisSocketTimeoutMs();
+
     @Key("SINK_REDIS_KEY_TEMPLATE")
     String getSinkRedisKeyTemplate();
 
@@ -64,4 +72,12 @@ public interface RedisSinkConfig extends SinkConfig {
     @ConverterClass(JsonToPropertiesConverter.class)
     @DefaultValue("")
     Properties getSinkRedisHashsetFieldToColumnMapping();
+
+    @Key("SINK_REDIS_CONNECTION_MAX_RETRIES")
+    @DefaultValue("1")
+    int getSinkRedisConnectionMaxRetries();
+
+    @Key("SINK_REDIS_CONNECTION_RETRY_BACKOFF_MS")
+    @DefaultValue("2000")
+    long getSinkRedisConnectionRetryBackoffMs();
 }

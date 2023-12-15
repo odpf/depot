@@ -31,16 +31,16 @@ public class RedisStandaloneClient implements RedisClient {
     private final DefaultJedisClientConfig defaultJedisClientConfig;
     private final HostAndPort hostAndPort;
     private Jedis jedis;
-
-    public RedisStandaloneClient(Instrumentation instrumentation, RedisTtl redisTTL, DefaultJedisClientConfig defaultJedisClientConfig, HostAndPort hostAndPort) {
-        this.instrumentation = instrumentation;
-        this.redisTTL = redisTTL;
-        this.defaultJedisClientConfig = defaultJedisClientConfig;
-        this.hostAndPort = hostAndPort;
-    }
+    private final int connectionMaxRetries;
+    private final long connectionRetryBackoffMs;
 
     public RedisStandaloneClient(Instrumentation instrumentation, RedisSinkConfig config) {
-        this(instrumentation, RedisTTLFactory.getTTl(config), RedisSinkUtils.getJedisConfig(config), getHostPort(config));
+        this.instrumentation = instrumentation;
+        this.connectionMaxRetries = config.getSinkRedisConnectionMaxRetries();
+        this.connectionRetryBackoffMs = config.getSinkRedisConnectionRetryBackoffMs();
+        this.redisTTL = RedisTTLFactory.getTTl(config);
+        this.defaultJedisClientConfig = RedisSinkUtils.getJedisConfig(config);
+        this.hostAndPort = getHostPort(config);
     }
 
     private static HostAndPort getHostPort(RedisSinkConfig config) {
@@ -62,6 +62,34 @@ public class RedisStandaloneClient implements RedisClient {
 
     @Override
     public List<RedisResponse> send(List<RedisRecord> records) {
+        int retryCount = connectionMaxRetries;
+        List<RedisResponse> redisResponseList = null;
+        while (retryCount >= 0) {
+            try {
+                redisResponseList = sendInternal(records);
+                break;
+            } catch (RuntimeException e) {
+
+                e.printStackTrace();
+                if (retryCount == 0) {
+                    throw e;
+                }
+                instrumentation.logInfo("Backing off for " + connectionRetryBackoffMs + " milliseconds.");
+                try {
+                    Thread.sleep(connectionRetryBackoffMs);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+                instrumentation.logInfo("Attempting to recreate Redis client. Retry attempt count : " + (connectionMaxRetries - retryCount + 1));
+                this.init();
+
+            }
+            retryCount--;
+        }
+        return redisResponseList;
+    }
+
+    public List<RedisResponse> sendInternal(List<RedisRecord> records) {
         Pipeline jedisPipelined = jedis.pipelined();
         jedisPipelined.multi();
         List<RedisStandaloneResponse> responses = records.stream()

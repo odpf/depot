@@ -44,6 +44,8 @@ public class RedisSinkUtils {
 
     public static DefaultJedisClientConfig getJedisConfig(RedisSinkConfig config) {
         return DefaultJedisClientConfig.builder()
+                .connectionTimeoutMillis(config.getSinkRedisConnectionTimeoutMs())
+                .socketTimeoutMillis(config.getSinkRedisSocketTimeoutMs())
                 .user(config.getSinkRedisAuthUsername())
                 .password(config.getSinkRedisAuthPassword())
                 .build();

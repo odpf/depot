@@ -1,5 +1,7 @@
 package com.gotocompany.depot.redis.util;
 
+import com.google.common.collect.ImmutableMap;
+import com.gotocompany.depot.config.RedisSinkConfig;
 import com.gotocompany.depot.redis.client.entry.RedisListEntry;
 import com.gotocompany.depot.redis.client.response.RedisClusterResponse;
 import com.gotocompany.depot.redis.client.response.RedisResponse;
@@ -8,12 +10,14 @@ import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.StatsDReporter;
 import com.gotocompany.depot.redis.record.RedisRecord;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import redis.clients.jedis.DefaultJedisClientConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,4 +72,28 @@ public class RedisSinkUtilsTest {
         Map<Long, ErrorInfo> errors = RedisSinkUtils.getErrorsFromResponse(records, responses, new Instrumentation(statsDReporter, RedisSinkUtils.class));
         Assert.assertTrue(errors.isEmpty());
     }
+
+
+    @Test
+    public void shouldSetRedisConnectionTimeoutMillis() {
+
+        RedisSinkConfig config = ConfigFactory.create(RedisSinkConfig.class, ImmutableMap.of(
+                "SINK_REDIS_CONNECTION_TIMEOUT_MS", "5000"
+        ));
+        DefaultJedisClientConfig defaultJedisClientConfig = RedisSinkUtils.getJedisConfig(config);
+        Assert.assertEquals(5000, defaultJedisClientConfig.getConnectionTimeoutMillis());
+
+    }
+
+    @Test
+    public void shouldSetRedisSocketTimeoutMillis() {
+
+        RedisSinkConfig config = ConfigFactory.create(RedisSinkConfig.class, ImmutableMap.of(
+                "SINK_REDIS_SOCKET_TIMEOUT_MS", "7000"
+        ));
+        DefaultJedisClientConfig defaultJedisClientConfig = RedisSinkUtils.getJedisConfig(config);
+        Assert.assertEquals(7000, defaultJedisClientConfig.getSocketTimeoutMillis());
+
+    }
+
 }

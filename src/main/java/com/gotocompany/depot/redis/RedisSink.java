@@ -20,13 +20,13 @@ public class RedisSink implements Sink {
     private final RedisClient redisClient;
     private final RedisParser redisParser;
     private final Instrumentation instrumentation;
-    private static final int CONNECTION_RETRY = 2;
-    private static final int CONNECTION_RETRY_BACKOFF_MILLIS = 2000;
+
 
     public RedisSink(RedisClient redisClient, RedisParser redisParser, Instrumentation instrumentation) {
         this.redisClient = redisClient;
         this.redisParser = redisParser;
         this.instrumentation = instrumentation;
+
     }
 
     @Override
@@ -46,33 +46,14 @@ public class RedisSink implements Sink {
     }
 
     private Map<Long, ErrorInfo> send(List<RedisRecord> validRecords) {
-        List<RedisResponse> responses = null;
-        RuntimeException exception = null;
-        int retry = CONNECTION_RETRY;
-        while (retry > 0) {
-            try {
-                responses = redisClient.send(validRecords);
-                break;
-            } catch (RuntimeException e) {
-                exception = e;
-                e.printStackTrace();
-                instrumentation.logInfo("Backing off for " + CONNECTION_RETRY_BACKOFF_MILLIS + " milliseconds.");
-                try {
-                    Thread.sleep(CONNECTION_RETRY_BACKOFF_MILLIS);
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
-                }
-                instrumentation.logInfo("Attempting to recreate Redis client. Retry attempt count : " + (CONNECTION_RETRY - retry + 1));
-                redisClient.init();
+        List<RedisResponse> responses;
+        try {
+            responses = redisClient.send(validRecords);
+        } catch (RuntimeException e) {
+            return RedisSinkUtils.getNonRetryableErrors(validRecords, e, instrumentation);
+        }
+        return RedisSinkUtils.getErrorsFromResponse(validRecords, responses, instrumentation);
 
-            }
-            retry--;
-        }
-        if (responses == null) {
-            return RedisSinkUtils.getNonRetryableErrors(validRecords, exception, instrumentation);
-        } else {
-            return RedisSinkUtils.getErrorsFromResponse(validRecords, responses, instrumentation);
-        }
     }
 
     @Override
