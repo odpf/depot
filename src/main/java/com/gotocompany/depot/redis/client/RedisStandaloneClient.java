@@ -3,6 +3,7 @@ package com.gotocompany.depot.redis.client;
 import com.gotocompany.depot.config.RedisSinkConfig;
 import com.gotocompany.depot.exception.ConfigurationException;
 import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.RedisSinkMetrics;
 import com.gotocompany.depot.redis.client.response.RedisResponse;
 import com.gotocompany.depot.redis.client.response.RedisStandaloneResponse;
 import com.gotocompany.depot.redis.record.RedisRecord;
@@ -33,6 +34,7 @@ public class RedisStandaloneClient implements RedisClient {
     private Jedis jedis;
     private final int connectionMaxRetries;
     private final long connectionRetryBackoffMs;
+    private final RedisSinkMetrics redisSinkMetrics;
 
     public RedisStandaloneClient(Instrumentation instrumentation, RedisSinkConfig config) {
         this.instrumentation = instrumentation;
@@ -41,6 +43,7 @@ public class RedisStandaloneClient implements RedisClient {
         this.redisTTL = RedisTTLFactory.getTTl(config);
         this.defaultJedisClientConfig = RedisSinkUtils.getJedisConfig(config);
         this.hostAndPort = getHostPort(config);
+        this.redisSinkMetrics = new RedisSinkMetrics(config);
     }
 
     private static HostAndPort getHostPort(RedisSinkConfig config) {
@@ -67,11 +70,13 @@ public class RedisStandaloneClient implements RedisClient {
         while (retryCount >= 0) {
             try {
                 redisResponseList = sendInternal(records);
+                instrumentSuccess(redisResponseList);
                 break;
             } catch (RuntimeException e) {
 
                 e.printStackTrace();
                 if (retryCount == 0) {
+                    instrumentFailure(records);
                     throw e;
                 }
                 instrumentation.logInfo("Backing off for " + connectionRetryBackoffMs + " milliseconds.");
@@ -81,6 +86,7 @@ public class RedisStandaloneClient implements RedisClient {
                     interruptedException.printStackTrace();
                 }
                 instrumentation.logInfo("Attempting to recreate Redis client. Retry attempt count : " + (connectionMaxRetries - retryCount + 1));
+                instrumentConnectionRetry();
                 this.init();
 
             }
@@ -111,5 +117,19 @@ public class RedisStandaloneClient implements RedisClient {
     public void init() {
         instrumentation.logInfo("Initialising Jedis client: Host: {} Port: {}", hostAndPort.getHost(), hostAndPort.getPort());
         jedis = new Jedis(hostAndPort, defaultJedisClientConfig);
+    }
+
+    private void instrumentSuccess(List<RedisResponse> redisResponseList) {
+        long successCount = redisResponseList.size();
+        instrumentation.captureCount(redisSinkMetrics.getRedisSuccessResponseTotalMetric(), successCount);
+    }
+
+    private void instrumentFailure(List<RedisRecord> validRecords) {
+        long failureCount = validRecords.size();
+        instrumentation.captureCount(redisSinkMetrics.getRedisNoResponseTotalMetric(), failureCount);
+    }
+
+    private void instrumentConnectionRetry() {
+        instrumentation.captureCount(redisSinkMetrics.getRedisConnectionRetryTotalMetric(), 1L);
     }
 }

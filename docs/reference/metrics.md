@@ -7,6 +7,8 @@ Sinks can have their own metrics, and they will be emmited while using sink conn
 
 * [Bigquery Sink](metrics.md#bigquery-sink)
 * [Bigtable Sink](metrics.md#bigtable-sink)
+* [Redis Sink](metrics.md#redis-sink)
+
 
 ## Bigquery Sink
 
@@ -36,4 +38,17 @@ Time taken for bigtable insert/update operation performed
 
 Total numbers of error occurred on bigtable insert/update operation
 
+## Redis Sink
+
+### `Redis Success Response Total`
+
+Total number of successful records pushed to the Redis server
+
+### `Redis No Response Total`
+
+Total number of records which could not be pushed to the Redis server due to broken connection,client timeout,etc.
+
+### `Redis Connection Retry Total`
+
+Total number of attempts to recreate the connection to Redis server from the Jedis client.
 
