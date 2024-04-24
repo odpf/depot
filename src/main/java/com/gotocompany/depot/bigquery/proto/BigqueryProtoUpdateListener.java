@@ -10,11 +10,9 @@ import com.gotocompany.depot.bigquery.exception.BQSchemaMappingException;
 import com.gotocompany.depot.bigquery.exception.BQTableUpdateFailure;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.BigQuerySinkConfig;
-import com.gotocompany.depot.message.MessageSchema;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoField;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
-import com.gotocompany.depot.message.proto.ProtoMessageSchema;
 import com.gotocompany.depot.stencil.DepotStencilUpdateListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -46,17 +44,16 @@ public class BigqueryProtoUpdateListener extends DepotStencilUpdateListener {
             String schemaClass = mode == SinkConnectorSchemaMessageMode.LOG_MESSAGE
                     ? config.getSinkConnectorSchemaProtoMessageClass() : config.getSinkConnectorSchemaProtoKeyClass();
             ProtoMessageParser messageParser = (ProtoMessageParser) getMessageParser();
-            MessageSchema schema;
+            ProtoField protoField;
             if (newDescriptors == null) {
-                schema = messageParser.getSchema(schemaClass);
+                protoField = messageParser.getProtoField(schemaClass);
             } else {
-                schema = messageParser.getSchema(schemaClass, newDescriptors);
+                protoField = messageParser.getProtoField(schemaClass, newDescriptors);
             }
-            ProtoField protoField = ((ProtoMessageSchema) schema).getProtoField();
             List<Field> bqSchemaFields = BigqueryFields.generateBigquerySchema(protoField);
             addMetadataFields(bqSchemaFields);
             bqClient.upsertTable(bqSchemaFields);
-            converterCache.setMessageRecordConverter(new MessageRecordConverter(messageParser, config, schema));
+            converterCache.setMessageRecordConverter(new MessageRecordConverter(messageParser, config));
         } catch (BigQueryException | IOException e) {
             String errMsg = "Error while updating bigquery table on callback:" + e.getMessage();
             log.error(errMsg);

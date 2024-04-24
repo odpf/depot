@@ -9,10 +9,8 @@ import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.exception.ConfigurationException;
 import com.gotocompany.depot.exception.DeserializerException;
 import com.gotocompany.depot.exception.EmptyMessageException;
-import com.gotocompany.depot.message.field.GenericFieldFactory;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
-import com.gotocompany.depot.message.MessageSchema;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import lombok.extern.slf4j.Slf4j;
@@ -27,18 +25,15 @@ public class BigTableRecordParser {
     private final MessageParser messageParser;
     private final BigTableRowKeyParser bigTableRowKeyParser;
     private final BigTableSchema bigTableSchema;
-    private final MessageSchema schema;
     private final Tuple<SinkConnectorSchemaMessageMode, String> modeAndSchema;
 
     public BigTableRecordParser(MessageParser messageParser,
                                 BigTableRowKeyParser bigTableRowKeyParser,
                                 Tuple<SinkConnectorSchemaMessageMode, String> modeAndSchema,
-                                MessageSchema schema,
                                 BigTableSchema bigTableSchema) {
         this.messageParser = messageParser;
         this.bigTableRowKeyParser = bigTableRowKeyParser;
         this.modeAndSchema = modeAndSchema;
-        this.schema = schema;
         this.bigTableSchema = bigTableSchema;
     }
 
@@ -62,7 +57,7 @@ public class BigTableRecordParser {
                             .getColumns(columnFamily)
                             .forEach(column -> {
                                 String fieldName = bigTableSchema.getField(columnFamily, column);
-                                String value = GenericFieldFactory.getField(parsedMessage.getFieldByName(fieldName, schema)).getString();
+                                String value = parsedMessage.getFieldByName(fieldName).toString();
                                 rowMutationEntry.setCell(columnFamily, column, value);
                             }));
             BigTableRecord bigTableRecord = new BigTableRecord(rowMutationEntry, index, null, message.getMetadata());

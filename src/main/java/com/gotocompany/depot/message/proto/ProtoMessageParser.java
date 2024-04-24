@@ -3,20 +3,20 @@ package com.gotocompany.depot.message.proto;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 import com.gotocompany.depot.config.SinkConfig;
-import com.gotocompany.depot.utils.StencilUtils;
 import com.gotocompany.depot.exception.ConfigurationException;
 import com.gotocompany.depot.exception.EmptyMessageException;
 import com.gotocompany.depot.message.MessageUtils;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
-import com.gotocompany.depot.message.MessageSchema;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.metrics.StatsDReporter;
 import com.gotocompany.depot.stencil.DepotStencilUpdateListener;
+import com.gotocompany.depot.utils.StencilUtils;
 import com.gotocompany.stencil.StencilClientFactory;
 import com.gotocompany.stencil.client.StencilClient;
 import com.gotocompany.stencil.config.StencilConfig;
+import com.jayway.jsonpath.Configuration;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -32,17 +32,24 @@ public class ProtoMessageParser implements MessageParser {
 
     private final StencilClient stencilClient;
     private final ProtoFieldParser protoMappingParser = new ProtoFieldParser();
+    private final Configuration jsonPathConfig;
 
     public ProtoMessageParser(SinkConfig sinkConfig, StatsDReporter reporter, DepotStencilUpdateListener protoUpdateListener) {
+
         StencilConfig stencilConfig = StencilUtils.getStencilConfig(sinkConfig, reporter.getClient(), protoUpdateListener);
         if (sinkConfig.isSchemaRegistryStencilEnable()) {
             stencilClient = StencilClientFactory.getClient(sinkConfig.getSchemaRegistryStencilUrls(), stencilConfig);
         } else {
             stencilClient = StencilClientFactory.getClient();
         }
+
+        jsonPathConfig = Configuration.builder()
+                .jsonProvider(new ProtoJsonProvider(sinkConfig))
+                .build();
     }
 
-    public ProtoMessageParser(StencilClient stencilClient) {
+    public ProtoMessageParser(StencilClient stencilClient, Configuration jsonPathConfig) {
+        this.jsonPathConfig = jsonPathConfig;
         this.stencilClient = stencilClient;
     }
 
@@ -67,19 +74,11 @@ public class ProtoMessageParser implements MessageParser {
             throw new EmptyMessageException();
         }
         DynamicMessage dynamicMessage = stencilClient.parse(schemaClass, payload);
-        return new ProtoParsedMessage(dynamicMessage);
+        return new ProtoParsedMessage(dynamicMessage, jsonPathConfig);
     }
 
     public Map<String, Descriptors.Descriptor> getDescriptorMap() {
         return stencilClient.getAll();
-    }
-
-    @Override
-    public MessageSchema getSchema(String schemaClass) throws IOException {
-        ProtoField protoField = new ProtoField();
-        protoField = protoMappingParser.parseFields(protoField, schemaClass, getDescriptorMap(),
-                getTypeNameToPackageNameMap(getDescriptorMap()));
-        return new ProtoMessageSchema(protoField);
     }
 
     @Override
@@ -102,10 +101,17 @@ public class ProtoMessageParser implements MessageParser {
         return t -> objects.add(keyExtractor.apply(t));
     }
 
-    public MessageSchema getSchema(String schemaClass, Map<String, Descriptors.Descriptor> newDescriptors) throws IOException {
+    public ProtoField getProtoField(String schemaClass, Map<String, Descriptors.Descriptor> newDescriptors) throws IOException {
         ProtoField protoField = new ProtoField();
         protoField = protoMappingParser.parseFields(protoField, schemaClass, newDescriptors,
                 getTypeNameToPackageNameMap(newDescriptors));
-        return new ProtoMessageSchema(protoField);
+        return protoField;
+    }
+
+    public ProtoField getProtoField(String schemaClass) throws IOException {
+        ProtoField protoField = new ProtoField();
+        protoField = protoMappingParser.parseFields(protoField, schemaClass, getDescriptorMap(),
+                getTypeNameToPackageNameMap(getDescriptorMap()));
+        return protoField;
     }
 }

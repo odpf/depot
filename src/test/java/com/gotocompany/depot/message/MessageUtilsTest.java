@@ -1,13 +1,21 @@
 package com.gotocompany.depot.message;
 
+import com.gotocompany.depot.common.Tuple;
+import com.gotocompany.depot.config.SinkConfig;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.spi.json.JsonOrgJsonProvider;
+import org.aeonbits.owner.ConfigFactory;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 
 public class MessageUtilsTest {
     private final Configuration configuration = Configuration.builder()
@@ -73,12 +81,52 @@ public class MessageUtilsTest {
         exception = Assert.assertThrows(IllegalArgumentException.class, () -> MessageUtils.getFieldFromJsonObject("test[0].testing", object, configuration));
         Assert.assertEquals("Invalid field config : test[0].testing", exception.getMessage());
     }
-    @Test
-    public void shouldNotThrowExceptionIfValid() throws IOException {
-        Message message = new Message("test", "test");
-        MessageUtils.validate(message, String.class);
 
+    @Test
+    public void shouldCheckAndSetTimeStampColumns() {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("col1", "value1");
+        metadata.put("col2", "value2");
+        metadata.put("col3", 50000);
+        metadata.put("col4", 1668158346000L);
+
+        Map<String, String> configMap = new HashMap<>();
+        configMap.put("SINK_ADD_METADATA_ENABLED", "true");
+        configMap.put("SINK_METADATA_COLUMNS_TYPES", "col1=string,col2=string,col3=integer,col4=timestamp");
+        SinkConfig config = ConfigFactory.create(SinkConfig.class, configMap);
+        Function<Long, Object> timeStampConvertor = (Date::new);
+        Map<String, Object> finalMetadata = MessageUtils.checkAndSetTimeStampColumns(metadata, config.getMetadataColumnsTypes(), timeStampConvertor);
+
+        Assert.assertEquals(4, finalMetadata.size());
+        Assert.assertEquals("value1", finalMetadata.get("col1"));
+        Assert.assertEquals("value2", finalMetadata.get("col2"));
+        Assert.assertEquals(50000, finalMetadata.get("col3"));
+        Assert.assertEquals(new Date(1668158346000L), finalMetadata.get("col4"));
     }
+
+    @Test
+    public void shouldReturnMetadata() {
+        Message message = new Message(
+                null,
+                null,
+                new Tuple<>("col1", "value1"),
+                new Tuple<>("col2", "value2"),
+                new Tuple<>("col3", 50000),
+                new Tuple<>("col4", 1668158346000L));
+
+        Map<String, String> configMap = new HashMap<>();
+        configMap.put("SINK_ADD_METADATA_ENABLED", "true");
+        configMap.put("SINK_METADATA_COLUMNS_TYPES", "col1=string,col2=string,col3=integer,col4=timestamp");
+        SinkConfig config = ConfigFactory.create(SinkConfig.class, configMap);
+        Function<Long, Object> timeStampConvertor = (Date::new);
+        Map<String, Object> finalMetadata = MessageUtils.getMetaData(message, config, timeStampConvertor);
+        Assert.assertEquals(4, finalMetadata.size());
+        Assert.assertEquals("value1", finalMetadata.get("col1"));
+        Assert.assertEquals("value2", finalMetadata.get("col2"));
+        Assert.assertEquals(50000, finalMetadata.get("col3"));
+        Assert.assertEquals(new Date(1668158346000L), finalMetadata.get("col4"));
+    }
+
     @Test
     public void shouldThrowExceptionIfNotValid() {
         Message message = new Message("test", "test");

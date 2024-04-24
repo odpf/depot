@@ -1,38 +1,45 @@
 package com.gotocompany.depot.message.proto;
 
-import com.google.api.client.util.DateTime;
-import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
-import com.gotocompany.depot.common.Tuple;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
+import com.gotocompany.depot.exception.DeserializerException;
+import com.jayway.jsonpath.Configuration;
+import com.google.protobuf.Message;
 import com.gotocompany.depot.config.SinkConfig;
-import com.gotocompany.depot.message.MessageSchema;
-import com.gotocompany.depot.message.ParsedMessage;
-import com.gotocompany.depot.message.proto.converter.fields.DurationProtoField;
-import com.gotocompany.depot.message.proto.converter.fields.MessageProtoField;
-import com.gotocompany.depot.message.proto.converter.fields.ProtoField;
-import com.gotocompany.depot.message.proto.converter.fields.ProtoFieldFactory;
-import com.gotocompany.depot.utils.ProtoUtils;
-import com.gotocompany.depot.exception.ConfigurationException;
 import com.gotocompany.depot.exception.UnknownFieldsException;
+import com.gotocompany.depot.message.LogicalValue;
+import com.gotocompany.depot.message.MessageUtils;
+import com.gotocompany.depot.message.ParsedMessage;
+import com.gotocompany.depot.schema.Schema;
+import com.gotocompany.depot.schema.SchemaField;
+import com.gotocompany.depot.schema.proto.ProtoSchema;
+import com.gotocompany.depot.schema.proto.ProtoSchemaField;
+import com.gotocompany.depot.utils.ProtoUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ProtoParsedMessage implements ParsedMessage {
-    private final DynamicMessage dynamicMessage;
 
-    private final Map<MessageSchema, Map<String, Object>> cachedMapping = new HashMap<>();
 
-    public ProtoParsedMessage(DynamicMessage dynamicMessage) {
+    private final Message dynamicMessage;
+    private final Configuration jsonPathConfig;
+
+    public ProtoParsedMessage(DynamicMessage dynamicMessage, Configuration jsonPathConfig) {
         this.dynamicMessage = dynamicMessage;
+        this.jsonPathConfig = jsonPathConfig;
+    }
+
+    public ProtoParsedMessage(Message dynamicMessage, Configuration jsonPathConfig) {
+        this.dynamicMessage = dynamicMessage;
+        this.jsonPathConfig = jsonPathConfig;
+
     }
 
     public String toString() {
@@ -45,6 +52,17 @@ public class ProtoParsedMessage implements ParsedMessage {
     }
 
     @Override
+    public JSONObject toJson() {
+        String json;
+        try {
+            json = JsonFormat.printer().print(dynamicMessage);
+        } catch (InvalidProtocolBufferException | IllegalArgumentException e) {
+            throw new DeserializerException(e.getMessage());
+        }
+        return new JSONObject(json);
+    }
+
+    @Override
     public void validate(SinkConfig config) {
         if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable() && ProtoUtils.hasUnknownField(dynamicMessage)) {
             log.error("Unknown fields {}", UnknownProtoFields.toString(dynamicMessage.toByteArray()));
@@ -52,123 +70,51 @@ public class ProtoParsedMessage implements ParsedMessage {
         }
     }
 
+    private Object getProtoValue(Descriptors.FieldDescriptor fd, Object value) {
+        switch (fd.getJavaType()) {
+            case ENUM:
+                return value.toString();
+            case MESSAGE:
+                return new ProtoParsedMessage((Message) value, jsonPathConfig);
+            default:
+                return value;
+        }
+    }
+
     @Override
-    public Map<String, Object> getMapping(MessageSchema schema) {
-        if (schema.getSchema() == null) {
-            throw new ConfigurationException("Schema is not configured");
-        }
-        return cachedMapping.computeIfAbsent(schema, x -> getMappings(dynamicMessage, (Properties) schema.getSchema()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getMappings(DynamicMessage message, Properties columnMapping) {
-        if (message == null || columnMapping == null || columnMapping.isEmpty()) {
-            return new HashMap<>();
-        }
-        Descriptors.Descriptor descriptorForType = message.getDescriptorForType();
-
-        Map<String, Object> row = new HashMap<>(columnMapping.size());
-        columnMapping.forEach((key, value) -> {
-            String columnName = value.toString();
-            String columnIndex = key.toString();
-            if (columnIndex.equals(Constants.Config.RECORD_NAME)) {
-                return;
+    public Map<SchemaField, Object> getFields() {
+        return dynamicMessage.getDescriptorForType().getFields().stream().filter(fd -> {
+            Object value = dynamicMessage.getField(fd);
+            if (value == null) {
+                return false;
             }
-            int protoIndex = Integer.parseInt(columnIndex);
-            Descriptors.FieldDescriptor fieldDesc = descriptorForType.findFieldByNumber(protoIndex);
-            if (fieldDesc != null && !message.getField(fieldDesc).toString().isEmpty()) {
-                Object field = message.getField(fieldDesc);
-                ProtoField protoField = ProtoFieldFactory.getField(fieldDesc, field);
-                Object fieldValue = protoField.getValue();
-                if (fieldValue instanceof List) {
-                    addRepeatedFields(row, value, (List<Object>) fieldValue);
-                    return;
-                }
-                if (fieldValue instanceof Instant) {
-                    row.put(columnName, new DateTime(((Instant) fieldValue).toEpochMilli()));
-                } else if (protoField.getClass().getName().equals(MessageProtoField.class.getName())
-                        || protoField.getClass().getName().equals(DurationProtoField.class.getName())) {
-                    Tuple<String, Object> nestedColumns = getNestedColumnName(field, value);
-                    row.put(nestedColumns.getFirst(), nestedColumns.getSecond());
-                } else {
-                    fieldValue = bytesCheck(fieldValue);
-                    row.put(columnName, fieldValue);
-                }
+            if (fd.isRepeated()) {
+                return !((List<?>) value).isEmpty();
             }
-        });
-        return row;
-    }
-
-    private Object bytesCheck(Object fieldValue) {
-        if (fieldValue instanceof ByteString) {
-            ByteString byteString = (ByteString) fieldValue;
-            byte[] bytes = byteString.toStringUtf8().getBytes();
-            return new String(Base64.getEncoder().encode(bytes));
-        } else {
-            return fieldValue;
-        }
-    }
-
-    private Tuple<String, Object> getNestedColumnName(Object field, Object value) {
-        try {
-            String columnName = getNestedColumnName((Properties) value);
-            Object fieldValue = getMappings((DynamicMessage) field, (Properties) value);
-            return new Tuple<>(columnName, fieldValue);
-        } catch (Exception e) {
-            log.error("Exception::Handling nested field failure: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    private String getNestedColumnName(Properties value) {
-        return value.get(Constants.Config.RECORD_NAME).toString();
-    }
-
-    private void addRepeatedFields(Map<String, Object> row, Object value, List<Object> fieldValue) {
-        if (fieldValue.isEmpty()) {
-            return;
-        }
-        List<Object> repeatedNestedFields = new ArrayList<>();
-        String columnName = null;
-        for (Object f : fieldValue) {
-            if (f instanceof DynamicMessage) {
-                assert value instanceof Properties;
-                Properties nestedMappings = (Properties) value;
-                repeatedNestedFields.add(getMappings((DynamicMessage) f, nestedMappings));
-                columnName = getNestedColumnName(nestedMappings);
-            } else {
-                if (f instanceof Instant) {
-                    repeatedNestedFields.add(new DateTime(((Instant) f).toEpochMilli()));
-                } else {
-                    f = bytesCheck(f);
-                    repeatedNestedFields.add(f);
-                }
-                assert value instanceof String;
-                columnName = (String) value;
+            return !value.toString().isEmpty();
+        }).collect(Collectors.toMap(ProtoSchemaField::new, fd -> {
+            Object value = dynamicMessage.getField(fd);
+            if (fd.isRepeated()) {
+                return ((List<?>) value).stream().map(v -> getProtoValue(fd, v)).collect(Collectors.toList());
             }
-        }
-        row.put(columnName, repeatedNestedFields);
+            return getProtoValue(fd, value);
+        }));
     }
 
-
-    public Object getFieldByName(String name, MessageSchema messageSchema) {
+    public Object getFieldByName(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Invalid field config : name can not be empty");
         }
-        String[] keys = name.split("\\.");
-        Object currentValue = dynamicMessage;
-        Descriptors.FieldDescriptor descriptor = null;
-        for (String key : keys) {
-            if (!(currentValue instanceof DynamicMessage)) {
-                throw new IllegalArgumentException("Invalid field config : " + name);
-            }
-            DynamicMessage message = (DynamicMessage) currentValue;
-            descriptor = message.getDescriptorForType().findFieldByName(key);
-            if (descriptor == null) {
-                throw new IllegalArgumentException("Invalid field config : " + name);
-            }
-            currentValue = message.getField(descriptor);
-        }
-        return ProtoFieldFactory.getField(descriptor, currentValue);
+        return MessageUtils.getFieldFromJsonObject(name, dynamicMessage, jsonPathConfig);
+    }
+
+    @Override
+    public Schema getSchema() {
+        return new ProtoSchema(dynamicMessage.getDescriptorForType());
+    }
+
+    @Override
+    public LogicalValue getLogicalValue() {
+        return new ProtoLogicalValue(dynamicMessage, getSchema());
     }
 }

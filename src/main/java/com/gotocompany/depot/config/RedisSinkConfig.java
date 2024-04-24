@@ -73,6 +73,10 @@ public interface RedisSinkConfig extends SinkConfig {
     @DefaultValue("")
     Properties getSinkRedisHashsetFieldToColumnMapping();
 
+    @Key("SINK_REDIS_DEFAULT_FIELD_VALUE_ENABLE")
+    @DefaultValue("true")
+    boolean getSinkDefaultFieldValueEnable();
+
     @Key("SINK_REDIS_CONNECTION_MAX_RETRIES")
     @DefaultValue("1")
     int getSinkRedisConnectionMaxRetries();

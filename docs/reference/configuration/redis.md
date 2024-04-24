@@ -78,6 +78,14 @@ The Redis deployment you are using. At present, we support `Standalone` and `Clu
 - Type: `required`
 - Default value: `Standalone`
 
+### `SINK_REDIS_DEFAULT_FIELD_VALUE_ENABLE`
+
+Defines whether to send the default values  for fields which are not present or null in the input Proto message
+
+* Example value: `false`
+* Type: `optional`
+* Default value: `true`
+
 ### `SINK_REDIS_SOCKET_TIMEOUT_MS`
 
 The max time in milliseconds that the Redis client will wait for response from the Redis server.

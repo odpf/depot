@@ -1,6 +1,5 @@
 package com.gotocompany.depot.log;
 
-import com.gotocompany.depot.message.json.JsonMessageParser;
 import com.gotocompany.depot.SinkResponse;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.error.ErrorInfo;
@@ -8,6 +7,7 @@ import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.exception.SinkException;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
+import com.gotocompany.depot.message.json.JsonMessageParser;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.JsonParserMetrics;
 import org.aeonbits.owner.ConfigFactory;

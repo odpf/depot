@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 public class UnknownError implements ErrorDescriptor {
 
     private String reason;
-
     private String message;
 
     @Override

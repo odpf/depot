@@ -9,6 +9,7 @@ import com.gotocompany.depot.common.Template;
 import com.gotocompany.depot.common.Tuple;
 import com.gotocompany.depot.config.BigTableSinkConfig;
 import com.gotocompany.depot.error.ErrorType;
+import com.gotocompany.depot.message.proto.ProtoJsonProvider;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
 import com.gotocompany.depot.utils.MessageConfigUtils;
 import com.gotocompany.depot.bigtable.model.BigTableRecord;
@@ -17,11 +18,11 @@ import com.gotocompany.depot.exception.ConfigurationException;
 import com.gotocompany.depot.exception.EmptyMessageException;
 import com.gotocompany.depot.exception.InvalidTemplateException;
 import com.gotocompany.depot.message.Message;
-import com.gotocompany.depot.message.MessageSchema;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.stencil.client.ClassLoadStencilClient;
+import com.jayway.jsonpath.Configuration;
 import org.aeonbits.owner.ConfigFactory;
 import org.aeonbits.owner.util.Collections;
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -46,9 +48,8 @@ public class BigTableRecordParserTest {
     @Mock
     private ClassLoadStencilClient stencilClient;
     @Mock
-    private MessageSchema schema;
-    @Mock
     private MessageParser mockMessageParser;
+
     @Mock
     private BigTableRowKeyParser mockBigTableRowKeyParser;
     @Mock
@@ -84,13 +85,17 @@ public class BigTableRecordParserTest {
         messages = Collections.list(message1, message2);
 
         stencilClient = Mockito.mock(ClassLoadStencilClient.class, CALLS_REAL_METHODS);
-        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient);
         sinkConfig = ConfigFactory.create(BigTableSinkConfig.class, System.getProperties());
+        Configuration jsonPathConfig = Configuration.builder()
+                .jsonProvider(new ProtoJsonProvider(sinkConfig))
+                .build();
+        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient, jsonPathConfig);
+
         Tuple<SinkConnectorSchemaMessageMode, String> modeAndSchema = MessageConfigUtils.getModeAndSchema(sinkConfig);
         BigTableSchema bigtableSchema = new BigTableSchema(sinkConfig.getColumnFamilyMapping());
-        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()), schema);
+        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()));
 
-        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, schema, bigtableSchema);
+        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, bigtableSchema);
     }
 
     @Test
@@ -105,12 +110,16 @@ public class BigTableRecordParserTest {
     @Test
     public void shouldReturnValidRecordsForListOfValidMessagesForComplexFieldsInColumnsMapping() throws InvalidTemplateException {
         System.setProperty("SINK_BIGTABLE_COLUMN_FAMILY_MAPPING", "{ \"cf1\" : { \"q1\" : \"order_number\", \"q2\" : \"service_type\", \"q3\" : \"driver_pickup_location\"} }");
-        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient);
         sinkConfig = ConfigFactory.create(BigTableSinkConfig.class, System.getProperties());
+        Configuration jsonPathConfig = Configuration.builder()
+                .jsonProvider(new ProtoJsonProvider(sinkConfig))
+                .build();
+        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient, jsonPathConfig);
+
         Tuple<SinkConnectorSchemaMessageMode, String> modeAndSchema = MessageConfigUtils.getModeAndSchema(sinkConfig);
-        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()), schema);
+        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()));
         BigTableSchema bigtableSchema = new BigTableSchema(sinkConfig.getColumnFamilyMapping());
-        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, schema, bigtableSchema);
+        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, bigtableSchema);
 
         List<BigTableRecord> records = bigTableRecordParser.convert(messages);
         assertTrue(records.get(0).isValid());
@@ -122,12 +131,15 @@ public class BigTableRecordParserTest {
     @Test
     public void shouldReturnValidRecordsForListOfValidMessagesForNestedTimestampFieldsInColumnsMapping() throws InvalidTemplateException {
         System.setProperty("SINK_BIGTABLE_COLUMN_FAMILY_MAPPING", "{ \"cf1\" : { \"q1\" : \"order_number\", \"q2\" : \"service_type\", \"q3\" : \"event_timestamp.nanos\"} }");
-        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient);
         sinkConfig = ConfigFactory.create(BigTableSinkConfig.class, System.getProperties());
+        Configuration jsonPathConfig = Configuration.builder()
+                .jsonProvider(new ProtoJsonProvider(sinkConfig))
+                .build();
+        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient, jsonPathConfig);
         Tuple<SinkConnectorSchemaMessageMode, String> modeAndSchema = MessageConfigUtils.getModeAndSchema(sinkConfig);
-        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()), schema);
+        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()));
         BigTableSchema bigtableSchema = new BigTableSchema(sinkConfig.getColumnFamilyMapping());
-        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, schema, bigtableSchema);
+        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, bigtableSchema);
 
         List<BigTableRecord> records = bigTableRecordParser.convert(messages);
         assertTrue(records.get(0).isValid());
@@ -139,12 +151,15 @@ public class BigTableRecordParserTest {
     @Test
     public void shouldReturnValidRecordsForListOfValidMessagesForNestedFieldsInColumnsMapping() throws InvalidTemplateException {
         System.setProperty("SINK_BIGTABLE_COLUMN_FAMILY_MAPPING", "{ \"cf1\" : { \"q1\" : \"order_number\", \"q2\" : \"service_type\", \"q3\" : \"driver_pickup_location.latitude\"} }");
-        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient);
         sinkConfig = ConfigFactory.create(BigTableSinkConfig.class, System.getProperties());
+        Configuration jsonPathConfig = Configuration.builder()
+                .jsonProvider(new ProtoJsonProvider(sinkConfig))
+                .build();
+        ProtoMessageParser protoMessageParser = new ProtoMessageParser(stencilClient, jsonPathConfig);
         Tuple<SinkConnectorSchemaMessageMode, String> modeAndSchema = MessageConfigUtils.getModeAndSchema(sinkConfig);
-        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()), schema);
+        BigTableRowKeyParser bigTableRowKeyParser = new BigTableRowKeyParser(new Template(sinkConfig.getRowKeyTemplate()));
         BigTableSchema bigtableSchema = new BigTableSchema(sinkConfig.getColumnFamilyMapping());
-        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, schema, bigtableSchema);
+        bigTableRecordParser = new BigTableRecordParser(protoMessageParser, bigTableRowKeyParser, modeAndSchema, bigtableSchema);
 
         List<BigTableRecord> records = bigTableRecordParser.convert(messages);
         assertTrue(records.get(0).isValid());
@@ -165,7 +180,6 @@ public class BigTableRecordParserTest {
         bigTableRecordParser = new BigTableRecordParser(mockMessageParser,
                 mockBigTableRowKeyParser,
                 MessageConfigUtils.getModeAndSchema(sinkConfig),
-                schema,
                 new BigTableSchema(sinkConfig.getColumnFamilyMapping())
         );
         when(mockMessageParser.parse(any(), any(), any())).thenThrow(EmptyMessageException.class);
@@ -183,7 +197,6 @@ public class BigTableRecordParserTest {
         bigTableRecordParser = new BigTableRecordParser(mockMessageParser,
                 mockBigTableRowKeyParser,
                 MessageConfigUtils.getModeAndSchema(sinkConfig),
-                schema,
                 new BigTableSchema(sinkConfig.getColumnFamilyMapping())
         );
         when(mockMessageParser.parse(any(), any(), any())).thenThrow(ConfigurationException.class);
@@ -201,7 +214,6 @@ public class BigTableRecordParserTest {
         bigTableRecordParser = new BigTableRecordParser(mockMessageParser,
                 mockBigTableRowKeyParser,
                 MessageConfigUtils.getModeAndSchema(sinkConfig),
-                schema,
                 new BigTableSchema(sinkConfig.getColumnFamilyMapping())
         );
         when(mockMessageParser.parse(any(), any(), any())).thenThrow(IOException.class);
@@ -219,7 +231,6 @@ public class BigTableRecordParserTest {
         bigTableRecordParser = new BigTableRecordParser(mockMessageParser,
                 mockBigTableRowKeyParser,
                 MessageConfigUtils.getModeAndSchema(sinkConfig),
-                schema,
                 new BigTableSchema(sinkConfig.getColumnFamilyMapping())
         );
         when(mockMessageParser.parse(any(), any(), any())).thenReturn(mockParsedMessage);

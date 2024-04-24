@@ -1,17 +1,20 @@
 package com.gotocompany.depot.config;
 
+import com.gotocompany.depot.config.converter.ConfToListConverter;
 import com.gotocompany.depot.config.converter.SchemaRegistryHeadersConverter;
 import com.gotocompany.depot.config.converter.SchemaRegistryRefreshConverter;
 import com.gotocompany.depot.config.converter.SinkConnectorSchemaDataTypeConverter;
 import com.gotocompany.depot.config.converter.SinkConnectorSchemaMessageModeConverter;
 import com.gotocompany.depot.config.enums.SinkConnectorSchemaDataType;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
+import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.stencil.cache.SchemaRefreshStrategy;
 import org.aeonbits.owner.Config;
 import org.apache.hc.core5.http.Header;
 
 import java.util.List;
 
+@Config.DisableFeature(Config.DisableableFeature.PARAMETER_FORMATTING)
 public interface SinkConfig extends Config {
 
     @Key("SCHEMA_REGISTRY_STENCIL_ENABLE")
@@ -81,4 +84,19 @@ public interface SinkConfig extends Config {
     @Key("SINK_CONNECTOR_SCHEMA_PROTO_ALLOW_UNKNOWN_FIELDS_ENABLE")
     @DefaultValue("false")
     boolean getSinkConnectorSchemaProtoAllowUnknownFieldsEnable();
+
+    @DefaultValue("false")
+    @Key("SINK_ADD_METADATA_ENABLED")
+    boolean shouldAddMetadata();
+
+    @DefaultValue("")
+    @Key("SINK_METADATA_COLUMNS_TYPES")
+    @ConverterClass(ConfToListConverter.class)
+    @Separator(ConfToListConverter.ELEMENT_SEPARATOR)
+    List<TupleString> getMetadataColumnsTypes();
+
+    @Key("SINK_DEFAULT_FIELD_VALUE_ENABLE")
+    @DefaultValue("true")
+    boolean getSinkDefaultFieldValueEnable();
+
 }
