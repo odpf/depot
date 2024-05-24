@@ -57,8 +57,8 @@ Defines whether to add Kafka metadata fields like topic, partition, offset, time
 
 ## `SINK_METADATA_COLUMNS_TYPES`
 
-Defines which Kafka metadata fields to add in the input proto message.
-* Example value: `message_offset`
+Defines which Kafka metadata fields to add in the Http request payload body, along with their data types.
+* Example value: `message_offset=integer,message_topic=string`
 * Type: `optional`
 
 ## `SINK_DEFAULT_FIELD_VALUE_ENABLE`
