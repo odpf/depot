@@ -394,4 +394,33 @@ public class JsonParserUtilTest {
         JsonNode parsedJsonNode = JsonParserUtils.parse(rawJsonNode, parsedLogMessage);
         assertEquals("\"\"", parsedJsonNode.toString());
     }
+
+    @Test
+    public void shouldParseJsonStringTemplateWithCommaWithSingleArguments() throws JsonProcessingException {
+        JsonNode rawJsonNode = OBJECT_MAPPER.readTree("\"%s/,/,int32_value\"");
+        JsonNode parsedJsonNode = JsonParserUtils.parse(rawJsonNode, parsedLogMessage);
+        assertEquals("\"445,\"", parsedJsonNode.toString());
+    }
+
+    @Test
+    public void shouldParseJsonStringTemplateWithCommaWithMultipleArguments() throws JsonProcessingException {
+        JsonNode rawJsonNode = OBJECT_MAPPER.readTree("\"%s/,/%s,int32_value,int32_value\"");
+        JsonNode parsedJsonNode = JsonParserUtils.parse(rawJsonNode, parsedLogMessage);
+        assertEquals("\"445,445\"", parsedJsonNode.toString());
+    }
+
+    @Test
+    public void shouldParseJsonStringTemplaateWithOnlyComma() throws JsonProcessingException {
+        JsonNode rawJsonNode = OBJECT_MAPPER.readTree("\"/,/\"");
+        JsonNode parsedJsonNode = JsonParserUtils.parse(rawJsonNode, parsedLogMessage);
+        assertEquals("\",\"", parsedJsonNode.toString());
+    }
+
+    @Test
+    public void shouldParseJsonStaringTemplateWithCommaAppendedWithString() throws JsonProcessingException {
+        JsonNode rawJsonNode = OBJECT_MAPPER.readTree("\"ww/,/eee\"");
+        JsonNode parsedJsonNode = JsonParserUtils.parse(rawJsonNode, parsedLogMessage);
+        assertEquals("\"ww,eee\"", parsedJsonNode.toString());
+    }
+
 }

@@ -17,21 +17,33 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(Parameterized.class)
 public class TemplateTest {
     private ParsedMessage parsedTestMessage;
     private ParsedMessage parsedBookingMessage;
     @Mock
     private SinkConfig sinkConfig;
+
+    private final String templateString;
+    private final String expectedOutput;
+
+    public TemplateTest(String templateString, String expectedOutput) {
+        this.templateString = templateString;
+        this.expectedOutput = expectedOutput;
+    }
+
 
     @Before
     public void setUp() throws Exception {
@@ -55,6 +67,7 @@ public class TemplateTest {
         Parser protoParserBooking = StencilClientFactory.getClient().getParser(TestBookingLogMessage.class.getName());
         parsedBookingMessage = new ProtoParsedMessage(protoParserBooking.parse((byte[]) bookingMessage.getLogMessage()), jsonPathConfig);
     }
+
 
     @Test
     public void shouldParseStringMessageForCollectionKeyTemplate() throws InvalidTemplateException {
@@ -130,5 +143,50 @@ public class TemplateTest {
     public void shouldGetTemplatePatternFromParameterizedString() throws InvalidTemplateException {
         Template template = new Template("http://dummy.com/%s,order_number");
         assertEquals("http://dummy.com/%s", template.getTemplateString());
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"eeeee/,/2222", "eeeee,2222"},
+                {"eeeee/,/2222/,/eeeee/,/2222", "eeeee,2222,eeeee,2222"},
+                {"/,/", ","},
+                {"ff//,//ss", "ff/,/ss"},
+                {"%s/,/%s,order_number,driver_pickup_location", "%s,%s"},
+                {"eeeee/,/2222/,/eeeee/,/2222%s,order_number", "eeeee,2222,eeeee,2222%s"}
+        });
+    }
+
+    @Test
+    public void testCommaParsingInTemplate() throws InvalidTemplateException {
+
+        Template template = new Template(templateString);
+        assertEquals(expectedOutput, template.getTemplateString());
+    }
+
+
+    @Test
+    public void shouldThrowExceptionIfMultipleCommasEnclosedInQuotes() {
+        Exception exception = assertThrows(InvalidTemplateException.class, () -> new Template("eee/,,/222%s,order_number"));
+        assertEquals("Template is not valid, variables=0, validArgs=0, values=2", exception.getMessage());
+    }
+
+
+    @Test
+    public void shouldThrowExceptionIfCommaNotEnclosedWithArguments() {
+        Exception exception = assertThrows(InvalidTemplateException.class, () -> new Template("ss,%s,order_number"));
+        assertEquals("Template is not valid, variables=0, validArgs=0, values=2", exception.getMessage());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfCommaNotEnclosedWithoutArguments() {
+        Exception exception = assertThrows(InvalidTemplateException.class, () -> new Template("ss,dd"));
+        assertEquals("Template is not valid, variables=0, validArgs=0, values=1", exception.getMessage());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfCommaEnclosedOutsideTemplateString() {
+        Exception exception = assertThrows(InvalidTemplateException.class, () -> new Template("%s/,/order_number"));
+        assertEquals("Template is not valid, variables=1, validArgs=1, values=0", exception.getMessage());
     }
 }

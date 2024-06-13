@@ -63,6 +63,16 @@ Corresponding payloads-
 * `""`
 * `null`
 
+Note: If you want to add a comma inside the JSON String, then you need to enclose it with /, like /,/ 
+
+Examples Templates-
+
+* `SINK_HTTPV2_JSON_BODY_TEMPLATE="ww/,/ee"`
+
+Corresponding payloads-
+
+* `"ww,ee"`
+
 
 ### Primitive data types
 
@@ -109,6 +119,8 @@ Corresponding payloads-
 * `"true45601"`
 
 
+
+
 You can provide nested primitive fields inside a message proto field in the template arguments.
 
 Examples Templates-
@@ -121,6 +133,15 @@ Corresponding payloads-
 * `4145601`
 * `true`
 
+Note: If you want to add a comma while concatenating multiple primitive types, then you need to enclose it with /, like /,/
+
+Examples Templates-
+
+* `SINK_HTTPV2_JSON_BODY_TEMPLATE="%s/,/%s,int_value,float_value"`
+
+Corresponding payloads-
+
+* `"4322,33.5655"`
 
 ### String data type
 
@@ -176,6 +197,17 @@ Examples Templates-
 Corresponding payloads-
 * `"daegaegaesg"`
 * `"true"`
+
+
+Note: If you want to add a comma inside the JSON String, then you need to enclose it with /, like /,/
+
+Examples Templates-
+
+* `SINK_HTTPV2_JSON_BODY_TEMPLATE="%s/,/%s,string_value,string_value"`
+
+Corresponding payloads-
+
+* `"ww,ww"`
 
 
 ### Object/Message data type
