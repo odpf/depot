@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.7"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.33.1"
         classpath "org.ajoberstar:gradle-git:1.6.0"
     }
 }
@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'com.gotocompany'
-version '0.9.1'
+version '0.9.2'
 
 repositories {
     mavenLocal()
