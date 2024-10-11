@@ -24,6 +24,22 @@ message TestFields {
   sint64 sint64_field = 16;
 }
 
+message TestRoot {
+  string string_field = 1;
+  TestInner inner_field = 2;
+  repeated TestInner inner_list_field = 3;
+}
+
+message TestInner {
+  string string_field = 1;
+  TestAnotherInner another_inner_field = 2;
+  repeated TestAnotherInner another_inner_list_field = 3;
+}
+
+message TestAnotherInner {
+  string string_field = 1;
+}
+
 enum TestEnum {
   TEST_1 = 0;
   TEST_2 = 1;
