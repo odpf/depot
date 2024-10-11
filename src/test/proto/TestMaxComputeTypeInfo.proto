@@ -29,6 +29,7 @@ message TestRoot {
   TestInner inner_field = 2;
   repeated TestInner inner_list_field = 3;
   google.protobuf.Timestamp timestamp_field = 4;
+  google.protobuf.Struct struct_field = 5;
 }
 
 message TestInner {
@@ -40,6 +41,7 @@ message TestInner {
 message TestAnotherInner {
   string string_field = 1;
 }
+
 
 enum TestEnum {
   TEST_1 = 0;
