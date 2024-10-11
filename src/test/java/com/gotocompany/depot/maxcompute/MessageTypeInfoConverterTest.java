@@ -47,6 +47,16 @@ public class MessageTypeInfoConverterTest {
     }
 
     @Test
+    public void shouldReturnTrueWhenCanConvertIsCalledWithMessageFieldDescriptor() {
+        Assertions.assertTrue(messageTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(1)));
+    }
+
+    @Test
+    public void shouldReturnFalseWhenCanConvertIsCalledWithNonMessageFieldDescriptor() {
+        Assertions.assertFalse(messageTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(0)));
+    }
+
+    @Test
     public void shouldReturnMinIntegerAsPriority() {
         Assertions.assertEquals(Integer.MIN_VALUE, messageTypeInfoConverter.getPriority());
     }
@@ -60,4 +70,5 @@ public class MessageTypeInfoConverterTest {
         messageTypeInfoConverter = new MessageTypeInfoConverter(converters);
         converters.add(messageTypeInfoConverter);
     }
+
 }

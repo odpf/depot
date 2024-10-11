@@ -28,6 +28,7 @@ message TestRoot {
   string string_field = 1;
   TestInner inner_field = 2;
   repeated TestInner inner_list_field = 3;
+  google.protobuf.Timestamp timestamp_field = 4;
 }
 
 message TestInner {
