@@ -4,6 +4,7 @@ package com.gotocompany.depot;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/duration.proto";
 
 message TestFields {
   bytes bytes_field = 1;
@@ -30,6 +31,7 @@ message TestRoot {
   repeated TestInner inner_list_field = 3;
   google.protobuf.Timestamp timestamp_field = 4;
   google.protobuf.Struct struct_field = 5;
+  google.protobuf.Duration duration_field = 6;
 }
 
 message TestInner {
