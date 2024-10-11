@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package com.gotocompany.depot;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+message TestFields {
+  bytes bytes_field = 1;
+  string string_field = 2;
+  TestEnum enum_field = 3;
+  double double_field = 4;
+  float float_field = 5;
+  bool bool_field = 6;
+  int64 int64_field = 7;
+  uint64 uint64_field = 8;
+  int32 int32_field = 9;
+  uint32 uint32_field = 10;
+  fixed64 fixed64_field = 11;
+  fixed32 fixed32_field = 12;
+  sfixed32 sfixed32_field = 13;
+  sfixed64 sfixed64_field = 14;
+  sint32 sint32_field = 15;
+  sint64 sint64_field = 16;
+}
+
+enum TestEnum {
+  TEST_1 = 0;
+  TEST_2 = 1;
+}
+
+
