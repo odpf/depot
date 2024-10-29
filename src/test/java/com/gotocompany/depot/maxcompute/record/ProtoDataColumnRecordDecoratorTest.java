@@ -44,7 +44,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
 
-        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null);
     }
 
     @Test
@@ -69,7 +69,43 @@ public class ProtoDataColumnRecordDecoratorTest {
                         expectedTimestamp});
     }
 
-    private void instantiateProtoDataColumnRecordDecorator(SinkConfig sinkConfig, MaxComputeSinkConfig maxComputeSinkConfig) throws IOException {
+    @Test
+    public void decorateShouldCallInjectedDecorator() throws IOException {
+        RecordDecorator recordDecorator = Mockito.mock(RecordDecorator.class);
+        Mockito.doNothing().when(recordDecorator)
+                .decorate(Mockito.any(), Mockito.any());
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
+        Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, recordDecorator);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = getMockedMessage();
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+        java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L * 1000);
+        expectedTimestamp.setNanos(1000);
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+
+        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        Assertions.assertThat(record)
+                .extracting("values")
+                .isEqualTo(new Object[]{"id",
+                        Arrays.asList(
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
+                        ),
+                        expectedTimestamp});
+        Mockito.verify(recordDecorator, Mockito.times(1))
+                .decorate(Mockito.any(), Mockito.any());
+    }
+
+    private void instantiateProtoDataColumnRecordDecorator(SinkConfig sinkConfig, MaxComputeSinkConfig maxComputeSinkConfig, RecordDecorator recordDecorator) throws IOException {
         ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator();
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(
                 converterOrchestrator,
@@ -88,7 +124,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 .thenReturn(parsedMessage);
 
         protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(
-                null,
+                recordDecorator,
                 converterOrchestrator,
                 protoMessageParser,
                 sinkConfig,
