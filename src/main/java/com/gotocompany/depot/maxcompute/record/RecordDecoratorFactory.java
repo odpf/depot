@@ -6,9 +6,7 @@ import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 import com.gotocompany.depot.message.MessageParser;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class RecordDecoratorFactory {
 
     public static RecordDecorator createRecordDecorator(
