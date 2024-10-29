@@ -37,7 +37,7 @@ public class PartitioningStrategyFactoryTest {
 
         PartitioningStrategy partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
 
-        Assert.assertTrue(partitioningStrategy instanceof TimestampPartitioningStrategyTest);
+        Assert.assertTrue(partitioningStrategy instanceof TimestampPartitioningStrategy);
     }
 
     @Test
