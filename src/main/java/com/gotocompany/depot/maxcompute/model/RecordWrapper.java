@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Data
-@Getter
-@Setter
 @AllArgsConstructor
 public class RecordWrapper {
     private Record record;
