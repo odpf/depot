@@ -104,4 +104,27 @@ public class MaxComputeSinkTest {
                 .allMatch(s -> ErrorType.DEFAULT_ERROR.equals(s.getErrorType())));
     }
 
+    @Test
+    public void shouldDoNothing() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+                .thenReturn("accessId");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+                .thenReturn("accessKey");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+                .thenReturn("odpsUrl");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+                .thenReturn("projectId");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+                .thenReturn("schema");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+                .thenReturn("tunnelUrl");
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
+
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+
+        Assertions.assertDoesNotThrow(maxComputeSink::close);
+    }
+
 }
