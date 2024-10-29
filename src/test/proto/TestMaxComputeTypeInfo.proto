@@ -26,6 +26,25 @@ message TestFields {
   sint64 sint64_field = 16;
 }
 
+message TestFieldsRepeated {
+  repeated bytes bytes_fields = 1;
+  repeated string string_fields = 2;
+  repeated TestEnum enum_fields = 3;
+  repeated double double_fields = 4;
+  repeated float float_fields = 5;
+  repeated bool bool_fields = 6;
+  repeated int64 int64_fields = 7;
+  repeated uint64 uint64_fields = 8;
+  repeated int32 int32_fields = 9;
+  repeated uint32 uint32_fields = 10;
+  repeated fixed64 fixed64_fields = 11;
+  repeated fixed32 fixed32_fields = 12;
+  repeated sfixed32 sfixed32_fields = 13;
+  repeated sfixed64 sfixed64_fields = 14;
+  repeated sint32 sint32_fields = 15;
+  repeated sint64 sint64_fields = 16;
+}
+
 message TestRoot {
   string string_field = 1;
   TestInner inner_field = 2;
@@ -34,6 +53,16 @@ message TestRoot {
   google.protobuf.Struct struct_field = 5;
   google.protobuf.Duration duration_field = 6;
   google.protobuf.Empty empty_field = 7;
+}
+
+message TestRootRepeated {
+  repeated string string_fields = 1;
+  repeated TestInner inner_fields = 2;
+  repeated TestInner inner_list_fields = 3;
+  repeated google.protobuf.Timestamp timestamp_fields = 4;
+  repeated google.protobuf.Struct struct_fields = 5;
+  repeated google.protobuf.Duration duration_fields = 6;
+  repeated google.protobuf.Empty empty_fields = 7;
 }
 
 message TestInner {
@@ -46,7 +75,27 @@ message TestAnotherInner {
   string string_field = 1;
 }
 
+message TestBuyerWrapper {
+  TestBuyer buyer = 1;
+}
 
+message TestBuyer {
+  string name = 1;
+  TestCart cart = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message TestCart {
+  string cart_id = 1;
+  repeated TestItem items = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Duration cart_age = 4;
+}
+
+message TestItem {
+  string id = 1;
+  int32 quantity = 2;
+}
 enum TestEnum {
   TEST_1 = 0;
   TEST_2 = 1;

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package deduction;
+
+option java_multiple_files = true;
+option java_package = "deduction";
+option java_outer_classname = "Deduction";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+message DeductionEvent {
+  string deduction_id = 1; // Unique identifier for deduction.
+  string subscription_id = 2; // Subscription id associated to the deduction.
+  string status = 3; // State of the deduction.
+  google.protobuf.Timestamp trigger_date_time = 4; // Date time used trigger schedule deductions
+  google.protobuf.Timestamp scheduled_at = 5; // Timestamp at which deduction was scheduled for deduction.
+  uint32 attempt_count = 6; // Number of times this deduction processing was attempted.
+  google.protobuf.Timestamp created_at = 7; // Timestamp at which deduction was created.
+  google.protobuf.Timestamp updated_at = 8; // Timestamp at which deduction was updated.
+  google.protobuf.Timestamp published_at = 9; // Timestamp at which deduction was published.
+  uint32 version = 10; // Version of deduction.
+  string iteration_id = 11; // Unique identifier for each iteration of deduction associated with a subscription.
+  uint32 retry_attempt_count = 12; // Number of times deductions have been retried for a particular iteration.
+}
+
+message Error {
+  string code = 1 [json_name = "code"];
+  string entity = 2 [json_name = "entity"];
+  string cause = 3 [json_name = "cause"];
+  google.protobuf.Struct details = 4 [json_name = "details"];
+}
+
+message GenericResponse {
+  string correlation_id = 1;
+  bool success = 2;
+  repeated Error errors = 3;
+}
+
+message HttpRequest {
+  string field1 = 1;
+  string field2 = 2;
+  repeated NestedRequest request = 3;
+  google.protobuf.Timestamp event_timestamp = 4;
+}
+
+message NestedRequest {
+  string id = 1;
+  string correlation_id = 2;
+  int64 count = 3;
+}
