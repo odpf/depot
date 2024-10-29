@@ -15,9 +15,11 @@ import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ConverterOrchestratorTest {
 
@@ -103,5 +105,18 @@ public class ConverterOrchestratorTest {
         Assertions.assertEquals(expectedMessage, messageRecord);
         Assertions.assertEquals(Collections.singletonList(expectedMessage), repeatedMessageRecord);
         Assertions.assertEquals("{\"intField\":1.0,\"stringField\":\"String\"}", structRecord);
+    }
+
+    @Test
+    public void shouldClearTheTypeInfoCache() throws NoSuchFieldException, IllegalAccessException {
+        converterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"));
+        Field field = converterOrchestrator.getClass()
+                .getDeclaredField("typeInfoCache");
+        field.setAccessible(true);
+        Assertions.assertEquals(1, ((Map<String, TypeInfo>) field.get(converterOrchestrator)).size());
+
+        converterOrchestrator.clearCache();
+
+        Assertions.assertEquals(0, ((Map<String, TypeInfo>) field.get(converterOrchestrator)).size());
     }
 }

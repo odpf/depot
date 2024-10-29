@@ -8,8 +8,7 @@ import com.aliyun.odps.account.AliyunAccount;
 import com.aliyun.odps.tunnel.TableTunnel;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
-import com.gotocompany.depot.maxcompute.client.insert.NonPartitionedInsertManager;
-import com.gotocompany.depot.maxcompute.client.insert.PartitionedInsertManager;
+import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 
 import java.util.HashMap;
@@ -59,10 +58,7 @@ public class MaxComputeClient {
     }
 
     private InsertManager initializeInsertManager() {
-        if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
-            return new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig);
-        }
-        return new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig);
+        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel);
     }
 
     private Map<String, String> getGlobalSettings() {
