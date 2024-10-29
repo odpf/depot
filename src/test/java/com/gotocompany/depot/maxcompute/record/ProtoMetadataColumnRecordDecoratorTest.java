@@ -75,7 +75,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         Assertions.assertThat(record.get(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()))
                 .isEqualTo(new SimpleStruct(
                         TypeInfoFactory.getStructTypeInfo(Arrays.asList("__message_timestamp", "__kafka_topic", "__kafka_offset"),
-                                Arrays.asList(TypeInfoFactory.TIMESTAMP_NTZ, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT)),
+                                Arrays.asList(TypeInfoFactory.TIMESTAMP, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT)),
                         Arrays.asList(expectedTimestamp, "topic", 100L)
                 ));
     }
