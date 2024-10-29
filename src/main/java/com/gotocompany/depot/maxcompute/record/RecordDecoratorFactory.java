@@ -17,7 +17,7 @@ public class RecordDecoratorFactory {
             MaxComputeSinkConfig maxComputeSinkConfig,
             SinkConfig sinkConfig
     ) {
-        RecordDecorator dataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null, converterOrchestrator, maxComputeSchemaCache, messageParser, sinkConfig, partitioningStrategy);
+        RecordDecorator dataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null, converterOrchestrator, messageParser, sinkConfig, partitioningStrategy);
         if (!maxComputeSinkConfig.shouldAddMetadata()) {
             return dataColumnRecordDecorator;
         }

@@ -90,7 +90,6 @@ public class ProtoDataColumnRecordDecoratorTest {
         protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(
                 null,
                 converterOrchestrator,
-                maxComputeSchemaCache,
                 protoMessageParser,
                 sinkConfig,
                 null
