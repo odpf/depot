@@ -5,6 +5,7 @@ import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.exception.MaxComputeTableOperationException;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
@@ -57,7 +58,7 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
             maxComputeClient.upsertTable(maxComputeSchema.getTableSchema());
             log.info("MaxCompute table upserted successfully");
         } catch (OdpsException e) {
-            throw new RuntimeException("Error while updating maxcompute table on callback", e);
+            throw new MaxComputeTableOperationException("Error while updating MaxCompute table", e);
         }
     }
 

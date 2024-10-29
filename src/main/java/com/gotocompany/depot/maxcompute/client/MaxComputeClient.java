@@ -10,17 +10,19 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor
 public class MaxComputeClient {
 
-    private final Odps odps;
-    private final MaxComputeSinkConfig maxComputeSinkConfig;
-    private final TableTunnel tableTunnel;
-    private final InsertManager insertManager;
+    private Odps odps;
+    private MaxComputeSinkConfig maxComputeSinkConfig;
+    private TableTunnel tableTunnel;
+    private InsertManager insertManager;
 
     public MaxComputeClient(MaxComputeSinkConfig maxComputeSinkConfig) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
