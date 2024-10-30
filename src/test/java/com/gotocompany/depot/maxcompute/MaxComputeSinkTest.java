@@ -1,11 +1,11 @@
 package com.gotocompany.depot.maxcompute;
 
 import com.aliyun.odps.data.Record;
+import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.SinkResponse;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
-import com.gotocompany.depot.exception.SinkException;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.record.MessageRecordConverter;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import java.util.List;
 public class MaxComputeSinkTest {
 
     @Test
-    public void shouldInsertMaxComputeSinkTest() throws SinkException {
+    public void shouldInsertMaxComputeSinkTest() throws IOException, TunnelException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
@@ -62,7 +63,7 @@ public class MaxComputeSinkTest {
     }
 
     @Test
-    public void shouldMarkAllMessageAsFailedWhenInsertThrowError() throws SinkException {
+    public void shouldMarkAllMessageAsFailedWhenInsertThrowTunnelExceptionError() throws IOException, TunnelException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
@@ -81,7 +82,93 @@ public class MaxComputeSinkTest {
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
-        Mockito.doThrow(new RuntimeException("Insert failed"))
+        Mockito.doThrow(new TunnelException("Failed establishing connection"))
+                .when(maxComputeClient)
+                .insert(Mockito.anyList());
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        List<Message> messages = Arrays.asList(
+                new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
+                new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
+        );
+        List<RecordWrapper> validRecords = Arrays.asList(
+                new RecordWrapper(Mockito.mock(Record.class), 0, null, null),
+                new RecordWrapper(Mockito.mock(Record.class), 1, null, null)
+        );
+        Mockito.when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
+
+        SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
+
+        Assertions.assertEquals(2, sinkResponse.getErrors().size());
+        Assert.assertTrue(sinkResponse.getErrors()
+                .values()
+                .stream()
+                .allMatch(s -> ErrorType.SINK_RETRYABLE_ERROR.equals(s.getErrorType())));
+    }
+
+    @Test
+    public void shouldMarkAllMessageAsFailedWhenInsertThrowIOExceptionError() throws IOException, TunnelException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+                .thenReturn("accessId");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+                .thenReturn("accessKey");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+                .thenReturn("odpsUrl");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+                .thenReturn("projectId");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+                .thenReturn("schema");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+                .thenReturn("tunnelUrl");
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        Mockito.doNothing()
+                .when(maxComputeClient)
+                .insert(Mockito.anyList());
+        MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
+        Mockito.doThrow(new IOException("Failed flushing"))
+                .when(maxComputeClient)
+                .insert(Mockito.anyList());
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        List<Message> messages = Arrays.asList(
+                new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
+                new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
+        );
+        List<RecordWrapper> validRecords = Arrays.asList(
+                new RecordWrapper(Mockito.mock(Record.class), 0, null, null),
+                new RecordWrapper(Mockito.mock(Record.class), 1, null, null)
+        );
+        Mockito.when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
+
+        SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
+
+        Assertions.assertEquals(2, sinkResponse.getErrors().size());
+        Assert.assertTrue(sinkResponse.getErrors()
+                .values()
+                .stream()
+                .allMatch(s -> ErrorType.SINK_RETRYABLE_ERROR.equals(s.getErrorType())));
+    }
+
+    @Test
+    public void shouldMarkAllMessageAsFailedWhenInsertThrowExceptionError() throws IOException, TunnelException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+                .thenReturn("accessId");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+                .thenReturn("accessKey");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+                .thenReturn("odpsUrl");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+                .thenReturn("projectId");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+                .thenReturn("schema");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+                .thenReturn("tunnelUrl");
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        Mockito.doNothing()
+                .when(maxComputeClient)
+                .insert(Mockito.anyList());
+        MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
+        Mockito.doThrow(new RuntimeException("Unexpected Error"))
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
         MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);

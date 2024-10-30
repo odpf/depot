@@ -6,12 +6,14 @@ import com.aliyun.odps.TableSchema;
 import com.aliyun.odps.account.Account;
 import com.aliyun.odps.account.AliyunAccount;
 import com.aliyun.odps.tunnel.TableTunnel;
+import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +43,8 @@ public class MaxComputeClient {
         }
     }
 
-    public void insert(List<RecordWrapper> recordWrappers) {
-        try {
-            insertManager.insert(recordWrappers);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to insert records into MaxCompute", e);
-        }
+    public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
+        insertManager.insert(recordWrappers);
     }
 
     private Odps initializeOdps() {
