@@ -1,6 +1,7 @@
 package com.gotocompany.depot.utils;
 
 import com.google.protobuf.Message;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -9,14 +10,14 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 
 public class ProtoUtils {
-    public static boolean hasUnknownField(Message root) {
-        List<Message> messageFields = collectNestedFields(root);
+    public static boolean hasUnknownField(Message root, ProtoUnknownFieldValidationType protoUnknownFieldValidationType) {
+        List<Message> messageFields = collectNestedFields(root, protoUnknownFieldValidationType);
         List<Message> messageWithUnknownFields = getMessageWithUnknownFields(messageFields);
         return !messageWithUnknownFields.isEmpty();
 
     }
 
-    private static List<Message> collectNestedFields(Message node) {
+    private static List<Message> collectNestedFields(Message node, ProtoUnknownFieldValidationType protoUnknownFieldValidationType) {
         List<Message> output = new LinkedList<>();
         Queue<Message> stack = Collections.asLifoQueue(new LinkedList<>());
         stack.add(node);
@@ -26,8 +27,8 @@ public class ProtoUtils {
                 break;
             }
             List<Message> nestedChildNodes = current.getAllFields().values().stream()
-                    .filter(field -> field instanceof Message)
-                    .map(field -> (Message) field)
+                    .filter(protoUnknownFieldValidationType::shouldFilter)
+                    .flatMap(protoUnknownFieldValidationType::getMapper)
                     .collect(Collectors.toList());
             stack.addAll(nestedChildNodes);
 
@@ -39,6 +40,5 @@ public class ProtoUtils {
 
     private static List<Message> getMessageWithUnknownFields(List<Message> messages) {
         return messages.stream().filter(message -> !message.getUnknownFields().asMap().isEmpty()).collect(Collectors.toList());
-
     }
 }
