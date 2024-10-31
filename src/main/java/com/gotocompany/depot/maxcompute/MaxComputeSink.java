@@ -33,9 +33,9 @@ public class MaxComputeSink implements Sink {
         try {
             maxComputeClient.insert(recordWrappers.getValidRecords());
         } catch (IOException | TunnelException e) {
-            errorMappers(recordWrappers.getValidRecords(), sinkResponse, new ErrorInfo(e, ErrorType.SINK_RETRYABLE_ERROR));
+            mapInsertionError(recordWrappers.getValidRecords(), sinkResponse, new ErrorInfo(e, ErrorType.SINK_RETRYABLE_ERROR));
         } catch (Exception e) {
-            errorMappers(recordWrappers.getValidRecords(), sinkResponse, new ErrorInfo(e, ErrorType.DEFAULT_ERROR));
+            mapInsertionError(recordWrappers.getValidRecords(), sinkResponse, new ErrorInfo(e, ErrorType.DEFAULT_ERROR));
         }
         return sinkResponse;
     }
@@ -44,9 +44,9 @@ public class MaxComputeSink implements Sink {
     public void close() throws IOException {
     }
 
-    private void errorMappers(List<RecordWrapper> recordWrappers,
-                              SinkResponse sinkResponse,
-                              ErrorInfo errorInfo) {
+    private void mapInsertionError(List<RecordWrapper> recordWrappers,
+                                   SinkResponse sinkResponse,
+                                   ErrorInfo errorInfo) {
         recordWrappers
                 .forEach(recordWrapper -> {
                     recordWrapper.setErrorInfo(errorInfo);
