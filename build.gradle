@@ -29,6 +29,8 @@ repositories {
     mavenCentral()
 }
 
+configurations.configureEach { exclude group: 'com.google.guava', module: 'listenablefuture' }
+
 dependencies {
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.25.0'
     implementation group: 'com.datadoghq', name: 'java-dogstatsd-client', version: '2.13.0'
@@ -59,6 +61,7 @@ dependencies {
     implementation group: 'joda-time', name: 'joda-time', version: '2.10.2'
     // need to take this out as well
     implementation 'ch.qos.logback:logback-classic:1.4.11'
+    implementation('com.google.guava:guava:32.0.1-jre') { force = true }
     testImplementation group: 'junit', name: 'junit', version: '4.13.1'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
