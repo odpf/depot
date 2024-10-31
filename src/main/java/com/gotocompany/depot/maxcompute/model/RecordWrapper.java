@@ -5,8 +5,6 @@ import com.aliyun.odps.data.Record;
 import com.gotocompany.depot.error.ErrorInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 @AllArgsConstructor

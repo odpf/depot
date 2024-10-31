@@ -25,9 +25,9 @@ public class MaxComputeSchemaHelper {
     private final PartitioningStrategy partitioningStrategy;
 
     public MaxComputeSchema buildMaxComputeSchema(Descriptors.Descriptor descriptor) {
-        List<Column> dataColumn = buildDataColumns(descriptor, partitioningStrategy);
+        List<Column> dataColumn = buildDataColumns(descriptor);
         List<Column> metadataColumns = buildMetadataColumns();
-        Column partitionColumn = maxComputeSinkConfig.isTablePartitioningEnabled() ? buildPartitionColumn(partitioningStrategy) : null;
+        Column partitionColumn = maxComputeSinkConfig.isTablePartitioningEnabled() ? buildPartitionColumn() : null;
         TableSchema.Builder tableSchemaBuilder = com.aliyun.odps.TableSchema.builder();
         tableSchemaBuilder.withColumns(dataColumn);
         tableSchemaBuilder.withColumns(metadataColumns);
@@ -40,14 +40,13 @@ public class MaxComputeSchemaHelper {
                 .tableSchema(tableSchemaBuilder.build())
                 .dataColumns(dataColumn.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
                 .metadataColumns(metadataColumns.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
-                .partitionColumns(Objects.nonNull(partitionColumn) ?
-                        Collections.singletonMap(partitionColumn.getName(), partitionColumn.getTypeInfo()) : Collections.emptyMap())
+                .partitionColumns(Objects.nonNull(partitionColumn)
+                        ? Collections.singletonMap(partitionColumn.getName(), partitionColumn.getTypeInfo()) : Collections.emptyMap())
                 .build();
 
     }
 
-    private List<Column> buildDataColumns(Descriptors.Descriptor descriptor,
-                                          PartitioningStrategy partitioningStrategy) {
+    private List<Column> buildDataColumns(Descriptors.Descriptor descriptor) {
         return descriptor.getFields()
                 .stream()
                 .filter(fieldDescriptor -> {
@@ -61,7 +60,7 @@ public class MaxComputeSchemaHelper {
                 .collect(Collectors.toList());
     }
 
-    private Column buildPartitionColumn(PartitioningStrategy partitioningStrategy) {
+    private Column buildPartitionColumn() {
         return partitioningStrategy.getPartitionColumn();
     }
 

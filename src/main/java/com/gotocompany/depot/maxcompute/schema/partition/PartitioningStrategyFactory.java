@@ -15,16 +15,16 @@ public class PartitioningStrategyFactory {
 
     private final ConverterOrchestrator converterOrchestrator;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
-    private static final Set<TypeInfo> allowedPartitionKeyTypeInfo;
+    private static final Set<TypeInfo> ALLOWED_PARTITION_KEY_TYPE_INFO;
 
     static {
-        allowedPartitionKeyTypeInfo = new HashSet<>();
-        allowedPartitionKeyTypeInfo.add(TypeInfoFactory.TIMESTAMP);
-        allowedPartitionKeyTypeInfo.add(TypeInfoFactory.STRING);
-        allowedPartitionKeyTypeInfo.add(TypeInfoFactory.TINYINT);
-        allowedPartitionKeyTypeInfo.add(TypeInfoFactory.SMALLINT);
-        allowedPartitionKeyTypeInfo.add(TypeInfoFactory.INT);
-        allowedPartitionKeyTypeInfo.add(TypeInfoFactory.BIGINT);
+        ALLOWED_PARTITION_KEY_TYPE_INFO = new HashSet<>();
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TIMESTAMP);
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.STRING);
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TINYINT);
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.SMALLINT);
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.INT);
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.BIGINT);
     }
 
     public PartitioningStrategy createPartitioningStrategy(Descriptors.Descriptor descriptor) {
@@ -47,7 +47,7 @@ public class PartitioningStrategyFactory {
     }
 
     private void checkPartitionTypePrecondition(TypeInfo typeInfo) {
-        if (!allowedPartitionKeyTypeInfo.contains(typeInfo)) {
+        if (!ALLOWED_PARTITION_KEY_TYPE_INFO.contains(typeInfo)) {
             throw new IllegalArgumentException("Partition key type not supported: " + typeInfo.getTypeName());
         }
     }
