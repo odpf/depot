@@ -47,14 +47,14 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         initializeDecorator(config);
     }
 
-    private void initializeDecorator(MaxComputeSinkConfig maxComputeSinkConfig) {
-        this.maxComputeSinkConfig = maxComputeSinkConfig;
+    private void initializeDecorator(MaxComputeSinkConfig sinkConfig) {
+        this.maxComputeSinkConfig = sinkConfig;
         ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator();
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, null);
+        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, sinkConfig, null);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
-        protoMetadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(null, maxComputeSinkConfig, maxComputeSchemaCache);
+        protoMetadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(null, sinkConfig, maxComputeSchemaCache);
     }
 
     @Test

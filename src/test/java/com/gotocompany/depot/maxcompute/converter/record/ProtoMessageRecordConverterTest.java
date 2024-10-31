@@ -139,7 +139,7 @@ public class ProtoMessageRecordConverterTest {
         RecordDecorator recordDecorator = Mockito.mock(RecordDecorator.class);
         Mockito.doThrow(new IOException()).when(recordDecorator)
                 .decorate(Mockito.any(), Mockito.any());
-        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
+        ProtoMessageRecordConverter recordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         Message message = new Message(
                 null,
                 getMockedMessage().toByteArray(),
@@ -148,7 +148,7 @@ public class ProtoMessageRecordConverterTest {
                 new Tuple<>("__kafka_offset", 100L)
         );
 
-        RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
+        RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);
@@ -165,7 +165,7 @@ public class ProtoMessageRecordConverterTest {
         com.google.protobuf.Message mockedMessage = getMockedMessage();
         Mockito.doThrow(new UnknownFieldsException(mockedMessage)).when(recordDecorator)
                 .decorate(Mockito.any(), Mockito.any());
-        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
+        ProtoMessageRecordConverter recordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         Message message = new Message(
                 null,
                 getMockedMessage().toByteArray(),
@@ -174,7 +174,7 @@ public class ProtoMessageRecordConverterTest {
                 new Tuple<>("__kafka_offset", 100L)
         );
 
-        RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
+        RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);
