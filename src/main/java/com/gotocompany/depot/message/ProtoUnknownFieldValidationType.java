@@ -3,6 +3,7 @@ package com.gotocompany.depot.message;
 import com.google.protobuf.Message;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -63,6 +64,9 @@ public enum ProtoUnknownFieldValidationType {
     public abstract Stream<Message> getMapper(Object object);
 
     private static boolean isMessageOrMessageListType(Object object) {
+        if (Objects.isNull(object)) {
+            return false;
+        }
         if (object instanceof Message) {
             return true;
         }
