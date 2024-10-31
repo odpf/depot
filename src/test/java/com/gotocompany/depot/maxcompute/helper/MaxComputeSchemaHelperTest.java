@@ -8,11 +8,12 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategyFactory;
-import com.sun.tools.javac.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.util.Arrays;
 
 
 public class MaxComputeSchemaHelperTest {
@@ -24,7 +25,7 @@ public class MaxComputeSchemaHelperTest {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getMetadataColumnsTypes()).thenReturn(
-                List.of(new TupleString("__message_timestamp", "timestamp"),
+                Arrays.asList(new TupleString("__message_timestamp", "timestamp"),
                         new TupleString("__kafka_topic", "string"),
                         new TupleString("__kafka_offset", "long")
                 )
@@ -49,15 +50,15 @@ public class MaxComputeSchemaHelperTest {
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("id", TypeInfoFactory.STRING),
                         Tuple.tuple("user", TypeInfoFactory.getStructTypeInfo(
-                                List.of("id", "contacts"),
-                                List.of(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
-                                        List.of("number"),
-                                        List.of(TypeInfoFactory.STRING)
+                                Arrays.asList("id", "contacts"),
+                                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
+                                        Arrays.asList("number"),
+                                        Arrays.asList(TypeInfoFactory.STRING)
                                 )))
                         )),
                         Tuple.tuple("items", TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
-                                List.of("id", "name"),
-                                List.of(TypeInfoFactory.STRING, TypeInfoFactory.STRING)
+                                Arrays.asList("id", "name"),
+                                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.STRING)
                         ))),
                         Tuple.tuple("event_timestamp", TypeInfoFactory.TIMESTAMP),
                         Tuple.tuple("__message_timestamp", TypeInfoFactory.TIMESTAMP),
@@ -75,7 +76,7 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("meta");
         Mockito.when(maxComputeSinkConfig.getMetadataColumnsTypes()).thenReturn(
-                List.of(new TupleString("__message_timestamp", "timestamp"),
+                Arrays.asList(new TupleString("__message_timestamp", "timestamp"),
                         new TupleString("__kafka_topic", "string"),
                         new TupleString("__kafka_offset", "long")
                 )
@@ -100,20 +101,20 @@ public class MaxComputeSchemaHelperTest {
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("id", TypeInfoFactory.STRING),
                         Tuple.tuple("user", TypeInfoFactory.getStructTypeInfo(
-                                List.of("id", "contacts"),
-                                List.of(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
-                                        List.of("number"),
-                                        List.of(TypeInfoFactory.STRING)
+                                Arrays.asList("id", "contacts"),
+                                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
+                                        Arrays.asList("number"),
+                                        Arrays.asList(TypeInfoFactory.STRING)
                                 )))
                         )),
                         Tuple.tuple("items", TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
-                                List.of("id", "name"),
-                                List.of(TypeInfoFactory.STRING, TypeInfoFactory.STRING)
+                                Arrays.asList("id", "name"),
+                                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.STRING)
                         ))),
                         Tuple.tuple("event_timestamp", TypeInfoFactory.TIMESTAMP),
                         Tuple.tuple("meta", TypeInfoFactory.getStructTypeInfo(
-                                List.of("__message_timestamp", "__kafka_topic", "__kafka_offset"),
-                                List.of(TypeInfoFactory.TIMESTAMP, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT)
+                                Arrays.asList("__message_timestamp", "__kafka_topic", "__kafka_offset"),
+                                Arrays.asList(TypeInfoFactory.TIMESTAMP, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT)
                         ))
                 );
         Assertions.assertThat(maxComputeSchema.getTableSchema().getPartitionColumns())
@@ -143,15 +144,15 @@ public class MaxComputeSchemaHelperTest {
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("id", TypeInfoFactory.STRING),
                         Tuple.tuple("user", TypeInfoFactory.getStructTypeInfo(
-                                List.of("id", "contacts"),
-                                List.of(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
-                                        List.of("number"),
-                                        List.of(TypeInfoFactory.STRING)
+                                Arrays.asList("id", "contacts"),
+                                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
+                                        Arrays.asList("number"),
+                                        Arrays.asList(TypeInfoFactory.STRING)
                                 )))
                         )),
                         Tuple.tuple("items", TypeInfoFactory.getArrayTypeInfo(TypeInfoFactory.getStructTypeInfo(
-                                List.of("id", "name"),
-                                List.of(TypeInfoFactory.STRING, TypeInfoFactory.STRING)
+                                Arrays.asList("id", "name"),
+                                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.STRING)
                         ))),
                         Tuple.tuple("event_timestamp", TypeInfoFactory.TIMESTAMP)
                 );
@@ -162,7 +163,7 @@ public class MaxComputeSchemaHelperTest {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getMetadataColumnsTypes()).thenReturn(
-                List.of(new TupleString("__message_timestamp", "timestamp"),
+                Arrays.asList(new TupleString("__message_timestamp", "timestamp"),
                         new TupleString("__kafka_topic", "string"),
                         new TupleString("__kafka_offset", "long")
                 )
