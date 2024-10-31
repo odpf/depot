@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class RecordConverterTest {
+public class ProtoMessageRecordConverterTest {
 
     private final Descriptors.Descriptor descriptor = TestMaxComputeRecord.MaxComputeRecord.getDescriptor();
     private MaxComputeSinkConfig maxComputeSinkConfig;
@@ -47,7 +47,7 @@ public class RecordConverterTest {
     private MaxComputeSchemaHelper maxComputeSchemaHelper;
     private SinkConfig sinkConfig;
     private MaxComputeSchemaCache maxComputeSchemaCache;
-    private RecordConverter recordConverter;
+    private ProtoMessageRecordConverter protoMessageRecordConverter;
 
     @Before
     public void setup() throws IOException {
@@ -87,7 +87,7 @@ public class RecordConverterTest {
                 protoMessageParser, sinkConfig, partitioningStrategy);
         RecordDecorator metadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(
                 protoDataColumnRecordDecorator, maxComputeSinkConfig, maxComputeSchemaCache);
-        recordConverter = new RecordConverter(metadataColumnRecordDecorator, maxComputeSchemaCache);
+        protoMessageRecordConverter = new ProtoMessageRecordConverter(metadataColumnRecordDecorator, maxComputeSchemaCache);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class RecordConverterTest {
         );
         java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L * 1000);
         expectedTimestamp.setNanos(1000);
-        RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
+        RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getValidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getValidRecords().get(0);
@@ -139,7 +139,7 @@ public class RecordConverterTest {
         RecordDecorator recordDecorator = Mockito.mock(RecordDecorator.class);
         Mockito.doThrow(new IOException()).when(recordDecorator)
                 .decorate(Mockito.any(), Mockito.any());
-        RecordConverter recordConverter = new RecordConverter(recordDecorator, maxComputeSchemaCache);
+        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         Message message = new Message(
                 null,
                 getMockedMessage().toByteArray(),
@@ -148,7 +148,7 @@ public class RecordConverterTest {
                 new Tuple<>("__kafka_offset", 100L)
         );
 
-        RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
+        RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);
@@ -165,7 +165,7 @@ public class RecordConverterTest {
         com.google.protobuf.Message mockedMessage = getMockedMessage();
         Mockito.doThrow(new UnknownFieldsException(mockedMessage)).when(recordDecorator)
                 .decorate(Mockito.any(), Mockito.any());
-        RecordConverter recordConverter = new RecordConverter(recordDecorator, maxComputeSchemaCache);
+        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         Message message = new Message(
                 null,
                 getMockedMessage().toByteArray(),
@@ -174,7 +174,7 @@ public class RecordConverterTest {
                 new Tuple<>("__kafka_offset", 100L)
         );
 
-        RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
+        RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);

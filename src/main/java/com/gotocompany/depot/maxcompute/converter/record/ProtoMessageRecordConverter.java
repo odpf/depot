@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
-public class RecordConverter implements MessageRecordConverter {
+public class ProtoMessageRecordConverter implements MessageRecordConverter {
 
     private final RecordDecorator recordDecorator;
     private final MaxComputeSchemaCache maxComputeSchemaCache;

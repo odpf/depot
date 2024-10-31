@@ -6,7 +6,7 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
-import com.gotocompany.depot.maxcompute.converter.record.RecordConverter;
+import com.gotocompany.depot.maxcompute.converter.record.ProtoMessageRecordConverter;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.record.RecordDecorator;
 import com.gotocompany.depot.maxcompute.record.RecordDecoratorFactory;
@@ -58,8 +58,8 @@ public class MaxComputeSinkFactory {
     }
 
     public Sink create() {
-        RecordConverter recordConverter = new RecordConverter(buildRecordDecorator(), maxComputeSchemaCache);
-        return new MaxComputeSink(maxComputeClient, recordConverter);
+        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(buildRecordDecorator(), maxComputeSchemaCache);
+        return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter);
     }
 
     private RecordDecorator buildRecordDecorator() {
