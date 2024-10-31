@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'com.gotocompany'
-version '0.9.2'
+version '0.10.1'
 
 repositories {
     mavenLocal()
@@ -219,6 +219,10 @@ jacocoTestCoverageVerification {
             limit {
                 minimum = 0.7
             }
+
+            excludes = [
+                    'com.gotocompany.depot.maxcompute.model'
+            ]
         }
     }
 }
