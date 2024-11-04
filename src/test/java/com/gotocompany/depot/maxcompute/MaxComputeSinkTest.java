@@ -11,6 +11,8 @@ import com.gotocompany.depot.maxcompute.converter.record.MessageRecordConverter;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
 import com.gotocompany.depot.message.Message;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -40,7 +42,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -77,7 +79,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -120,7 +122,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -163,7 +165,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -206,7 +208,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
 
         MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);

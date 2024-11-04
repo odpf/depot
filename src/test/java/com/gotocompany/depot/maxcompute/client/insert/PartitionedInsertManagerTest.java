@@ -5,6 +5,8 @@ import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -54,7 +56,11 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig);
+        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
+        Mockito.doNothing()
+                .when(instrumentation)
+                .captureCount(Mockito.anyString(), Mockito.anyLong());
+        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, Mockito.mock(MaxComputeMetrics.class));
         int expectedPartitionFlushInvocation = 2;
 
         partitionedInsertManager.insert(recordWrappers);

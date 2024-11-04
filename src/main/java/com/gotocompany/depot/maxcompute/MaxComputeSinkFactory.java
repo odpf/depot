@@ -16,6 +16,7 @@ import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategyFac
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.MessageParserFactory;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.metrics.StatsDReporter;
 import com.gotocompany.stencil.client.StencilClient;
 import org.aeonbits.owner.ConfigFactory;
@@ -30,9 +31,11 @@ public class MaxComputeSinkFactory {
     private final StatsDReporter statsDReporter;
     private final ConverterOrchestrator converterOrchestrator;
     private final StencilClient stencilClient;
+    private final MaxComputeMetrics maxComputeMetrics;
     private MaxComputeClient maxComputeClient;
     private MaxComputeSchemaCache maxComputeSchemaCache;
     private PartitioningStrategy partitioningStrategy;
+    private MessageParser messageParser;
 
     public MaxComputeSinkFactory(StatsDReporter statsDReporter,
                                  StencilClient stencilClient,
@@ -43,7 +46,8 @@ public class MaxComputeSinkFactory {
         this.converterOrchestrator = new ConverterOrchestrator();
         this.partitioningStrategyFactory = new PartitioningStrategyFactory(converterOrchestrator, maxComputeSinkConfig);
         this.stencilClient = stencilClient;
-        this.maxComputeClient = new MaxComputeClient(maxComputeSinkConfig);
+        this.maxComputeMetrics = new MaxComputeMetrics(sinkConfig);
+        this.maxComputeClient = new MaxComputeClient(maxComputeSinkConfig, statsDReporter, maxComputeMetrics);
     }
 
     public void init() {
@@ -52,19 +56,13 @@ public class MaxComputeSinkFactory {
         this.partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         this.maxComputeSchemaCache = new MaxComputeSchemaCache(maxComputeSchemaHelper, sinkConfig, converterOrchestrator, maxComputeClient);
-        MessageParser messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
+        messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
         this.maxComputeSchemaCache.setMessageParser(messageParser);
         this.maxComputeSchemaCache.updateSchema();
     }
 
     public Sink create() {
-        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(buildRecordDecorator(), maxComputeSchemaCache);
-        return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter);
-    }
-
-    private RecordDecorator buildRecordDecorator() {
-        MessageParser messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
-        return RecordDecoratorFactory.createRecordDecorator(
+        RecordDecorator recordDecorator = RecordDecoratorFactory.createRecordDecorator(
                 converterOrchestrator,
                 maxComputeSchemaCache,
                 messageParser,
@@ -72,7 +70,8 @@ public class MaxComputeSinkFactory {
                 maxComputeSinkConfig,
                 sinkConfig
         );
+        ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
+        return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter);
     }
-
 
 }

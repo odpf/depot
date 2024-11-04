@@ -5,6 +5,8 @@ import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -40,7 +42,16 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("table");
         Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeout())
                 .thenReturn(1000L);
-        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig);
+        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
+        Mockito.doNothing()
+                .when(instrumentation)
+                .captureCount(Mockito.anyString(), Mockito.anyLong());
+        MaxComputeMetrics maxComputeMetrics = Mockito.mock(MaxComputeMetrics.class);
+        Mockito.when(maxComputeMetrics.getMaxComputeFlushRecordMetric())
+                .thenReturn("flush_record");
+        Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
+                .thenReturn("flush_size");
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
                 Mockito.mock(RecordWrapper.class)
         );

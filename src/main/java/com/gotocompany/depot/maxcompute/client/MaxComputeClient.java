@@ -11,6 +11,9 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -25,13 +28,19 @@ public class MaxComputeClient {
     private MaxComputeSinkConfig maxComputeSinkConfig;
     private TableTunnel tableTunnel;
     private InsertManager insertManager;
+    private StatsDReporter statsDReporter;
+    private MaxComputeMetrics maxComputeMetrics;
 
-    public MaxComputeClient(MaxComputeSinkConfig maxComputeSinkConfig) {
+    public MaxComputeClient(MaxComputeSinkConfig maxComputeSinkConfig,
+                            StatsDReporter statsDReporter,
+                            MaxComputeMetrics maxComputeMetrics) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
         this.odps = initializeOdps();
         this.tableTunnel = new TableTunnel(odps);
         this.tableTunnel.setEndpoint(maxComputeSinkConfig.getMaxComputeTunnelUrl());
         this.insertManager = initializeInsertManager();
+        this.statsDReporter = statsDReporter;
+        this.maxComputeMetrics = maxComputeMetrics;
     }
 
     public void upsertTable(TableSchema tableSchema) throws OdpsException {
@@ -58,7 +67,8 @@ public class MaxComputeClient {
     }
 
     private InsertManager initializeInsertManager() {
-        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel);
+        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel,
+                new Instrumentation(statsDReporter, InsertManager.class), maxComputeMetrics);
     }
 
     private Map<String, String> getGlobalSettings() {
