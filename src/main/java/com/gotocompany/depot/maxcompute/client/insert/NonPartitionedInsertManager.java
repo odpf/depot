@@ -24,7 +24,7 @@ public class NonPartitionedInsertManager implements InsertManager {
     @Override
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
         TableTunnel.StreamUploadSession streamUploadSession = getStreamUploadSession();
-        TableTunnel.StreamRecordPack recordPack = streamUploadSession.newRecordPack();
+        TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession, maxComputeSinkConfig);
         for (RecordWrapper recordWrapper : recordWrappers) {
             recordPack.append(recordWrapper.getRecord());
         }

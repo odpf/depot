@@ -1,5 +1,6 @@
 package com.gotocompany.depot.config;
 
+import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.converter.ConfToListConverter;
 import org.aeonbits.owner.Config;
@@ -67,5 +68,18 @@ public interface MaxComputeSinkConfig extends Config {
     @Key("SINK_MAXCOMPUTE_RECORD_PACK_FLUSH_TIMEOUT")
     @DefaultValue("-1")
     Long getMaxComputeRecordPackFlushTimeout();
+
+    @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ENABLED")
+    @DefaultValue("false")
+    boolean isStreamingInsertCompressEnabled();
+
+    @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ALGORITHM")
+    CompressOption.CompressAlgorithm getMaxComputeCompressionAlgorithm();
+
+    @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_LEVEL")
+    int getMaxComputeCompressionLevel();
+
+    @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_STRATEGY")
+    int getMaxComputeCompressionStrategy();
 
 }

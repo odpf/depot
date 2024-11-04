@@ -30,7 +30,7 @@ public class PartitionedInsertManager implements InsertManager {
                 .collect(Collectors.groupingBy(record -> record.getPartitionSpec().toString()));
         for (Map.Entry<String, List<RecordWrapper>> entry : partitionSpecRecordWrapperMap.entrySet()) {
             TableTunnel.StreamUploadSession streamUploadSession = getStreamUploadSession(entry.getValue().get(0).getPartitionSpec());
-            TableTunnel.StreamRecordPack recordPack = streamUploadSession.newRecordPack();
+            TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession, maxComputeSinkConfig);
             for (RecordWrapper recordWrapper : entry.getValue()) {
                 recordPack.append(recordWrapper.getRecord());
             }
