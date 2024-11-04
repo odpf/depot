@@ -14,6 +14,7 @@ import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.metrics.StatsDReporter;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@AllArgsConstructor
 @NoArgsConstructor
 public class MaxComputeClient {
 
@@ -38,9 +40,9 @@ public class MaxComputeClient {
         this.odps = initializeOdps();
         this.tableTunnel = new TableTunnel(odps);
         this.tableTunnel.setEndpoint(maxComputeSinkConfig.getMaxComputeTunnelUrl());
-        this.insertManager = initializeInsertManager();
         this.statsDReporter = statsDReporter;
         this.maxComputeMetrics = maxComputeMetrics;
+        this.insertManager = initializeInsertManager();
     }
 
     public void upsertTable(TableSchema tableSchema) throws OdpsException {
