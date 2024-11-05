@@ -19,6 +19,7 @@ import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.metrics.StatsDReporter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class MaxComputeClient {
 
     private Odps odps;
@@ -93,6 +95,7 @@ public class MaxComputeClient {
     }
 
     public Instance execute(String sql) throws OdpsException {
+        log.info("Executing SQL: {}", sql);
         return SQLTask.run(odps, sql);
     }
 
