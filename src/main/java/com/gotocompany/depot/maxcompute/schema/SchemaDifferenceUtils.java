@@ -25,9 +25,9 @@ public class SchemaDifferenceUtils {
     private static final String ALTER_TABLE_QUERY_TEMPLATE = "ALTER TABLE %s.%s ADD COLUMN IF NOT EXISTS %s;";
 
     public static List<String> getSchemaDifferenceSql(TableSchema oldSchema, TableSchema newSchema, String schemaName, String tableName) {
-        List<MaxComputeColumnDetail> MaxComputeColumnDetailDifference = getMaxComputeColumnDetailDifference(oldSchema, newSchema, tableName);
+        List<MaxComputeColumnDetail> maxComputeColumnDetailDifference = getMaxComputeColumnDetailDifference(oldSchema, newSchema, tableName);
 
-        return MaxComputeColumnDetailDifference.stream()
+        return maxComputeColumnDetailDifference.stream()
                 .map(MaxComputeColumnDetail -> String.format(ALTER_TABLE_QUERY_TEMPLATE, schemaName, tableName, MaxComputeColumnDetail.getDdlDeclaration()))
                 .collect(Collectors.toList());
     }
@@ -53,17 +53,17 @@ public class SchemaDifferenceUtils {
     }
 
     private static void skipStructFields(Map.Entry<String, MaxComputeColumnDetail> entry, Iterator<Map.Entry<String, MaxComputeColumnDetail>> newMaxComputeColumnDetailIterator) {
-        StructTypeInfo structTypeInfo = isStructType(entry.getValue().getTypeInfo()) ? (StructTypeInfo) entry.getValue().getTypeInfo() :
-                ((StructTypeInfo) ((ArrayTypeInfo) entry.getValue().getTypeInfo()).getElementTypeInfo());
+        StructTypeInfo structTypeInfo = isStructType(entry.getValue().getTypeInfo()) ? (StructTypeInfo) entry.getValue().getTypeInfo()
+                : ((StructTypeInfo) ((ArrayTypeInfo) entry.getValue().getTypeInfo()).getElementTypeInfo());
         for (int i = 0; i < structTypeInfo.getFieldCount(); i++) {
             newMaxComputeColumnDetailIterator.next();
         }
     }
 
     private static Map<String, MaxComputeColumnDetail> buildMaxComputeColumnDetailMap(TableSchema schema) {
-        Map<String, MaxComputeColumnDetail> MaxComputeColumnDetailMap = new TreeMap<>();
-        schema.getColumns().forEach(column -> fieldMetadataHelper(column.getTypeInfo(), "", column.getName(), MaxComputeColumnDetailMap, false));
-        return MaxComputeColumnDetailMap;
+        Map<String, MaxComputeColumnDetail> maxComputeColumnDetailMap = new TreeMap<>();
+        schema.getColumns().forEach(column -> fieldMetadataHelper(column.getTypeInfo(), "", column.getName(), maxComputeColumnDetailMap, false));
+        return maxComputeColumnDetailMap;
     }
 
     private static void fieldMetadataHelper(TypeInfo typeInfo, String prefix, String name, Map<String, MaxComputeColumnDetail> result, boolean isArrayElement) {
