@@ -1,16 +1,19 @@
 package com.gotocompany.depot.maxcompute.client;
 
+import com.aliyun.odps.Instance;
 import com.aliyun.odps.Odps;
 import com.aliyun.odps.OdpsException;
 import com.aliyun.odps.TableSchema;
 import com.aliyun.odps.account.Account;
 import com.aliyun.odps.account.AliyunAccount;
+import com.aliyun.odps.task.SQLTask;
 import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
+import com.gotocompany.depot.maxcompute.schema.SchemaDifferenceUtils;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.metrics.StatsDReporter;
@@ -46,11 +49,20 @@ public class MaxComputeClient {
     }
 
     public void upsertTable(TableSchema tableSchema) throws OdpsException {
+        String projectName = maxComputeSinkConfig.getMaxComputeProjectId();
+        String datasetName = maxComputeSinkConfig.getMaxComputeSchema();
         String tableName = maxComputeSinkConfig.getMaxComputeTableName();
         if (!this.odps.tables().exists(tableName)) {
-            this.odps.tables().create(odps.getDefaultProject(), tableName, tableSchema, "",
+            this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",
                     false, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(),
                     null, null);
+            return;
+        }
+        TableSchema oldSchema = this.odps.tables().get(projectName, datasetName, tableName)
+                .getSchema();
+        List<String> schemaDifferenceSql = SchemaDifferenceUtils.getSchemaDifferenceSql(oldSchema, tableSchema, datasetName, tableName);
+        for (String sql : schemaDifferenceSql) {
+            execute(sql);
         }
     }
 
@@ -78,6 +90,10 @@ public class MaxComputeClient {
         globalSettings.put("setproject odps.schema.evolution.enable", "true");
         globalSettings.put("odps.namespace.schema", "true");
         return globalSettings;
+    }
+
+    public Instance execute(String sql) throws OdpsException {
+        return SQLTask.run(odps, sql);
     }
 
 }
