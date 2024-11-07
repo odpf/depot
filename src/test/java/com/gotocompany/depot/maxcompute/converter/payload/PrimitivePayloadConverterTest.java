@@ -1,5 +1,6 @@
 package com.gotocompany.depot.maxcompute.converter.payload;
 
+import com.aliyun.odps.data.Binary;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
@@ -28,8 +29,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(0), message.getField(descriptor.getFields().get(0)));
 
-        Assertions.assertTrue(result instanceof byte[]);
-        Assertions.assertArrayEquals(bytes, (byte[]) result);
+        Assertions.assertTrue(result instanceof Binary);
+        Assertions.assertArrayEquals(bytes, ((Binary) result).data());
     }
 
     @Test
@@ -237,7 +238,7 @@ public class PrimitivePayloadConverterTest {
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(0), message.getField(descriptorRepeated.getFields().get(0)));
 
         Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof byte[]));
+        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Binary));
     }
 
     @Test
