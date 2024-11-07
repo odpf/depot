@@ -55,7 +55,7 @@ public class PartitionedInsertManager implements InsertManager {
 
     private Record reorderRecord(Record payload, TableSchema tableSchema) {
         Record record = new ArrayRecord(tableSchema);
-        for (int i = 0; i < payload.getColumnCount(); i ++) {
+        for (int i = 0; i < payload.getColumnCount(); i++) {
             String name = payload.getColumns()[i].getName();
             record.set(name, payload.get(name));
         }
