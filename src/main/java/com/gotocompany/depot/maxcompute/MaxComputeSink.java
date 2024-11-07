@@ -47,10 +47,9 @@ public class MaxComputeSink implements Sink {
     private void mapInsertionError(List<RecordWrapper> recordWrappers,
                                    SinkResponse sinkResponse,
                                    ErrorInfo errorInfo) {
-        recordWrappers
-                .forEach(recordWrapper -> {
-                    recordWrapper.setErrorInfo(errorInfo);
-                    sinkResponse.getErrors().put(recordWrapper.getIndex(), errorInfo);
-                });
+        recordWrappers.forEach(recordWrapper -> {
+            recordWrapper.setErrorInfo(errorInfo);
+            sinkResponse.getErrors().put(recordWrapper.getIndex(), errorInfo);
+        });
     }
 }
