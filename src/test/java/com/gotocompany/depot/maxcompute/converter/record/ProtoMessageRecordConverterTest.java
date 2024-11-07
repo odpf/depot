@@ -109,6 +109,9 @@ public class ProtoMessageRecordConverterTest {
         Assertions.assertThat(recordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Serializable[]{
+                        new java.sql.Timestamp(123012311L),
+                        "topic",
+                        100L,
                         "id",
                         new ArrayList<>(Arrays.asList(
                                 new SimpleStruct(
@@ -126,10 +129,7 @@ public class ProtoMessageRecordConverterTest {
                                         Arrays.asList("name_2", 50f)
                                 )
                         )),
-                        expectedTimestamp,
-                        new java.sql.Timestamp(123012311L),
-                        "topic",
-                        100L
+                        expectedTimestamp
                 });
         Assertions.assertThat(recordWrapper.getErrorInfo()).isNull();
     }

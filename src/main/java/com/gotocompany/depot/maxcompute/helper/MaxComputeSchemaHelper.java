@@ -25,16 +25,16 @@ public class MaxComputeSchemaHelper {
     private final PartitioningStrategy partitioningStrategy;
 
     public MaxComputeSchema buildMaxComputeSchema(Descriptors.Descriptor descriptor) {
-        List<Column> dataColumn = buildDataColumns(descriptor);
+
         List<Column> metadataColumns = buildMetadataColumns();
+        List<Column> dataColumn = buildDataColumns(descriptor);
         Column partitionColumn = maxComputeSinkConfig.isTablePartitioningEnabled() ? buildPartitionColumn() : null;
         TableSchema.Builder tableSchemaBuilder = com.aliyun.odps.TableSchema.builder();
-        tableSchemaBuilder.withColumns(dataColumn);
         tableSchemaBuilder.withColumns(metadataColumns);
+        tableSchemaBuilder.withColumns(dataColumn);
         if (Objects.nonNull(partitionColumn)) {
             tableSchemaBuilder.withPartitionColumn(partitionColumn);
         }
-
         return MaxComputeSchema.builder()
                 .descriptor(descriptor)
                 .tableSchema(tableSchemaBuilder.build())
@@ -77,4 +77,5 @@ public class MaxComputeSchemaHelper {
         return Collections.singletonList(Column.newBuilder(maxComputeSinkConfig.getMaxcomputeMetadataNamespace(),
                 MetadataUtil.getMetadataTypeInfo(maxComputeSinkConfig)).build());
     }
+
 }

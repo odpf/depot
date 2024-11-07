@@ -1,9 +1,6 @@
 package com.gotocompany.depot.maxcompute.client.insert;
 
 import com.aliyun.odps.PartitionSpec;
-import com.aliyun.odps.TableSchema;
-import com.aliyun.odps.data.ArrayRecord;
-import com.aliyun.odps.data.Record;
 import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
@@ -35,7 +32,7 @@ public class PartitionedInsertManager implements InsertManager {
             TableTunnel.StreamUploadSession streamUploadSession = getStreamUploadSession(entry.getValue().get(0).getPartitionSpec());
             TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession, maxComputeSinkConfig);
             for (RecordWrapper recordWrapper : entry.getValue()) {
-                recordPack.append(reorderRecord(recordWrapper.getRecord(), streamUploadSession.getSchema()));
+                recordPack.append(recordWrapper.getRecord());
             }
             TableTunnel.FlushResult flushResult = recordPack.flush(
                     new TableTunnel.FlushOption()
@@ -51,15 +48,6 @@ public class PartitionedInsertManager implements InsertManager {
                 .setCreatePartition(true)
                 .setPartitionSpec(partitionSpec)
                 .build();
-    }
-
-    private Record reorderRecord(Record payload, TableSchema tableSchema) {
-        Record record = new ArrayRecord(tableSchema);
-        for (int i = 0; i < payload.getColumnCount(); i++) {
-            String name = payload.getColumns()[i].getName();
-            record.set(name, payload.get(name));
-        }
-        return record;
     }
 
 }
