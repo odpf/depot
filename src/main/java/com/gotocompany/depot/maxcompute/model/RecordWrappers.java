@@ -1,13 +1,13 @@
 package com.gotocompany.depot.maxcompute.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @AllArgsConstructor
+@Getter
 public class RecordWrappers {
     private List<RecordWrapper> validRecords;
     private List<RecordWrapper> invalidRecords;

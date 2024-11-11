@@ -2,13 +2,11 @@ package com.gotocompany.depot.maxcompute.model;
 
 import com.aliyun.odps.type.TypeInfo;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
-@Data
 @AllArgsConstructor
-@EqualsAndHashCode
+@Getter
 public class MaxComputeColumnDetail {
     private String prefix;
     private String name;

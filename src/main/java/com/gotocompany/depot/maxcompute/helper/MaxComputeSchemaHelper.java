@@ -36,12 +36,9 @@ public class MaxComputeSchemaHelper {
             tableSchemaBuilder.withPartitionColumn(partitionColumn);
         }
         return MaxComputeSchema.builder()
-                .descriptor(descriptor)
                 .tableSchema(tableSchemaBuilder.build())
                 .dataColumns(dataColumn.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
                 .metadataColumns(metadataColumns.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
-                .partitionColumns(Objects.nonNull(partitionColumn)
-                        ? Collections.singletonMap(partitionColumn.getName(), partitionColumn.getTypeInfo()) : Collections.emptyMap())
                 .build();
 
     }
