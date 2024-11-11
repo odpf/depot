@@ -17,7 +17,7 @@ public class TimestampPayloadConverterTest {
     public void shouldConvertToTimestampNtz() {
         TypeInfo typeInfo = timestampTypeInfoConverter.convert(descriptor.getFields().get(TIMESTAMP_INDEX));
 
-        Assertions.assertEquals(TypeInfoFactory.TIMESTAMP, typeInfo);
+        Assertions.assertEquals(TypeInfoFactory.TIMESTAMP_NTZ, typeInfo);
     }
 
     @Test

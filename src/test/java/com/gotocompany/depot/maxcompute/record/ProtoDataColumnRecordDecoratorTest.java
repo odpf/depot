@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class ProtoDataColumnRecordDecoratorTest {
@@ -54,8 +55,11 @@ public class ProtoDataColumnRecordDecoratorTest {
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
         TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = getMockedMessage();
         Message message = new Message(null, maxComputeRecord.toByteArray());
-        java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L * 1000);
-        expectedTimestamp.setNanos(1000);
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L,
+                1000,
+                java.time.ZoneOffset.UTC
+        );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -66,7 +70,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
                         ),
-                        expectedTimestamp});
+                        expectedLocalDateTime});
     }
 
     @Test
@@ -87,8 +91,10 @@ public class ProtoDataColumnRecordDecoratorTest {
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
         TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = getMockedMessage();
         Message message = new Message(null, maxComputeRecord.toByteArray());
-        java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L * 1000);
-        expectedTimestamp.setNanos(1000);
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L,
+                1000,
+                java.time.ZoneOffset.UTC);
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
@@ -100,7 +106,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
                         ),
-                        expectedTimestamp});
+                        expectedLocalDateTime});
         Mockito.verify(recordDecorator, Mockito.times(1))
                 .decorate(Mockito.any(), Mockito.any());
     }

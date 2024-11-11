@@ -17,6 +17,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,11 +69,11 @@ public class MessagePayloadConverterTest {
         StructTypeInfo itemTypeInfo = TypeInfoFactory.getStructTypeInfo(Arrays.asList("id", "quantity"), Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.INT));
         StructTypeInfo cartTypeInfo = TypeInfoFactory.getStructTypeInfo(
                 Arrays.asList("cart_id", "items", "created_at", "cart_age"),
-                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(itemTypeInfo), TypeInfoFactory.TIMESTAMP, durationTypeInfo)
+                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(itemTypeInfo), TypeInfoFactory.TIMESTAMP_NTZ, durationTypeInfo)
         );
         StructTypeInfo expectedStructTypeInfo = TypeInfoFactory.getStructTypeInfo(
                 Arrays.asList("name", "cart", "created_at"),
-                Arrays.asList(TypeInfoFactory.STRING, cartTypeInfo, TypeInfoFactory.TIMESTAMP)
+                Arrays.asList(TypeInfoFactory.STRING, cartTypeInfo, TypeInfoFactory.TIMESTAMP_NTZ)
         );
         List<Object> expectedStructValues = Arrays.asList(
                 "buyerName",
@@ -80,9 +81,9 @@ public class MessagePayloadConverterTest {
                         Arrays.asList(
                                 "cart_id",
                                 Arrays.asList(new SimpleStruct(itemTypeInfo, Arrays.asList("item1", 1)), new SimpleStruct(itemTypeInfo, Arrays.asList("item2", 2))),
-                                new java.sql.Timestamp(timestamp.getSeconds() * 1000),
+                                LocalDateTime.ofEpochSecond(timestamp.getSeconds(), 0, java.time.ZoneOffset.UTC),
                                 new SimpleStruct(durationTypeInfo, Arrays.asList(duration.getSeconds(), duration.getNanos())))),
-                new java.sql.Timestamp(timestamp.getSeconds() * 1000)
+                LocalDateTime.ofEpochSecond(timestamp.getSeconds(), 0, java.time.ZoneOffset.UTC)
         );
 
         Object object = messagePayloadConverter.convert(descriptor.getFields().get(0), wrapper.getField(descriptor.getFields().get(0)));

@@ -34,6 +34,8 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -99,8 +101,16 @@ public class ProtoMessageRecordConverterTest {
                 new Tuple<>("__kafka_topic", "topic"),
                 new Tuple<>("__kafka_offset", 100L)
         );
-        java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L * 1000);
-        expectedTimestamp.setNanos(1000);
+        LocalDateTime expectedTimestampLocalDateTime = LocalDateTime.ofEpochSecond(
+                123012311L,
+                0,
+                ZoneOffset.UTC
+        );
+        LocalDateTime expectedPayloadLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L,
+                1000,
+                ZoneOffset.UTC
+        );
         RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getValidRecords()).size().isEqualTo(1);
@@ -109,7 +119,7 @@ public class ProtoMessageRecordConverterTest {
         Assertions.assertThat(recordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Serializable[]{
-                        new java.sql.Timestamp(123012311L),
+                        expectedTimestampLocalDateTime,
                         "topic",
                         100L,
                         "id",
@@ -129,7 +139,7 @@ public class ProtoMessageRecordConverterTest {
                                         Arrays.asList("name_2", 50f)
                                 )
                         )),
-                        expectedTimestamp
+                        expectedPayloadLocalDateTime
                 });
         Assertions.assertThat(recordWrapper.getErrorInfo()).isNull();
     }

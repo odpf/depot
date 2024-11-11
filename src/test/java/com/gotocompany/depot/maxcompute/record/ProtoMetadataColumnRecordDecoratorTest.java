@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class ProtoMetadataColumnRecordDecoratorTest {
@@ -68,7 +69,8 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         );
         Record record = new ArrayRecord(maxComputeSchemaCache.getMaxComputeSchema().getColumns());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
-        java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L);
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L, 0, java.time.ZoneOffset.UTC);
 
         protoMetadataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -76,7 +78,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
                 .isEqualTo(new SimpleStruct(
                         TypeInfoFactory.getStructTypeInfo(Arrays.asList("__message_timestamp", "__kafka_topic", "__kafka_offset"),
                                 Arrays.asList(TypeInfoFactory.TIMESTAMP, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT)),
-                        Arrays.asList(expectedTimestamp, "topic", 100L)
+                        Arrays.asList(expectedLocalDateTime, "topic", 100L)
                 ));
     }
 
@@ -100,14 +102,16 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         );
         Record record = new ArrayRecord(maxComputeSchemaCache.getMaxComputeSchema().getColumns());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
-        java.sql.Timestamp expectedTimestamp = new java.sql.Timestamp(10002010L);
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L, 0, java.time.ZoneOffset.UTC
+        );
 
         protoMetadataColumnRecordDecorator.decorate(recordWrapper, message);
 
         Assertions.assertThat(record)
                 .satisfies(r -> {
                     Assertions.assertThat(r.get("__message_timestamp"))
-                            .isEqualTo(expectedTimestamp);
+                            .isEqualTo(expectedLocalDateTime);
                     Assertions.assertThat(r.get("__kafka_topic"))
                             .isEqualTo("topic");
                     Assertions.assertThat(r.get("__kafka_offset"))

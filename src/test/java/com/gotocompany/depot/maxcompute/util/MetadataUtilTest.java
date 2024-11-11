@@ -26,7 +26,7 @@ public class MetadataUtilTest {
 
         Assertions.assertThat(structTypeInfo.getFieldNames()).containsExactlyInAnyOrder("__message_timestamp", "__kafka_topic", "__kafka_offset");
         Assertions.assertThat(structTypeInfo.getFieldTypeInfos()).containsExactlyInAnyOrder(
-                TypeInfoFactory.TIMESTAMP, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT
+                TypeInfoFactory.TIMESTAMP_NTZ, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT
         );
     }
 
@@ -38,7 +38,7 @@ public class MetadataUtilTest {
         Assertions.assertThat(MetadataUtil.getMetadataTypeInfo("double")).isEqualTo(TypeInfoFactory.DOUBLE);
         Assertions.assertThat(MetadataUtil.getMetadataTypeInfo("string")).isEqualTo(TypeInfoFactory.STRING);
         Assertions.assertThat(MetadataUtil.getMetadataTypeInfo("boolean")).isEqualTo(TypeInfoFactory.BOOLEAN);
-        Assertions.assertThat(MetadataUtil.getMetadataTypeInfo("timestamp")).isEqualTo(TypeInfoFactory.TIMESTAMP);
+        Assertions.assertThat(MetadataUtil.getMetadataTypeInfo("timestamp")).isEqualTo(TypeInfoFactory.TIMESTAMP_NTZ);
     }
 
 }

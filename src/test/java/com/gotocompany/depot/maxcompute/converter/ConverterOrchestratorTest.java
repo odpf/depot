@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +33,7 @@ public class ConverterOrchestratorTest {
         String expectedStringTypeInfoRepresentation = "STRING";
         String expectedMessageTypeRepresentation = "STRUCT<string_field:STRING,another_inner_field:STRUCT<string_field:STRING>,another_inner_list_field:ARRAY<STRUCT<string_field:STRING>>>";
         String expectedRepeatedMessageTypeRepresentation = String.format("ARRAY<%s>", expectedMessageTypeRepresentation);
-        String expectedTimestampTypeInfoRepresentation = "TIMESTAMP";
+        String expectedTimestampTypeInfoRepresentation = "TIMESTAMP_NTZ";
         String expectedDurationTypeInfoRepresentation = "STRUCT<seconds:BIGINT,nanos:INT>";
         String expectedStructTypeInfoRepresentation = "STRING";
 
@@ -100,7 +102,7 @@ public class ConverterOrchestratorTest {
         Object structRecord = converterOrchestrator.convert(descriptor.findFieldByName("struct_field"), messagePayload.getField(descriptor.findFieldByName("struct_field")));
 
         Assertions.assertEquals("string_field", stringRecord);
-        Assertions.assertEquals(new java.sql.Timestamp(100 * 1000), timestampRecord);
+        Assertions.assertEquals(LocalDateTime.ofEpochSecond(100, 0, ZoneOffset.UTC), timestampRecord);
         Assertions.assertEquals(new SimpleStruct(TypeInfoFactory.getStructTypeInfo(Arrays.asList("seconds", "nanos"), Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT)), Arrays.asList(100L, 0)), durationRecord);
         Assertions.assertEquals(expectedMessage, messageRecord);
         Assertions.assertEquals(Collections.singletonList(expectedMessage), repeatedMessageRecord);

@@ -50,10 +50,9 @@ public class TimestampPartitioningStrategyTest {
         MaxComputeSinkConfig maxComputeSinkConfig = getMaxComputeSinkConfig();
         TimestampPartitioningStrategy timestampPartitioningStrategy =
                 new TimestampPartitioningStrategy(maxComputeSinkConfig);
-        //October 29, 2024 12:00:00 AM GMT+07:00
-        long expectedStartOfDayEpoch = 1730134800;
+        String expectedStartOfDayEpoch = "2024-10-28T00:00";
 
-        Assertions.assertEquals(String.format("tablePartitionColumnName='%d'", expectedStartOfDayEpoch),
+        Assertions.assertEquals(String.format("tablePartitionColumnName='%s'", expectedStartOfDayEpoch),
                 timestampPartitioningStrategy.getPartitionSpec(timestamp).toString());
     }
 
