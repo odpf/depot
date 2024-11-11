@@ -19,7 +19,7 @@ public class PartitioningStrategyFactory {
 
     static {
         ALLOWED_PARTITION_KEY_TYPE_INFO = new HashSet<>();
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TIMESTAMP);
+        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TIMESTAMP_NTZ);
         ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.STRING);
         ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TINYINT);
         ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.SMALLINT);
@@ -39,7 +39,7 @@ public class PartitioningStrategyFactory {
         }
         TypeInfo partitionKeyTypeInfo = converterOrchestrator.convert(fieldDescriptor);
         checkPartitionTypePrecondition(partitionKeyTypeInfo);
-        if (TypeInfoFactory.TIMESTAMP.equals(partitionKeyTypeInfo)) {
+        if (TypeInfoFactory.TIMESTAMP_NTZ.equals(partitionKeyTypeInfo)) {
             return new TimestampPartitioningStrategy(maxComputeSinkConfig);
         } else {
             return new DefaultPartitioningStrategy(partitionKeyTypeInfo, maxComputeSinkConfig);

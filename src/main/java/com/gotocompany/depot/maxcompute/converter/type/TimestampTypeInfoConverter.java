@@ -8,7 +8,7 @@ public class TimestampTypeInfoConverter implements TypeInfoConverter {
 
     @Override
     public TypeInfo convertSingular(Descriptors.FieldDescriptor fieldDescriptor) {
-        return TypeInfoFactory.TIMESTAMP;
+        return TypeInfoFactory.TIMESTAMP_NTZ;
     }
 
     @Override
