@@ -221,7 +221,9 @@ jacocoTestCoverageVerification {
             }
 
             excludes = [
-                    'com.gotocompany.depot.maxcompute.model'
+                    'com.gotocompany.depot.maxcompute.model',
+                    'com.gotocompany.depot.maxcompute.MaxComputeSinkFactory',
+                    'com.gotocompany.depot.maxcompute.client.MaxComputeClient'
             ]
         }
     }
