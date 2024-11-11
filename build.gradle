@@ -211,7 +211,8 @@ jacocoTestCoverageVerification {
                               '**/serializer/**',
                               '**/cortexpb/**',
                               '**/Clock**',
-                              '**/GoGoProtos**',])
+                              '**/GoGoProtos**',
+                              '**/MaxComputeClient**'])
         })
     }
     violationRules {
