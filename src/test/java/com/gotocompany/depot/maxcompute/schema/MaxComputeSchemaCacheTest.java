@@ -135,6 +135,44 @@ public class MaxComputeSchemaCacheTest {
                 .upsertTable(Mockito.any());
     }
 
+    @Test
+    public void shouldUpdateSchemaUsingLogKeyBasedOnNewDescriptor() throws OdpsException {
+        Map<String, Descriptors.Descriptor> newDescriptor = new HashMap<>();
+        newDescriptor.put("class", Mockito.mock(Descriptors.Descriptor.class));
+        MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
+        ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
+        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
+                null,
+                null,
+                null,
+                null
+        );
+        Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
+                .thenReturn(mockedMaxComputeSchema);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+                .thenReturn(SinkConnectorSchemaMessageMode.LOG_KEY);
+        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
+                .thenReturn("class");
+        MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
+        MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
+                maxComputeSchemaHelper,
+                sinkConfig,
+                new ConverterOrchestrator(),
+                maxComputeClient
+        );
+        maxComputeSchemaCache.setMessageParser(protoMessageParser);
+        Mockito.doNothing()
+                .when(maxComputeClient)
+                .upsertTable(Mockito.any());
+
+        maxComputeSchemaCache.getMaxComputeSchema();
+        maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
+
+        Mockito.verify(maxComputeClient, Mockito.times(2))
+                .upsertTable(Mockito.any());
+    }
+
     @Test(expected = MaxComputeTableOperationException.class)
     public void shouldThrowMaxComputeTableOperationExceptionWhenUpsertIsFailing() throws OdpsException {
         Map<String, Descriptors.Descriptor> newDescriptor = new HashMap<>();
