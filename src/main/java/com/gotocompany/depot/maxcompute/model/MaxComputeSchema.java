@@ -6,17 +6,13 @@ import com.aliyun.odps.type.TypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Map;
 import java.util.Objects;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Builder
 @Getter
-@Setter
 public class MaxComputeSchema {
     private final TableSchema tableSchema;
     private final Map<String, TypeInfo> dataColumns;

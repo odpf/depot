@@ -6,10 +6,10 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
 @AllArgsConstructor
-@Getter
 public class MaxComputeColumnDetail {
     private String prefix;
     private String name;
+    @Getter
     private TypeInfo typeInfo;
     private boolean isArrayElement;
 
