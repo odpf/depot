@@ -30,7 +30,6 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
                 null,
                 null,
-                null,
                 null
         );
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
@@ -69,7 +68,6 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
                 null,
                 null,
-                null,
                 null
         );
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
@@ -104,7 +102,6 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
                 null,
                 null,
                 null
@@ -144,7 +141,6 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
                 null,
                 null,
-                null,
                 null
         );
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
@@ -180,7 +176,6 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
                 null,
                 null,
                 null
