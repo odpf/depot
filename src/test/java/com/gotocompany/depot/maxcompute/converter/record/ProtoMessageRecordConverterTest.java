@@ -64,8 +64,6 @@ public class ProtoMessageRecordConverterTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_column");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimezone()).thenReturn("UTC+7");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampZoneOffset()).thenReturn("+07:00");
         converterOrchestrator = new ConverterOrchestrator();
         protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);

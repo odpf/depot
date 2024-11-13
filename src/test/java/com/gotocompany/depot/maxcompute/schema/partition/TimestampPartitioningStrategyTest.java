@@ -64,10 +64,6 @@ public class TimestampPartitioningStrategyTest {
                 .thenReturn("tablePartitionColumnName");
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey())
                 .thenReturn("tablePartitionKey");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimezone())
-                .thenReturn("UTC+7");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampZoneOffset())
-                .thenReturn("+07:00");
         return maxComputeSinkConfig;
     }
 }
