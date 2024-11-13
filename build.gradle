@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'com.gotocompany'
-version '0.10.1-SNAPSHOT'
+version '0.10.1'
 
 repositories {
     mavenLocal()
@@ -143,8 +143,12 @@ java {
 publishing {
     repositories {
         maven {
-            // Publishes to the local Maven repository (~/.m2/repository)
-            url = uri("file://${buildDir}/repo")
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
         }
     }
 
@@ -181,6 +185,10 @@ publishing {
     }
 }
 
+signing {
+   sign publishing.publications.maven
+}
+
 nexusPublishing {
     repositories {
         sonatype {
@@ -201,18 +209,17 @@ jacocoTestCoverageVerification {
                               '**/serializer/**',
                               '**/cortexpb/**',
                               '**/Clock**',
-                              '**/GoGoProtos**',])
+                              '**/GoGoProtos**',
+                              '**/MaxComputeClient**',
+                              '**/MaxComputeSinkFactory**',
+                              ''])
         })
     }
     violationRules {
         rule {
             limit {
-                minimum = 0.0
+                minimum = 0.7
             }
-
-            excludes = [
-                    'com.gotocompany.depot.maxcompute.model'
-            ]
         }
     }
 }
