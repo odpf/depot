@@ -105,18 +105,22 @@ Configuration for enabling compression in the streaming insert operation. This c
 * Default value: `false`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ALGORITHM
+
 Configuration for defining the compression algorithm in the streaming insert operation. This config will be used for defining the compression algorithm in the streaming insert operation.
 Supported algorithms are ODPS_RAW, ODPS_ZLIB, ODPS_LZ4_FRAME, ODPS_ARROW_LZ4_FRAME, ODPS_ARROW_ZSTD
 * Example value: `ODPS_ZLIB`
 * Type: `optional`
+* Default value: `ODPS_LZ4_FRAME`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_LEVEL
+
 Configuration for defining the compression level in the streaming insert operation. This config will be used for defining the compression level in the streaming insert operation.
 * Example value: `1`
 * Type: `optional`
 * Default value: `1`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_STRATEGY
+
 Configuration for defining the compression strategy in the streaming insert operation. This config will be used for defining the compression strategy in the streaming insert operation.
 * Example value: `1`
 * Type: `optional`

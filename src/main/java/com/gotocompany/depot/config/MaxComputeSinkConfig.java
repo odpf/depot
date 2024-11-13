@@ -68,7 +68,7 @@ public interface MaxComputeSinkConfig extends Config {
 
     @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ALGORITHM")
     @ConverterClass(MaxComputeCompressionAlgorithmConverter.class)
-    @DefaultValue("ODPS_ZLIB")
+    @DefaultValue("ODPS_LZ4_FRAME")
     CompressOption.CompressAlgorithm getMaxComputeCompressionAlgorithm();
 
     @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_LEVEL")
