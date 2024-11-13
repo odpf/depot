@@ -6,4 +6,8 @@ public class MaxComputeTableOperationException extends RuntimeException {
         super(message, e);
     }
 
+    public MaxComputeTableOperationException(String message) {
+        super(message);
+    }
+
 }

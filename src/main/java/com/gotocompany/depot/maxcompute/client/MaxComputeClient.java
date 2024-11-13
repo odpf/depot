@@ -1,5 +1,6 @@
 package com.gotocompany.depot.maxcompute.client;
 
+import com.aliyun.odps.Column;
 import com.aliyun.odps.Instance;
 import com.aliyun.odps.Odps;
 import com.aliyun.odps.OdpsException;
@@ -12,6 +13,7 @@ import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
+import com.gotocompany.depot.maxcompute.exception.MaxComputeTableOperationException;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.schema.SchemaDifferenceUtils;
 import com.gotocompany.depot.metrics.Instrumentation;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -55,16 +58,41 @@ public class MaxComputeClient {
         String datasetName = maxComputeSinkConfig.getMaxComputeSchema();
         String tableName = maxComputeSinkConfig.getMaxComputeTableName();
         if (!this.odps.tables().exists(tableName)) {
-            this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",
-                    false, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(),
-                    null, null);
+            createTable(tableSchema, projectName, datasetName, tableName);
             return;
         }
+        updateTable(tableSchema, projectName, datasetName, tableName);
+    }
+
+    private void createTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) throws OdpsException {
+        this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",
+                false, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(),
+                null, null);
+    }
+
+    private void updateTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) throws OdpsException {
         TableSchema oldSchema = this.odps.tables().get(projectName, datasetName, tableName)
                 .getSchema();
+        checkPartitionPrecondition(oldSchema);
         List<String> schemaDifferenceSql = SchemaDifferenceUtils.getSchemaDifferenceSql(oldSchema, tableSchema, datasetName, tableName);
         for (String sql : schemaDifferenceSql) {
             execute(sql);
+        }
+    }
+
+    private void checkPartitionPrecondition(TableSchema oldSchema) {
+        if (maxComputeSinkConfig.isTablePartitioningEnabled() && oldSchema.getPartitionColumns().isEmpty()) {
+            throw new MaxComputeTableOperationException("Updating non-partitioned table to partitioned table is not supported");
+        }
+        if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
+            String currentPartitionColumnKey = oldSchema.getPartitionColumns()
+                    .stream()
+                    .findFirst()
+                    .map(Column::getName)
+                    .orElse(null);
+            if (!Objects.equals(maxComputeSinkConfig.getTablePartitionColumnName(), currentPartitionColumnKey)) {
+                throw new MaxComputeTableOperationException("Changing partition column is not supported");
+            }
         }
     }
 
