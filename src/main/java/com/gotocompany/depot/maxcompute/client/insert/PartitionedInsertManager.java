@@ -47,6 +47,7 @@ public class PartitionedInsertManager implements InsertManager {
                         maxComputeSinkConfig.getMaxComputeTableName())
                 .setCreatePartition(true)
                 .setPartitionSpec(partitionSpec)
+                .allowSchemaMismatch(false)
                 .build();
     }
 

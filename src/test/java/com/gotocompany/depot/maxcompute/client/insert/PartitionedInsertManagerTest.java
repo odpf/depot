@@ -40,6 +40,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(builder);
         Mockito.when(builder.setPartitionSpec(Mockito.any(PartitionSpec.class)))
                 .thenReturn(builder);
+        Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
+                .thenReturn(builder);
         Mockito.when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -93,6 +95,8 @@ public class PartitionedInsertManagerTest {
         Mockito.when(builder.setCreatePartition(Mockito.anyBoolean()))
                 .thenReturn(builder);
         Mockito.when(builder.setPartitionSpec(Mockito.any(PartitionSpec.class)))
+                .thenReturn(builder);
+        Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
         Mockito.when(builder.build())
                 .thenReturn(streamUploadSession);

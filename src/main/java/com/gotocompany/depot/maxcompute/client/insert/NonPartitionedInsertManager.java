@@ -38,6 +38,7 @@ public class NonPartitionedInsertManager implements InsertManager {
     private TableTunnel.StreamUploadSession getStreamUploadSession() throws TunnelException {
         return tableTunnel.buildStreamUploadSession(maxComputeSinkConfig.getMaxComputeProjectId(),
                         maxComputeSinkConfig.getMaxComputeTableName())
+                .allowSchemaMismatch(false)
                 .build();
     }
 }

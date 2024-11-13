@@ -36,6 +36,8 @@ public class NonPartitionedInsertManagerTest {
         TableTunnel.StreamUploadSession.Builder builder = Mockito.mock(TableTunnel.StreamUploadSession.Builder.class);
         Mockito.when(tableTunnel.buildStreamUploadSession(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(builder);
+        Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
+                .thenReturn(builder);
         Mockito.when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -82,6 +84,8 @@ public class NonPartitionedInsertManagerTest {
         TableTunnel tableTunnel = Mockito.mock(TableTunnel.class);
         TableTunnel.StreamUploadSession.Builder builder = Mockito.mock(TableTunnel.StreamUploadSession.Builder.class);
         Mockito.when(tableTunnel.buildStreamUploadSession(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(builder);
+        Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
         Mockito.when(builder.build())
                 .thenReturn(streamUploadSession);
