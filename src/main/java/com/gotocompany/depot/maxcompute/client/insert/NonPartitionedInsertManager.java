@@ -30,7 +30,7 @@ public class NonPartitionedInsertManager implements InsertManager {
         }
         TableTunnel.FlushResult flushResult = recordPack.flush(
                 new TableTunnel.FlushOption()
-                        .timeout(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeout()));
+                        .timeout(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs()));
         instrumentation.captureCount(maxComputeMetrics.getMaxComputeFlushRecordMetric(), flushResult.getRecordCount());
         instrumentation.captureCount(maxComputeMetrics.getMaxComputeFlushSizeMetric(), flushResult.getFlushSize());
     }

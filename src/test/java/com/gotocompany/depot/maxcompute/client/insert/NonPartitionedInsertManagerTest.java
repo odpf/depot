@@ -45,7 +45,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("project");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
                 .thenReturn("table");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeout())
+        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
                 .thenReturn(1000L);
         Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
@@ -94,7 +94,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("project");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
                 .thenReturn("table");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeout())
+        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
                 .thenReturn(1000L);
         Mockito.when(maxComputeSinkConfig.isStreamingInsertCompressEnabled())
                 .thenReturn(true);

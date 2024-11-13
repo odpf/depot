@@ -49,7 +49,7 @@ public class PartitionedInsertManagerTest {
                 .thenReturn("project");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
                 .thenReturn("table");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeout())
+        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
                 .thenReturn(1000L);
         RecordWrapper firstPartitionRecordWrapper = Mockito.mock(RecordWrapper.class);
         Mockito.when(firstPartitionRecordWrapper.getPartitionSpec())
@@ -105,7 +105,7 @@ public class PartitionedInsertManagerTest {
                 .thenReturn("project");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
                 .thenReturn("table");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeout())
+        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
                 .thenReturn(1000L);
         Mockito.when(maxComputeSinkConfig.isStreamingInsertCompressEnabled())
                 .thenReturn(true);

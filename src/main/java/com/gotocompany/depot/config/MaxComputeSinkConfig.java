@@ -58,9 +58,9 @@ public interface MaxComputeSinkConfig extends Config {
     @Key("SINK_MAXCOMPUTE_TABLE_LIFECYCLE_DAYS")
     Long getMaxComputeTableLifecycleDays();
 
-    @Key("SINK_MAXCOMPUTE_RECORD_PACK_FLUSH_TIMEOUT")
+    @Key("SINK_MAXCOMPUTE_RECORD_PACK_FLUSH_TIMEOUT_MS")
     @DefaultValue("-1")
-    Long getMaxComputeRecordPackFlushTimeout();
+    Long getMaxComputeRecordPackFlushTimeoutMs();
 
     @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ENABLED")
     @DefaultValue("false")
