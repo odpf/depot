@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DefaultPartitioningStrategy implements PartitioningStrategy {
 
+    private static final String PARTITION_SPEC_FORMAT = "%s=%s";
+    private static final String DEFAULT_PARTITION = "DEFAULT";
+
     private final TypeInfo typeInfo;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
@@ -30,7 +33,10 @@ public class DefaultPartitioningStrategy implements PartitioningStrategy {
 
     @Override
     public PartitionSpec getPartitionSpec(Object object) {
-        return new PartitionSpec(String.format("%s=%s", maxComputeSinkConfig.getTablePartitionColumnName(), object.toString()));
+        if (object == null) {
+            return new PartitionSpec(String.format(PARTITION_SPEC_FORMAT, maxComputeSinkConfig.getTablePartitionColumnName(), DEFAULT_PARTITION));
+        }
+        return new PartitionSpec(String.format(PARTITION_SPEC_FORMAT, maxComputeSinkConfig.getTablePartitionColumnName(), object));
     }
 
 }

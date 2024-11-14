@@ -47,6 +47,17 @@ public class DefaultPartitioningStrategyTest {
                 .toString());
     }
 
+    @Test
+    public void shouldReturnDefaultPartitionSpec() {
+        String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='DEFAULT'";
+        DefaultPartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
+                getMaxComputeSinkConfig());
+
+        Assertions.assertEquals(expectedPartitionSpecStringRepresentation,
+                defaultPartitioningStrategy.getPartitionSpec(null)
+                .toString());
+    }
+
     private MaxComputeSinkConfig getMaxComputeSinkConfig() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName())

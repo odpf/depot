@@ -16,6 +16,7 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     private static final String SECONDS_FIELD = "seconds";
     private static final String NANOS_FIELD = "nanos";
     private static final String PARTITION_SPEC_FORMAT = "%s=%s";
+    private static final String DEFAULT_PARTITION = "DEFAULT";
 
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
@@ -37,6 +38,10 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
     @Override
     public PartitionSpec getPartitionSpec(Object object) {
+        if (object == null) {
+            return new PartitionSpec(String.format(PARTITION_SPEC_FORMAT,
+                    maxComputeSinkConfig.getTablePartitionColumnName(), DEFAULT_PARTITION));
+        }
         Message message = (Message) object;
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS_FIELD));
         int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS_FIELD));

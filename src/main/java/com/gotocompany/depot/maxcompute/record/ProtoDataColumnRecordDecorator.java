@@ -12,6 +12,7 @@ import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 public class ProtoDataColumnRecordDecorator extends RecordDecorator {
 
@@ -40,13 +41,29 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();
         Map<Descriptors.FieldDescriptor, Object> fields = protoMessage.getAllFields();
         for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : fields.entrySet()) {
+            if (entry.getKey().getName().equals(getPartitionFieldName()) && shouldReplaceOriginalColumn()) {
+                continue;
+            }
             recordWrapper.getRecord()
                     .set(entry.getKey().getName(), converterOrchestrator.convert(entry.getKey(), entry.getValue()));
         }
         if (partitioningStrategy != null) {
-            Object object = protoMessage.getField(protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName()));
+            Descriptors.FieldDescriptor partitionFieldDescriptor = protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName());
+            Object object = protoMessage.hasField(partitionFieldDescriptor) ? protoMessage.getField(protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName())) : null;
             recordWrapper.setPartitionSpec(partitioningStrategy.getPartitionSpec(object));
         }
+    }
+
+    private String getPartitionFieldName() {
+        return Optional.ofNullable(partitioningStrategy)
+                .map(PartitioningStrategy::getOriginalPartitionColumnName)
+                .orElse(null);
+    }
+
+    private boolean shouldReplaceOriginalColumn() {
+        return Optional.ofNullable(partitioningStrategy)
+                .map(PartitioningStrategy::shouldReplaceOriginalColumn)
+                .orElse(false);
     }
 
     private String getSchemaClass() {

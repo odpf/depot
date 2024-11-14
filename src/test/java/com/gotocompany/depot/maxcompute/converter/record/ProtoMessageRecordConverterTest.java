@@ -109,6 +109,7 @@ public class ProtoMessageRecordConverterTest {
                 1000,
                 ZoneOffset.UTC
         );
+
         RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
 
         Assertions.assertThat(recordWrappers.getValidRecords()).size().isEqualTo(1);
