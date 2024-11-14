@@ -13,6 +13,10 @@ import java.time.ZoneOffset;
 @RequiredArgsConstructor
 public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
+    private static final String SECONDS_FIELD = "seconds";
+    private static final String NANOS_FIELD = "nanos";
+    private static final String PARTITION_SPEC_FORMAT = "%s=%s";
+
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     @Override
@@ -34,9 +38,10 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     @Override
     public PartitionSpec getPartitionSpec(Object object) {
         Message message = (Message) object;
-        long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName("seconds"));
-        int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName("nanos"));
-        return new PartitionSpec(String.format("%s=%s", maxComputeSinkConfig.getTablePartitionColumnName(), getStartOfDayEpoch(seconds, nanos)));
+        long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS_FIELD));
+        int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS_FIELD));
+        return new PartitionSpec(String.format(PARTITION_SPEC_FORMAT,
+                maxComputeSinkConfig.getTablePartitionColumnName(), getStartOfDayEpoch(seconds, nanos)));
     }
 
     private String getStartOfDayEpoch(long seconds, int nanos) {

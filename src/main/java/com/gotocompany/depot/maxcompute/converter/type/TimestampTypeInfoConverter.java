@@ -6,6 +6,8 @@ import com.google.protobuf.Descriptors;
 
 public class TimestampTypeInfoConverter implements TypeInfoConverter {
 
+    private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
+
     @Override
     public TypeInfo convertSingular(Descriptors.FieldDescriptor fieldDescriptor) {
         return TypeInfoFactory.TIMESTAMP_NTZ;
@@ -14,7 +16,7 @@ public class TimestampTypeInfoConverter implements TypeInfoConverter {
     @Override
     public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
         return Descriptors.FieldDescriptor.Type.MESSAGE.equals(fieldDescriptor.getType())
-                && fieldDescriptor.getMessageType().getFullName().equals("google.protobuf.Timestamp");
+                && fieldDescriptor.getMessageType().getFullName().equals(GOOGLE_PROTOBUF_TIMESTAMP);
     }
 
 }

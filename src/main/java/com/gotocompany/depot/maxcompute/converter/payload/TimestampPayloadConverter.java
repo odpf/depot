@@ -11,13 +11,16 @@ import java.time.ZoneOffset;
 @RequiredArgsConstructor
 public class TimestampPayloadConverter implements PayloadConverter {
 
+    private static final String SECONDS = "seconds";
+    private static final String NANOS = "nanos";
+
     private final TimestampTypeInfoConverter timestampTypeInfoConverter;
 
     @Override
     public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
         Message message = (Message) object;
-        long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName("seconds"));
-        int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName("nanos"));
+        long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));
+        int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS));
         return LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.UTC);
     }
 

@@ -13,6 +13,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DurationPayloadConverter implements PayloadConverter {
 
+    private static final String SECONDS = "seconds";
+    private static final String NANOS = "nanos";
+
     private final DurationTypeInfoConverter durationTypeInfoConverter;
 
     @Override
@@ -28,8 +31,8 @@ public class DurationPayloadConverter implements PayloadConverter {
 
     private static List<Object> getValues(Message durationMessage) {
         List<Object> values = new ArrayList<>();
-        values.add(durationMessage.getField(durationMessage.getDescriptorForType().findFieldByName("seconds")));
-        values.add(durationMessage.getField(durationMessage.getDescriptorForType().findFieldByName("nanos")));
+        values.add(durationMessage.getField(durationMessage.getDescriptorForType().findFieldByName(SECONDS)));
+        values.add(durationMessage.getField(durationMessage.getDescriptorForType().findFieldByName(NANOS)));
         return values;
     }
 

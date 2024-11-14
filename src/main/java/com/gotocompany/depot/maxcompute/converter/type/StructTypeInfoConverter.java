@@ -6,6 +6,8 @@ import com.google.protobuf.Descriptors;
 
 public class StructTypeInfoConverter implements TypeInfoConverter {
 
+    private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";
+
     @Override
     public TypeInfo convertSingular(Descriptors.FieldDescriptor fieldDescriptor) {
         return TypeInfoFactory.STRING;
@@ -14,7 +16,7 @@ public class StructTypeInfoConverter implements TypeInfoConverter {
     @Override
     public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
         return fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.MESSAGE
-                && fieldDescriptor.getMessageType().getFullName().equals("google.protobuf.Struct");
+                && fieldDescriptor.getMessageType().getFullName().equals(GOOGLE_PROTOBUF_STRUCT);
     }
 
 }
