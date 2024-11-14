@@ -11,6 +11,7 @@ import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class ProtoDataColumnRecordDecorator extends RecordDecorator {
 
@@ -37,9 +38,10 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
         parsedMessage.validate(sinkConfig);
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();
-        for (Descriptors.FieldDescriptor fieldDescriptor : protoMessage.getDescriptorForType().getFields()) {
+        Map<Descriptors.FieldDescriptor, Object> fields = protoMessage.getAllFields();
+        for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : fields.entrySet()) {
             recordWrapper.getRecord()
-                    .set(fieldDescriptor.getName(), converterOrchestrator.convert(fieldDescriptor, protoMessage.getField(fieldDescriptor)));
+                    .set(entry.getKey().getName(), converterOrchestrator.convert(entry.getKey(), entry.getValue()));
         }
         if (partitioningStrategy != null) {
             Object object = protoMessage.getField(protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName()));

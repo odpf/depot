@@ -54,7 +54,6 @@ public class MessagePayloadConverterTest {
                                         .build(),
                                 TestMaxComputeTypeInfo.TestItem.newBuilder()
                                         .setId("item2")
-                                        .setQuantity(2)
                                         .build()))
                         .setCreatedAt(timestamp)
                         .setCartAge(duration)
@@ -80,7 +79,7 @@ public class MessagePayloadConverterTest {
                 new SimpleStruct(cartTypeInfo,
                         Arrays.asList(
                                 "cart_id",
-                                Arrays.asList(new SimpleStruct(itemTypeInfo, Arrays.asList("item1", 1)), new SimpleStruct(itemTypeInfo, Arrays.asList("item2", 2))),
+                                Arrays.asList(new SimpleStruct(itemTypeInfo, Arrays.asList("item1", 1)), new SimpleStruct(itemTypeInfo, Arrays.asList("item2", null))),
                                 LocalDateTime.ofEpochSecond(timestamp.getSeconds(), 0, java.time.ZoneOffset.UTC),
                                 new SimpleStruct(durationTypeInfo, Arrays.asList(duration.getSeconds(), duration.getNanos())))),
                 LocalDateTime.ofEpochSecond(timestamp.getSeconds(), 0, java.time.ZoneOffset.UTC)

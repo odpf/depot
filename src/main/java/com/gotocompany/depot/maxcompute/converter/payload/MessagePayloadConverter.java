@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class MessagePayloadConverter implements PayloadConverter {
@@ -19,11 +20,16 @@ public class MessagePayloadConverter implements PayloadConverter {
     public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
         Message dynamicMessage = (Message) object;
         List<Object> values = new ArrayList<>();
+        Map<Descriptors.FieldDescriptor, Object> payloadFields = dynamicMessage.getAllFields();
         fieldDescriptor.getMessageType().getFields().forEach(innerFieldDescriptor -> {
+            if (!payloadFields.containsKey(innerFieldDescriptor)) {
+                values.add(null);
+                return;
+            }
             Object mappedInnerValue = payloadConverters.stream()
                     .filter(converter -> converter.canConvert(innerFieldDescriptor))
                     .findFirst()
-                    .map(converter -> converter.convert(innerFieldDescriptor, dynamicMessage.getField(innerFieldDescriptor)))
+                    .map(converter -> converter.convert(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor)))
                     .orElse(null);
             values.add(mappedInnerValue);
         });

@@ -74,6 +74,31 @@ public class ProtoDataColumnRecordDecoratorTest {
     }
 
     @Test
+    public void decorateShouldPutDefaultPartitionSpec() throws IOException {
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = getMockedMessage();
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L,
+                1000,
+                java.time.ZoneOffset.UTC
+        );
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        Assertions.assertThat(record)
+                .extracting("values")
+                .isEqualTo(new Object[]{"id",
+                        Arrays.asList(
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
+                        ),
+                        expectedLocalDateTime});
+    }
+
+    @Test
     public void decorateShouldCallInjectedDecorator() throws IOException {
         RecordDecorator recordDecorator = Mockito.mock(RecordDecorator.class);
         Mockito.doNothing().when(recordDecorator)
