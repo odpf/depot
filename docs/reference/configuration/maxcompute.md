@@ -80,9 +80,9 @@ Contains the partition column name of the MaxCompute table. This could be the sa
 ## SINK_MAXCOMPUTE_TABLE_PARTITION_BY_TIMESTAMP_KEY_FORMAT
 
 Contains the format of the timestamp key in the partition. This config will be used for defining the format of the timestamp key in the partition.
-* Example value: `YYYYMMdd'T'HHmmss`
+* Example value: `yyyyMMdd'T'HHmmss`
 * Type: `optional`
-* Default value: `YYYYMMdd`
+* Default value: `yyyyMMdd`
 
 ## SINK_MAXCOMPUTE_TABLE_NAME
 

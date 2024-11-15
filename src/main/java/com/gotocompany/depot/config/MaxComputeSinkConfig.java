@@ -53,7 +53,7 @@ public interface MaxComputeSinkConfig extends Config {
     String getTablePartitionColumnName();
 
     @Key("SINK_MAXCOMPUTE_TABLE_PARTITION_BY_TIMESTAMP_KEY_FORMAT")
-    @DefaultValue("YYYYMMDD")
+    @DefaultValue("yyyyMMdd")
     String getTablePartitionByTimestampKeyFormat();
 
     @Key("SINK_MAXCOMPUTE_TABLE_NAME")
