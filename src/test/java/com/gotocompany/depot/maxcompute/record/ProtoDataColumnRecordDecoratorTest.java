@@ -5,6 +5,7 @@ import com.aliyun.odps.data.Record;
 import com.aliyun.odps.data.SimpleStruct;
 import com.aliyun.odps.type.ArrayTypeInfo;
 import com.aliyun.odps.type.StructTypeInfo;
+import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeRecord;
@@ -15,6 +16,9 @@ import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
+import com.gotocompany.depot.maxcompute.schema.partition.DefaultPartitioningStrategy;
+import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
+import com.gotocompany.depot.maxcompute.schema.partition.TimestampPartitioningStrategy;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
@@ -41,11 +45,9 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
-
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-
-        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, null, getMockedMessage());
     }
 
     @Test
@@ -61,6 +63,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 java.time.ZoneOffset.UTC
         );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
         Assertions.assertThat(record)
@@ -71,6 +74,127 @@ public class ProtoDataColumnRecordDecoratorTest {
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
                         ),
                         expectedLocalDateTime});
+    }
+
+    @Test
+    public void decorateShouldAppendDataColumnToRecordAndOmitPartitionColumnIfPartitionedByPrimitiveTypes() throws IOException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
+        Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("id");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("id");
+        Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        PartitioningStrategy partitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
+                maxComputeSinkConfig);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, partitioningStrategy, getMockedMessage());
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = getMockedMessage();
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L,
+                1000,
+                java.time.ZoneOffset.UTC
+        );
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+
+        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        Assertions.assertThat(record)
+                .extracting("values")
+                .isEqualTo(new Object[]{
+                        Arrays.asList(
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
+                        ),
+                        expectedLocalDateTime});
+    }
+
+    @Test
+    public void decorateShouldAppendDataColumnToRecordAndShouldNotOmitOriginalColumnIfPartitionedByTimestamp() throws IOException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
+        Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
+        Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        PartitioningStrategy partitioningStrategy = new TimestampPartitioningStrategy(maxComputeSinkConfig);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, partitioningStrategy, getMockedMessage());
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = getMockedMessage();
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                10002010L,
+                1000,
+                java.time.ZoneOffset.UTC
+        );
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+
+        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        Assertions.assertThat(record)
+                .extracting("values")
+                .isEqualTo(new Object[]{
+                        "id",
+                        Arrays.asList(
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
+                        ),
+                        expectedLocalDateTime});
+    }
+
+    @Test
+    public void decorateShouldSetDefaultPartitioningSpecWhenProtoFieldNotExists() throws IOException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
+        Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
+        Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        PartitioningStrategy partitioningStrategy = new TimestampPartitioningStrategy(maxComputeSinkConfig);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = TestMaxComputeRecord.MaxComputeRecord
+                .newBuilder()
+                .setId("id")
+                .addAllInnerRecord(Arrays.asList(
+                        TestMaxComputeRecord.InnerRecord.newBuilder()
+                                .setName("name_1")
+                                .setBalance(100.2f)
+                                .build(),
+                        TestMaxComputeRecord.InnerRecord.newBuilder()
+                                .setName("name_2")
+                                .setBalance(50f)
+                                .build()
+                ))
+                .build();
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, partitioningStrategy, maxComputeRecord);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+
+        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        Assertions.assertThat(record)
+                .extracting("values")
+                .isEqualTo(new Object[]{
+                        "id",
+                        Arrays.asList(
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_1", 100.2f)),
+                                new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
+                        ),
+                        null});
+        Assertions.assertThat(recordWrapper.getPartitionSpec().toString())
+                .isEqualTo("__partition_key='DEFAULT'");
     }
 
     @Test
@@ -86,6 +210,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 java.time.ZoneOffset.UTC
         );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
         Assertions.assertThat(record)
@@ -109,8 +234,8 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null);
-        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, recordDecorator);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, null, getMockedMessage());
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, recordDecorator, null, getMockedMessage());
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
         Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
@@ -136,30 +261,30 @@ public class ProtoDataColumnRecordDecoratorTest {
                 .decorate(Mockito.any(), Mockito.any());
     }
 
-    private void instantiateProtoDataColumnRecordDecorator(SinkConfig sinkConfig, MaxComputeSinkConfig maxComputeSinkConfig, RecordDecorator recordDecorator) throws IOException {
+    private void instantiateProtoDataColumnRecordDecorator(SinkConfig sinkConfig, MaxComputeSinkConfig maxComputeSinkConfig,
+                                                           RecordDecorator recordDecorator,
+                                                           PartitioningStrategy partitioningStrategy,
+                                                           com.google.protobuf.Message mockedMessage) throws IOException {
         ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator();
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(
                 converterOrchestrator,
                 maxComputeSinkConfig,
-                null
+                partitioningStrategy
         );
-
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
         MaxComputeSchemaCache maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
-
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);
-        Mockito.when(parsedMessage.getRaw()).thenReturn(getMockedMessage());
+        Mockito.when(parsedMessage.getRaw()).thenReturn(mockedMessage);
         Mockito.when(protoMessageParser.parse(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(parsedMessage);
-
         protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(
                 recordDecorator,
                 converterOrchestrator,
                 protoMessageParser,
                 sinkConfig,
-                null
+                partitioningStrategy
         );
     }
 
