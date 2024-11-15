@@ -18,12 +18,12 @@ import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.schema.SchemaDifferenceUtils;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
-import com.gotocompany.depot.metrics.StatsDReporter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,17 +38,16 @@ public class MaxComputeClient {
     private MaxComputeSinkConfig maxComputeSinkConfig;
     private TableTunnel tableTunnel;
     private InsertManager insertManager;
-    private StatsDReporter statsDReporter;
     private MaxComputeMetrics maxComputeMetrics;
+    private Instrumentation instrumentation;
 
     public MaxComputeClient(MaxComputeSinkConfig maxComputeSinkConfig,
-                            StatsDReporter statsDReporter,
-                            MaxComputeMetrics maxComputeMetrics) {
+                            Instrumentation instrumentation, MaxComputeMetrics maxComputeMetrics) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
+        this.instrumentation = instrumentation;
         this.odps = initializeOdps();
         this.tableTunnel = new TableTunnel(odps);
         this.tableTunnel.setEndpoint(maxComputeSinkConfig.getMaxComputeTunnelUrl());
-        this.statsDReporter = statsDReporter;
         this.maxComputeMetrics = maxComputeMetrics;
         this.insertManager = initializeInsertManager();
     }
@@ -61,13 +60,35 @@ public class MaxComputeClient {
             createTable(tableSchema, projectName, datasetName, tableName);
             return;
         }
+        Instant start = Instant.now();
         updateTable(tableSchema, projectName, datasetName, tableName);
+        instrumentation.logInfo("Successfully updated maxCompute table " + tableName);
+        instrument(start, MaxComputeMetrics.MaxComputeAPIType.TABLE_UPDATE);
     }
 
     private void createTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) throws OdpsException {
+        Instant start = Instant.now();
         this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",
                 false, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(),
                 null, null);
+        instrumentation.logInfo("Successfully created maxCompute table " + tableName);
+        instrument(start, MaxComputeMetrics.MaxComputeAPIType.TABLE_CREATE);
+    }
+
+    private void instrument(Instant startTime, MaxComputeMetrics.MaxComputeAPIType type) {
+        instrumentation.incrementCounter(
+                maxComputeMetrics.getMaxComputeOperationTotalMetric(),
+                String.format(MaxComputeMetrics.MAXCOMPUTE_TABLE_TAG, maxComputeSinkConfig.getMaxComputeTableName()),
+                String.format(MaxComputeMetrics.MAXCOMPUTE_PROJECT_TAG, maxComputeSinkConfig.getMaxComputeProjectId()),
+                String.format(MaxComputeMetrics.MAXCOMPUTE_API_TAG, type)
+        );
+        instrumentation.captureDurationSince(
+                maxComputeMetrics.getMaxComputeOperationLatencyMetric(),
+                startTime,
+                String.format(MaxComputeMetrics.MAXCOMPUTE_TABLE_TAG, maxComputeSinkConfig.getMaxComputeTableName()),
+                String.format(MaxComputeMetrics.MAXCOMPUTE_PROJECT_TAG, maxComputeSinkConfig.getMaxComputeProjectId()),
+                String.format(MaxComputeMetrics.MAXCOMPUTE_API_TAG, type)
+        );
     }
 
     private void updateTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) throws OdpsException {
@@ -111,8 +132,7 @@ public class MaxComputeClient {
     }
 
     private InsertManager initializeInsertManager() {
-        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel,
-                new Instrumentation(statsDReporter, InsertManager.class), maxComputeMetrics);
+        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel, instrumentation, maxComputeMetrics);
     }
 
     private Map<String, String> getGlobalSettings() {

@@ -11,8 +11,8 @@ import com.gotocompany.depot.maxcompute.converter.record.MessageRecordConverter;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
 import com.gotocompany.depot.message.Message;
+import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
-import com.gotocompany.depot.metrics.StatsDReporter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -42,12 +42,12 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -79,7 +79,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -87,7 +87,7 @@ public class MaxComputeSinkTest {
         Mockito.doThrow(new TunnelException("Failed establishing connection"))
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -122,7 +122,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -130,7 +130,7 @@ public class MaxComputeSinkTest {
         Mockito.doThrow(new IOException("Failed flushing"))
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -165,7 +165,7 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
@@ -173,7 +173,7 @@ public class MaxComputeSinkTest {
         Mockito.doThrow(new RuntimeException("Unexpected Error"))
                 .when(maxComputeClient)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -208,10 +208,10 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)));
+        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
 
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter);
+        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
 
         Assertions.assertDoesNotThrow(maxComputeSink::close);
     }

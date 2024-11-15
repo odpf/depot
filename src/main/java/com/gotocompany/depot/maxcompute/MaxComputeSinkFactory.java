@@ -16,6 +16,7 @@ import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategyFac
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.MessageParserFactory;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
+import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.metrics.StatsDReporter;
 import com.gotocompany.stencil.client.StencilClient;
@@ -47,7 +48,7 @@ public class MaxComputeSinkFactory {
         this.partitioningStrategyFactory = new PartitioningStrategyFactory(converterOrchestrator, maxComputeSinkConfig);
         this.stencilClient = stencilClient;
         this.maxComputeMetrics = new MaxComputeMetrics(sinkConfig);
-        this.maxComputeClient = new MaxComputeClient(maxComputeSinkConfig, statsDReporter, maxComputeMetrics);
+        this.maxComputeClient = new MaxComputeClient(maxComputeSinkConfig, new Instrumentation(statsDReporter, MaxComputeClient.class), maxComputeMetrics);
     }
 
     public void init() {
@@ -71,7 +72,8 @@ public class MaxComputeSinkFactory {
                 sinkConfig
         );
         ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
-        return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter);
+        return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter,
+                new Instrumentation(statsDReporter, MaxComputeSink.class), maxComputeMetrics);
     }
 
 }

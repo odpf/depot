@@ -6,39 +6,39 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Slf4j
-public class NonPartitionedInsertManager implements InsertManager {
+public class NonPartitionedInsertManager extends InsertManager {
 
-    private final TableTunnel tableTunnel;
-    private final MaxComputeSinkConfig maxComputeSinkConfig;
-    private final Instrumentation instrumentation;
-    private final MaxComputeMetrics maxComputeMetrics;
+    public NonPartitionedInsertManager(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig, Instrumentation instrumentation, MaxComputeMetrics maxComputeMetrics) {
+        super(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+    }
 
     @Override
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
         TableTunnel.StreamUploadSession streamUploadSession = getStreamUploadSession();
-        TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession, maxComputeSinkConfig);
+        TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession);
         for (RecordWrapper recordWrapper : recordWrappers) {
             recordPack.append(recordWrapper.getRecord());
         }
+        Instant start = Instant.now();
         TableTunnel.FlushResult flushResult = recordPack.flush(
                 new TableTunnel.FlushOption()
-                        .timeout(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs()));
-        instrumentation.captureCount(maxComputeMetrics.getMaxComputeFlushRecordMetric(), flushResult.getRecordCount());
-        instrumentation.captureCount(maxComputeMetrics.getMaxComputeFlushSizeMetric(), flushResult.getFlushSize());
+                        .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs()));
+        instrument(start, flushResult);
     }
 
     private TableTunnel.StreamUploadSession getStreamUploadSession() throws TunnelException {
-        return tableTunnel.buildStreamUploadSession(maxComputeSinkConfig.getMaxComputeProjectId(),
-                        maxComputeSinkConfig.getMaxComputeTableName())
+        return super.getTableTunnel().buildStreamUploadSession(
+                        super.getMaxComputeSinkConfig().getMaxComputeProjectId(),
+                        super.getMaxComputeSinkConfig().getMaxComputeTableName())
                 .allowSchemaMismatch(false)
                 .build();
     }
+
 }
