@@ -33,6 +33,7 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn(timestampFieldName);
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn(timestampFieldName);
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(), maxComputeSinkConfig);
 
         PartitioningStrategy partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);

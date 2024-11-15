@@ -121,6 +121,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         PartitioningStrategy partitioningStrategy = new TimestampPartitioningStrategy(maxComputeSinkConfig);
@@ -156,6 +157,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);

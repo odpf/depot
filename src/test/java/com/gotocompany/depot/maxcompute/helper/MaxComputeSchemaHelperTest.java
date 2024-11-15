@@ -33,6 +33,7 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("event_timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(
                 new ConverterOrchestrator(), maxComputeSinkConfig
         );
@@ -84,6 +85,7 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("event_timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         int expectedNonPartitionColumnCount = 5;
         int expectedPartitionColumnCount = 1;
         PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(

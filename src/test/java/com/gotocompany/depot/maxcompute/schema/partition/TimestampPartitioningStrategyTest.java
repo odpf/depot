@@ -74,6 +74,7 @@ public class TimestampPartitioningStrategyTest {
                 .thenReturn("tablePartitionColumnName");
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey())
                 .thenReturn("tablePartitionKey");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         return maxComputeSinkConfig;
     }
 

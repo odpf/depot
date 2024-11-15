@@ -5,12 +5,11 @@ import com.aliyun.odps.PartitionSpec;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
-@RequiredArgsConstructor
 public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
     private static final String SECONDS_FIELD = "seconds";
@@ -19,6 +18,12 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     private static final String DEFAULT_PARTITION = "DEFAULT";
 
     private final MaxComputeSinkConfig maxComputeSinkConfig;
+    private final DateTimeFormatter dateTimeFormatter;
+
+    public TimestampPartitioningStrategy(MaxComputeSinkConfig maxComputeSinkConfig) {
+        this.maxComputeSinkConfig = maxComputeSinkConfig;
+        this.dateTimeFormatter = DateTimeFormatter.ofPattern(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat());
+    }
 
     @Override
     public String getOriginalPartitionColumnName() {
@@ -53,7 +58,7 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
         return LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.UTC)
                 .toLocalDate()
                 .atStartOfDay()
-                .toString();
+                .format(dateTimeFormatter);
     }
 
 }
