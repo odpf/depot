@@ -23,6 +23,7 @@ import com.gotocompany.stencil.client.StencilClient;
 import org.aeonbits.owner.ConfigFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class MaxComputeSinkFactory {
 
@@ -57,7 +58,8 @@ public class MaxComputeSinkFactory {
         this.partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         this.maxComputeSchemaCache = new MaxComputeSchemaCache(maxComputeSchemaHelper, sinkConfig, converterOrchestrator, maxComputeClient);
-        this.partitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
+        Optional.ofNullable(this.partitioningStrategy)
+                .ifPresent(partitioningStrategy -> partitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache));
         messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
         this.maxComputeSchemaCache.setMessageParser(messageParser);
         this.maxComputeSchemaCache.updateSchema();
