@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -101,11 +102,9 @@ public class ProtoMessageRecordConverterTest {
                 new Tuple<>("__kafka_topic", "topic"),
                 new Tuple<>("__kafka_offset", 100L)
         );
-        LocalDateTime expectedTimestampLocalDateTime = LocalDateTime.ofEpochSecond(
-                123012311L,
-                0,
-                ZoneOffset.UTC
-        );
+        LocalDateTime expectedTimestampLocalDateTime = Instant.ofEpochMilli(
+                123012311L).atZone(ZoneId.of("UTC"))
+                .toLocalDateTime();
         LocalDateTime expectedPayloadLocalDateTime = LocalDateTime.ofEpochSecond(
                 10002010L,
                 1000,

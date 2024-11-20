@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -61,8 +62,9 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         );
         Record record = new ArrayRecord(maxComputeSchemaCache.getMaxComputeSchema().getColumns());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
-        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
-                10002010L, 0, java.time.ZoneOffset.UTC);
+        LocalDateTime expectedLocalDateTime = Instant.ofEpochMilli(10002010L)
+                .atZone(ZoneId.of("UTC"))
+                .toLocalDateTime();
 
         protoMetadataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -95,9 +97,9 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         );
         Record record = new ArrayRecord(maxComputeSchemaCache.getMaxComputeSchema().getColumns());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
-        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
-                10002010L, 0, java.time.ZoneOffset.UTC
-        );
+        LocalDateTime expectedLocalDateTime = Instant.ofEpochMilli(10002010L)
+                .atZone(ZoneId.of("UTC"))
+                .toLocalDateTime();
 
         protoMetadataColumnRecordDecorator.decorate(recordWrapper, message);
 

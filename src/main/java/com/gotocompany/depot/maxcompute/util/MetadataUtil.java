@@ -52,9 +52,9 @@ public class MetadataUtil {
 
     public static Object getValidMetadataValue(String type, Object value, MaxComputeSinkConfig maxComputeSinkConfig) {
         if (TIMESTAMP.equalsIgnoreCase(type)) {
-            Instant instant = Instant.now();
-            ZoneOffset zoneOffset = maxComputeSinkConfig.getZoneId().getRules().getOffset(instant);
-            return LocalDateTime.ofEpochSecond((Long) value, 0, zoneOffset);
+            return Instant.ofEpochMilli((Long) value)
+                    .atZone(maxComputeSinkConfig.getZoneId())
+                    .toLocalDateTime();
         }
         return METADATA_MAPPER_MAP.get(type.toLowerCase()).apply(value);
     }
