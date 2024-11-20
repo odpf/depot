@@ -77,13 +77,6 @@ Contains the partition column name of the MaxCompute table. This could be the sa
 * Example value: `column1`
 * Type: `required`
 
-## SINK_MAXCOMPUTE_TABLE_PARTITION_BY_TIMESTAMP_KEY_FORMAT
-
-Contains the format of the timestamp key in the partition. This config will be used for defining the format of the timestamp key in the partition.
-* Example value: `yyyyMMdd'T'HHmmss`
-* Type: `optional`
-* Default value: `yyyyMMdd`
-
 ## SINK_MAXCOMPUTE_TABLE_NAME
 
 Contains the name of the MaxCompute table. Further documentation on MaxCompute [Table Name](https://www.alibabacloud.com/help/en/maxcompute/user-guide/tables).
@@ -132,3 +125,11 @@ Configuration for defining the compression strategy in the streaming insert oper
 * Example value: `1`
 * Type: `optional`
 * Default value: `0`
+
+## SINK_MAXCOMPUTE_ZONE_ID
+
+Contains ZoneID used for parsing the timestamp in the record. This config will be used for parsing the timestamp in the record.
+
+* Example value: `Asia/Bangkok`
+* Type: `optional`
+* Default value: `Asia/Bangkok`
