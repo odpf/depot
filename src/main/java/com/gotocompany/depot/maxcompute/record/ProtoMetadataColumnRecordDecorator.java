@@ -51,7 +51,7 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
         List<Object> values = IntStream.range(0, typeInfo.getFieldCount())
                 .mapToObj(index -> {
                     Object metadataValue = metadata.get(typeInfo.getFieldNames().get(index));
-                    return MetadataUtil.getValidMetadataValue(metadataTypePairs.get(typeInfo.getFieldNames().get(index)), metadataValue);
+                    return MetadataUtil.getValidMetadataValue(metadataTypePairs.get(typeInfo.getFieldNames().get(index)), metadataValue, maxComputeSinkConfig);
                 }).collect(Collectors.toList());
         record.set(maxComputeSinkConfig.getMaxcomputeMetadataNamespace(), new SimpleStruct(typeInfo, values));
     }
@@ -63,7 +63,7 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
                 .getMetadataColumns()
                 .entrySet()) {
             Object value = metadata.get(entry.getKey());
-            record.set(entry.getKey(), MetadataUtil.getValidMetadataValue(metadataTypePairs.get(entry.getKey()), value));
+            record.set(entry.getKey(), MetadataUtil.getValidMetadataValue(metadataTypePairs.get(entry.getKey()), value, maxComputeSinkConfig));
         }
     }
 
