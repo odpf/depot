@@ -6,6 +6,7 @@ import com.aliyun.odps.type.TypeInfoFactory;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
@@ -51,7 +52,9 @@ public class MetadataUtil {
 
     public static Object getValidMetadataValue(String type, Object value, MaxComputeSinkConfig maxComputeSinkConfig) {
         if (TIMESTAMP.equalsIgnoreCase(type)) {
-            return LocalDateTime.ofEpochSecond((Long) value, 0, ZoneOffset.of(maxComputeSinkConfig.getZoneOffset()));
+            Instant instant = Instant.now();
+            ZoneOffset zoneOffset = maxComputeSinkConfig.getZoneId().getRules().getOffset(instant);
+            return LocalDateTime.ofEpochSecond((Long) value, 0, zoneOffset);
         }
         return METADATA_MAPPER_MAP.get(type.toLowerCase()).apply(value);
     }

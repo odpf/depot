@@ -6,6 +6,7 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -23,12 +24,15 @@ public class TimestampPayloadConverter implements PayloadConverter {
         Message message = (Message) object;
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));
         int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS));
-        return LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.of(maxComputeSinkConfig.getZoneOffset()));
+        Instant instant = Instant.now();
+        ZoneOffset zoneOffset = maxComputeSinkConfig.getZoneId().getRules().getOffset(instant);
+        return LocalDateTime.ofEpochSecond(seconds, nanos, zoneOffset);
     }
 
     @Override
     public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
         return timestampTypeInfoConverter.canConvert(fieldDescriptor);
     }
+
 
 }

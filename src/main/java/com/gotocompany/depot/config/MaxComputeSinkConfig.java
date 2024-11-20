@@ -4,8 +4,10 @@ import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.converter.ConfToListConverter;
 import com.gotocompany.depot.config.converter.MaxComputeCompressionAlgorithmConverter;
+import com.gotocompany.depot.config.converter.ZoneIdConverter;
 import org.aeonbits.owner.Config;
 
+import java.time.ZoneId;
 import java.util.List;
 
 public interface MaxComputeSinkConfig extends Config {
@@ -84,8 +86,9 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("0")
     int getMaxComputeCompressionStrategy();
 
-    @Key("SINK_MAXCOMPUTE_ZONE_OFFSET")
-    @DefaultValue("+07:00")
-    String getZoneOffset();
+    @Key("SINK_MAXCOMPUTE_ZONE_ID")
+    @ConverterClass(ZoneIdConverter.class)
+    @DefaultValue("Asia/Bangkok")
+    ZoneId getZoneId();
 
 }

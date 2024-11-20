@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +35,7 @@ public class ConverterOrchestratorTest {
     @Before
     public void init() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
     }
 

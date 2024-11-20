@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class TimestampPayloadConverterTest {
     @Before
     public void setUp() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         timestampPayloadConverter = new TimestampPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
     }
     @Test

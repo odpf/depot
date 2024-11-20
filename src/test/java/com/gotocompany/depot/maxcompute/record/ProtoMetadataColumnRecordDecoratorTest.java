@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 
 public class ProtoMetadataColumnRecordDecoratorTest {
@@ -45,7 +46,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
                 new TupleString("__kafka_topic", "string"),
                 new TupleString("__kafka_offset", "long")
         ));
-        Mockito.when(config.getZoneOffset()).thenReturn("+00:00");
+        Mockito.when(config.getZoneId()).thenReturn(ZoneId.of("UTC"));
         initializeDecorator(config);
     }
 
@@ -83,7 +84,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
                 new TupleString("__kafka_topic", "string"),
                 new TupleString("__kafka_offset", "long")
         ));
-        Mockito.when(mcSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        Mockito.when(mcSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         initializeDecorator(mcSinkConfig);
         Message message = new Message(
                 null,

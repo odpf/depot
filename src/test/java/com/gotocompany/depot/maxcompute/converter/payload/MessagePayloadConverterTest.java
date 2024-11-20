@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -108,7 +109,7 @@ public class MessagePayloadConverterTest {
 
     private List<PayloadConverter> initializePayloadConverter(MessageTypeInfoConverter messageTypeInfoConverter) {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         List<PayloadConverter> payloadConverters = new ArrayList<>();
         payloadConverters.add(new DurationPayloadConverter(new DurationTypeInfoConverter()));
         payloadConverters.add(new PrimitivePayloadConverter(new PrimitiveTypeInfoConverter()));
