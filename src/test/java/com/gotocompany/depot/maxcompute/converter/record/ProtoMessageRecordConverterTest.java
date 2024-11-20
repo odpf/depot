@@ -84,7 +84,7 @@ public class ProtoMessageRecordConverterTest {
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
-
+        partitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 converterOrchestrator,
                 protoMessageParser, sinkConfig, partitioningStrategy);

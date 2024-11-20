@@ -2,27 +2,21 @@ package com.gotocompany.depot.maxcompute.schema.partition;
 
 import com.aliyun.odps.Column;
 import com.aliyun.odps.PartitionSpec;
+import com.aliyun.odps.data.Record;
+import com.aliyun.odps.expression.TruncTime;
 import com.aliyun.odps.type.TypeInfoFactory;
-import com.google.protobuf.Message;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 
 public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
-    private static final String SECONDS_FIELD = "seconds";
-    private static final String NANOS_FIELD = "nanos";
-    private static final String PARTITION_SPEC_FORMAT = "%s=%s";
-    private static final String DEFAULT_PARTITION = "DEFAULT";
+    private static final String DAY = "DAY";
 
     private final MaxComputeSinkConfig maxComputeSinkConfig;
-    private final DateTimeFormatter dateTimeFormatter;
+    private MaxComputeSchemaCache maxComputeSchemaCache;
 
     public TimestampPartitioningStrategy(MaxComputeSinkConfig maxComputeSinkConfig) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat());
     }
 
     @Override
@@ -37,28 +31,26 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
     @Override
     public Column getPartitionColumn() {
-        return Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), TypeInfoFactory.STRING)
+        Column column = Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), TypeInfoFactory.STRING)
                 .build();
+        column.setGenerateExpression(new TruncTime(maxComputeSinkConfig.getTablePartitionKey(), DAY));
+        return column;
     }
 
     @Override
     public PartitionSpec getPartitionSpec(Object object) {
-        if (object == null) {
-            return new PartitionSpec(String.format(PARTITION_SPEC_FORMAT,
-                    maxComputeSinkConfig.getTablePartitionColumnName(), DEFAULT_PARTITION));
-        }
-        Message message = (Message) object;
-        long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS_FIELD));
-        int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS_FIELD));
-        return new PartitionSpec(String.format(PARTITION_SPEC_FORMAT,
-                maxComputeSinkConfig.getTablePartitionColumnName(), getStartOfDayEpoch(seconds, nanos)));
+        PartitionSpec partitionSpec = new PartitionSpec();
+        maxComputeSchemaCache.getMaxComputeSchema()
+                .getTableSchema()
+                .getPartitionColumns()
+                .forEach(partitionColumn -> partitionSpec.set(partitionColumn.getName(), partitionColumn.getGenerateExpression()
+                                .generate((Record) object)));
+        return partitionSpec;
     }
 
-    private String getStartOfDayEpoch(long seconds, int nanos) {
-        return LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.UTC)
-                .toLocalDate()
-                .atStartOfDay()
-                .format(dateTimeFormatter);
+    @Override
+    public void setMaxComputeSchemaCache(MaxComputeSchemaCache maxComputeSchemaCache) {
+        this.maxComputeSchemaCache = maxComputeSchemaCache;
     }
 
 }

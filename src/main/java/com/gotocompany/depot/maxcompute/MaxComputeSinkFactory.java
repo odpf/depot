@@ -57,6 +57,7 @@ public class MaxComputeSinkFactory {
         this.partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         this.maxComputeSchemaCache = new MaxComputeSchemaCache(maxComputeSchemaHelper, sinkConfig, converterOrchestrator, maxComputeClient);
+        this.partitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
         messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
         this.maxComputeSchemaCache.setMessageParser(messageParser);
         this.maxComputeSchemaCache.updateSchema();

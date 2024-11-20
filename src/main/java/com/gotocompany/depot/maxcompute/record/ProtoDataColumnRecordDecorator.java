@@ -4,7 +4,9 @@ import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
+import com.gotocompany.depot.maxcompute.schema.partition.DefaultPartitioningStrategy;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
+import com.gotocompany.depot.maxcompute.schema.partition.TimestampPartitioningStrategy;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.ParsedMessage;
@@ -47,10 +49,13 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
             recordWrapper.getRecord()
                     .set(entry.getKey().getName(), converterOrchestrator.convert(entry.getKey(), entry.getValue()));
         }
-        if (partitioningStrategy != null) {
+        if (partitioningStrategy != null && partitioningStrategy instanceof DefaultPartitioningStrategy) {
             Descriptors.FieldDescriptor partitionFieldDescriptor = protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName());
             Object object = protoMessage.hasField(partitionFieldDescriptor) ? protoMessage.getField(protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName())) : null;
             recordWrapper.setPartitionSpec(partitioningStrategy.getPartitionSpec(object));
+        }
+        if (partitioningStrategy != null && partitioningStrategy instanceof TimestampPartitioningStrategy) {
+            recordWrapper.setPartitionSpec(partitioningStrategy.getPartitionSpec(recordWrapper.getRecord()));
         }
     }
 

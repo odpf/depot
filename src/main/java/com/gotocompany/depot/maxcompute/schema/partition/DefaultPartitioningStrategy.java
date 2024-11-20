@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class DefaultPartitioningStrategy implements PartitioningStrategy {
 
     private static final String PARTITION_SPEC_FORMAT = "%s=%s";
-    private static final String DEFAULT_PARTITION = "DEFAULT";
+    private static final String DEFAULT_PARTITION = "__NULL__";
 
     private final TypeInfo typeInfo;
     private final MaxComputeSinkConfig maxComputeSinkConfig;

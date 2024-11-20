@@ -49,7 +49,7 @@ public class DefaultPartitioningStrategyTest {
 
     @Test
     public void shouldReturnDefaultPartitionSpec() {
-        String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='DEFAULT'";
+        String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='__NULL__'";
         DefaultPartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
                 getMaxComputeSinkConfig());
 

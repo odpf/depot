@@ -1,12 +1,20 @@
 package com.gotocompany.depot.maxcompute.schema.partition;
 
 import com.aliyun.odps.Column;
+import com.aliyun.odps.TableSchema;
+import com.aliyun.odps.data.ArrayRecord;
+import com.aliyun.odps.data.Record;
+import com.aliyun.odps.expression.TruncTime;
 import com.aliyun.odps.type.TypeInfoFactory;
-import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
+import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class TimestampPartitioningStrategyTest {
 
@@ -43,26 +51,57 @@ public class TimestampPartitioningStrategyTest {
     public void shouldReturnValidPartitionSpec() {
         //October 29, 2024 12:00:10 AM GMT+07:00
         long epoch = 1730134810;
-        Timestamp timestamp = Timestamp.newBuilder()
-                .setSeconds(epoch)
-                .setNanos(0)
-                .build();
         MaxComputeSinkConfig maxComputeSinkConfig = getMaxComputeSinkConfig();
         TimestampPartitioningStrategy timestampPartitioningStrategy =
                 new TimestampPartitioningStrategy(maxComputeSinkConfig);
-        String expectedStartOfDayEpoch = "2024-10-28T00:00";
+        Column partitionColumn = Column.newBuilder("tablePartitionColumnName", TypeInfoFactory.STRING)
+                .build();
+        partitionColumn.setGenerateExpression(new TruncTime("event_timestamp", "DAY"));
+        TableSchema tableSchema = TableSchema.builder()
+                .withStringColumn("str")
+                .withColumn(Column.newBuilder("event_timestamp", TypeInfoFactory.TIMESTAMP_NTZ)
+                        .build())
+                .withPartitionColumn(partitionColumn)
+                .build();
+        MaxComputeSchemaCache maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
+        MaxComputeSchema maxComputeSchema = Mockito.mock(MaxComputeSchema.class);
+        Mockito.when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
+        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema())
+                .thenReturn(maxComputeSchema);
+        timestampPartitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
+        String expectedStartOfDayEpoch = "2024-10-28";
+        Record record = new ArrayRecord(tableSchema);
+        record.set("str", "strVal");
+        record.set("event_timestamp", LocalDateTime.ofEpochSecond(epoch, 0, ZoneOffset.UTC));
 
         Assertions.assertEquals(String.format("tablePartitionColumnName='%s'", expectedStartOfDayEpoch),
-                timestampPartitioningStrategy.getPartitionSpec(timestamp).toString());
+                timestampPartitioningStrategy.getPartitionSpec(record).toString());
     }
 
     @Test
     public void shouldReturnDefaultPartitionSpec() {
-        String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='DEFAULT'";
+        String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='__NULL__'";
         TimestampPartitioningStrategy timestampPartitioningStrategy = new TimestampPartitioningStrategy(getMaxComputeSinkConfig());
+        MaxComputeSchemaCache maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
+        MaxComputeSchema maxComputeSchema = Mockito.mock(MaxComputeSchema.class);
+        Column partitionColumn = Column.newBuilder("tablePartitionColumnName", TypeInfoFactory.STRING)
+                .build();
+        partitionColumn.setGenerateExpression(new TruncTime("event_timestamp", "DAY"));
+        TableSchema tableSchema = TableSchema.builder()
+                .withStringColumn("str")
+                .withDatetimeColumn("event_timestamp")
+                .withPartitionColumn(partitionColumn)
+                .build();
+        Mockito.when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
+        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema())
+                .thenReturn(maxComputeSchema);
+        Record record = new ArrayRecord(tableSchema);
+        record.set("str", "strVal");
+        record.set("event_timestamp", null);
+        timestampPartitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
 
         Assertions.assertEquals(expectedPartitionSpecStringRepresentation,
-                timestampPartitioningStrategy.getPartitionSpec(null)
+                timestampPartitioningStrategy.getPartitionSpec(record)
                         .toString());
     }
 
