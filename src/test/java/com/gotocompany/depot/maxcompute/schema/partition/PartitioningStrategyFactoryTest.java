@@ -19,7 +19,8 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn(stringFieldName);
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn(stringFieldName);
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(), maxComputeSinkConfig);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig);
 
         PartitioningStrategy partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
 
@@ -34,7 +35,8 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn(timestampFieldName);
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn(timestampFieldName);
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(), maxComputeSinkConfig);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig);
 
         PartitioningStrategy partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
 
@@ -45,7 +47,8 @@ public class PartitioningStrategyFactoryTest {
     public void shouldReturnNull() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(), maxComputeSinkConfig);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig);
 
         PartitioningStrategy partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
 
@@ -59,7 +62,8 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn(unsupportedTypeFieldName);
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn(unsupportedTypeFieldName);
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(), maxComputeSinkConfig);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig);
 
         partitioningStrategyFactory.createPartitioningStrategy(descriptor);
     }
@@ -71,7 +75,8 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn(fieldName);
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn(fieldName);
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(), maxComputeSinkConfig);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig);
 
         partitioningStrategyFactory.createPartitioningStrategy(descriptor);
     }

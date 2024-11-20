@@ -45,6 +45,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, null, getMockedMessage());
@@ -84,6 +85,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("id");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("id");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         PartitioningStrategy partitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
@@ -122,6 +124,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         PartitioningStrategy partitioningStrategy = new TimestampPartitioningStrategy(maxComputeSinkConfig);
@@ -160,6 +163,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampKeyFormat()).thenReturn("YYYY-MM-dd'T'HH:mm");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         PartitioningStrategy partitioningStrategy = new TimestampPartitioningStrategy(maxComputeSinkConfig);
@@ -234,6 +238,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, null, getMockedMessage());
@@ -267,7 +272,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                                                            RecordDecorator recordDecorator,
                                                            PartitioningStrategy partitioningStrategy,
                                                            com.google.protobuf.Message mockedMessage) throws IOException {
-        ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator();
+        ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(
                 converterOrchestrator,
                 maxComputeSinkConfig,

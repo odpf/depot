@@ -9,6 +9,7 @@ import org.aeonbits.owner.Config;
 import java.util.List;
 
 public interface MaxComputeSinkConfig extends Config {
+
     @Key("SINK_MAXCOMPUTE_ODPS_URL")
     String getMaxComputeOdpsUrl();
 
@@ -82,5 +83,9 @@ public interface MaxComputeSinkConfig extends Config {
     @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_STRATEGY")
     @DefaultValue("0")
     int getMaxComputeCompressionStrategy();
+
+    @Key("SINK_MAXCOMPUTE_ZONE_OFFSET")
+    @DefaultValue("+07:00")
+    String getZoneOffset();
 
 }

@@ -2,6 +2,7 @@ package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.type.TypeInfo;
 import com.google.protobuf.Descriptors;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.payload.DurationPayloadConverter;
 import com.gotocompany.depot.maxcompute.converter.payload.MessagePayloadConverter;
 import com.gotocompany.depot.maxcompute.converter.payload.PayloadConverter;
@@ -26,11 +27,11 @@ public class ConverterOrchestrator {
     private final List<PayloadConverter> payloadConverters;
     private final Map<String, TypeInfo> typeInfoCache;
 
-    public ConverterOrchestrator() {
+    public ConverterOrchestrator(MaxComputeSinkConfig maxComputeSinkConfig) {
         typeInfoConverters = new ArrayList<>();
         payloadConverters = new ArrayList<>();
         typeInfoCache = new ConcurrentHashMap<>();
-        initializeConverters();
+        initializeConverters(maxComputeSinkConfig);
     }
 
     public TypeInfo convert(Descriptors.FieldDescriptor fieldDescriptor) {
@@ -53,7 +54,7 @@ public class ConverterOrchestrator {
         typeInfoCache.clear();
     }
 
-    private void initializeConverters() {
+    private void initializeConverters(MaxComputeSinkConfig maxComputeSinkConfig) {
         PrimitiveTypeInfoConverter primitiveTypeInfoConverter = new PrimitiveTypeInfoConverter();
         DurationTypeInfoConverter durationTypeInfoConverter = new DurationTypeInfoConverter();
         StructTypeInfoConverter structTypeInfoConverter = new StructTypeInfoConverter();
@@ -69,7 +70,7 @@ public class ConverterOrchestrator {
         payloadConverters.add(new PrimitivePayloadConverter(primitiveTypeInfoConverter));
         payloadConverters.add(new DurationPayloadConverter(durationTypeInfoConverter));
         payloadConverters.add(new StructPayloadConverter(structTypeInfoConverter));
-        payloadConverters.add(new TimestampPayloadConverter(timestampTypeInfoConverter));
+        payloadConverters.add(new TimestampPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig));
         payloadConverters.add(new MessagePayloadConverter(messageTypeInfoConverter, payloadConverters));
     }
 

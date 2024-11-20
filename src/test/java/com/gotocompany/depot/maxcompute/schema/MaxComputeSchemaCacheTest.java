@@ -2,6 +2,7 @@ package com.gotocompany.depot.maxcompute.schema;
 
 import com.aliyun.odps.OdpsException;
 import com.google.protobuf.Descriptors;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
@@ -39,11 +40,15 @@ public class MaxComputeSchemaCacheTest {
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
+        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
+                .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(),
+                new ConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
@@ -78,10 +83,12 @@ public class MaxComputeSchemaCacheTest {
         Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(),
+                new ConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         Field field = MaxComputeSchemaCache.class.getDeclaredField("maxComputeSchema");
@@ -114,10 +121,12 @@ public class MaxComputeSchemaCacheTest {
         Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(),
+                new ConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
@@ -151,10 +160,12 @@ public class MaxComputeSchemaCacheTest {
         Mockito.when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(),
+                new ConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
@@ -188,10 +199,12 @@ public class MaxComputeSchemaCacheTest {
         Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(),
+                new ConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);

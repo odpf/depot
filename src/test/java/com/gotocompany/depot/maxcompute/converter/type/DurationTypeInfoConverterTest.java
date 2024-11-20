@@ -18,7 +18,7 @@ public class DurationTypeInfoConverterTest {
 
         TypeInfo typeInfo = durationTypeInfoConverter.convert(fieldDescriptor);
 
-        Assertions.assertEquals("STRUCT<seconds:BIGINT,nanos:INT>", typeInfo.getTypeName());
+        Assertions.assertEquals("STRUCT<`seconds`:BIGINT,`nanos`:INT>", typeInfo.getTypeName());
     }
 
     @Test

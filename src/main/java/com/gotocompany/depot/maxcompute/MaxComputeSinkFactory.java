@@ -33,7 +33,7 @@ public class MaxComputeSinkFactory {
     private final ConverterOrchestrator converterOrchestrator;
     private final StencilClient stencilClient;
     private final MaxComputeMetrics maxComputeMetrics;
-    private MaxComputeClient maxComputeClient;
+    private final MaxComputeClient maxComputeClient;
     private MaxComputeSchemaCache maxComputeSchemaCache;
     private PartitioningStrategy partitioningStrategy;
     private MessageParser messageParser;
@@ -44,7 +44,7 @@ public class MaxComputeSinkFactory {
         this.statsDReporter = statsDReporter;
         this.maxComputeSinkConfig = ConfigFactory.create(MaxComputeSinkConfig.class, env);
         this.sinkConfig = ConfigFactory.create(SinkConfig.class, env);
-        this.converterOrchestrator = new ConverterOrchestrator();
+        this.converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
         this.partitioningStrategyFactory = new PartitioningStrategyFactory(converterOrchestrator, maxComputeSinkConfig);
         this.stencilClient = stencilClient;
         this.maxComputeMetrics = new MaxComputeMetrics(sinkConfig);

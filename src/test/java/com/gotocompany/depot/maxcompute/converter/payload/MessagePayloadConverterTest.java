@@ -7,6 +7,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.type.DurationTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.MessageTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.PrimitiveTypeInfoConverter;
@@ -16,6 +17,7 @@ import com.gotocompany.depot.maxcompute.converter.type.TypeInfoConverter;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,11 +107,13 @@ public class MessagePayloadConverterTest {
     }
 
     private List<PayloadConverter> initializePayloadConverter(MessageTypeInfoConverter messageTypeInfoConverter) {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
         List<PayloadConverter> payloadConverters = new ArrayList<>();
         payloadConverters.add(new DurationPayloadConverter(new DurationTypeInfoConverter()));
         payloadConverters.add(new PrimitivePayloadConverter(new PrimitiveTypeInfoConverter()));
         payloadConverters.add(new StructPayloadConverter(new StructTypeInfoConverter()));
-        payloadConverters.add(new TimestampPayloadConverter(new TimestampTypeInfoConverter()));
+        payloadConverters.add(new TimestampPayloadConverter(new TimestampTypeInfoConverter(), maxComputeSinkConfig));
         payloadConverters.add(new MessagePayloadConverter(messageTypeInfoConverter, payloadConverters));
         return payloadConverters;
     }

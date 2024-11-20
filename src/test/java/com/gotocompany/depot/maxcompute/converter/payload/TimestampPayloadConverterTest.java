@@ -3,9 +3,12 @@ package com.gotocompany.depot.maxcompute.converter.payload;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -14,11 +17,16 @@ import java.util.List;
 public class TimestampPayloadConverterTest {
 
     private final TimestampTypeInfoConverter timestampTypeInfoConverter = new TimestampTypeInfoConverter();
-    private final TimestampPayloadConverter timestampPayloadConverter = new TimestampPayloadConverter(timestampTypeInfoConverter);
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
     private final Descriptors.Descriptor repeatedDescriptor = TestMaxComputeTypeInfo.TestRootRepeated.getDescriptor();
+    private TimestampPayloadConverter timestampPayloadConverter = new TimestampPayloadConverter(timestampTypeInfoConverter, Mockito.mock(MaxComputeSinkConfig.class));
 
-
+    @Before
+    public void setUp() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        timestampPayloadConverter = new TimestampPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+    }
     @Test
     public void shouldConvertToTimestampNtz() {
         Timestamp timestamp = Timestamp.newBuilder()

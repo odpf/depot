@@ -45,17 +45,8 @@ public class ProtoMetadataColumnRecordDecoratorTest {
                 new TupleString("__kafka_topic", "string"),
                 new TupleString("__kafka_offset", "long")
         ));
+        Mockito.when(config.getZoneOffset()).thenReturn("+00:00");
         initializeDecorator(config);
-    }
-
-    private void initializeDecorator(MaxComputeSinkConfig sinkConfig) {
-        this.maxComputeSinkConfig = sinkConfig;
-        ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator();
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, sinkConfig, null);
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
-        maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
-        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
-        protoMetadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(null, sinkConfig, maxComputeSchemaCache);
     }
 
     @Test
@@ -92,6 +83,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
                 new TupleString("__kafka_topic", "string"),
                 new TupleString("__kafka_offset", "long")
         ));
+        Mockito.when(mcSinkConfig.getZoneOffset()).thenReturn("+00:00");
         initializeDecorator(mcSinkConfig);
         Message message = new Message(
                 null,
@@ -138,5 +130,15 @@ public class ProtoMetadataColumnRecordDecoratorTest {
                         .setNanos(1000)
                         .build())
                 .build();
+    }
+
+    private void initializeDecorator(MaxComputeSinkConfig sinkConfig) {
+        this.maxComputeSinkConfig = sinkConfig;
+        ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator(sinkConfig);
+        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, sinkConfig, null);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
+        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
+        protoMetadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(null, sinkConfig, maxComputeSchemaCache);
     }
 }

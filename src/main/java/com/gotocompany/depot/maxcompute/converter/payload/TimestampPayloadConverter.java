@@ -2,6 +2,7 @@ package com.gotocompany.depot.maxcompute.converter.payload;
 
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,13 +16,14 @@ public class TimestampPayloadConverter implements PayloadConverter {
     private static final String NANOS = "nanos";
 
     private final TimestampTypeInfoConverter timestampTypeInfoConverter;
+    private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     @Override
     public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
         Message message = (Message) object;
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));
         int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS));
-        return LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.UTC);
+        return LocalDateTime.ofEpochSecond(seconds, nanos, ZoneOffset.of(maxComputeSinkConfig.getZoneOffset()));
     }
 
     @Override

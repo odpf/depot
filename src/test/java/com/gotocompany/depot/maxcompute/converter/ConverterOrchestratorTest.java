@@ -12,8 +12,11 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -26,15 +29,22 @@ import java.util.Map;
 public class ConverterOrchestratorTest {
 
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
-    private final ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator();
+    private ConverterOrchestrator converterOrchestrator;
+
+    @Before
+    public void init() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getZoneOffset()).thenReturn("+00:00");
+        converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
+    }
 
     @Test
     public void shouldConvertPayloadToTypeInfo() {
         String expectedStringTypeInfoRepresentation = "STRING";
-        String expectedMessageTypeRepresentation = "STRUCT<string_field:STRING,another_inner_field:STRUCT<string_field:STRING>,another_inner_list_field:ARRAY<STRUCT<string_field:STRING>>>";
+        String expectedMessageTypeRepresentation = "STRUCT<`string_field`:STRING,`another_inner_field`:STRUCT<`string_field`:STRING>,`another_inner_list_field`:ARRAY<STRUCT<`string_field`:STRING>>>";
         String expectedRepeatedMessageTypeRepresentation = String.format("ARRAY<%s>", expectedMessageTypeRepresentation);
         String expectedTimestampTypeInfoRepresentation = "TIMESTAMP_NTZ";
-        String expectedDurationTypeInfoRepresentation = "STRUCT<seconds:BIGINT,nanos:INT>";
+        String expectedDurationTypeInfoRepresentation = "STRUCT<`seconds`:BIGINT,`nanos`:INT>";
         String expectedStructTypeInfoRepresentation = "STRING";
 
         TypeInfo stringTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("string_field"));
