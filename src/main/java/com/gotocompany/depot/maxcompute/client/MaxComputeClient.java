@@ -97,7 +97,12 @@ public class MaxComputeClient {
         checkPartitionPrecondition(oldSchema);
         List<String> schemaDifferenceSql = SchemaDifferenceUtils.getSchemaDifferenceSql(oldSchema, tableSchema, datasetName, tableName);
         for (String sql : schemaDifferenceSql) {
-            execute(sql);
+            Instance instance = execute(sql);
+            if (!instance.isSuccessful()) {
+                instrumentation.logError("Failed to execute SQL: " + sql);
+                String errorMessage = instance.getRawTaskResults().get(0).getResult().getString();
+                throw new MaxComputeTableOperationException(String.format("Failed to update table schema with reason: %s", errorMessage));
+            }
         }
     }
 
