@@ -50,7 +50,7 @@ public class MetadataUtil {
     }
 
     public static Object getValidMetadataValue(String type, Object value, MaxComputeSinkConfig maxComputeSinkConfig) {
-        if (TIMESTAMP.equalsIgnoreCase(type)) {
+        if (TIMESTAMP.equalsIgnoreCase(type) && value instanceof Long) {
             return Instant.ofEpochMilli((Long) value)
                     .atZone(maxComputeSinkConfig.getZoneId())
                     .toLocalDateTime();

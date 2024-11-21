@@ -30,8 +30,8 @@ public class MaxComputeSchemaHelper {
         List<Column> dataColumn = buildDataColumns(descriptor);
         Column partitionColumn = maxComputeSinkConfig.isTablePartitioningEnabled() ? buildPartitionColumn() : null;
         TableSchema.Builder tableSchemaBuilder = com.aliyun.odps.TableSchema.builder();
-        tableSchemaBuilder.withColumns(dataColumn);
         tableSchemaBuilder.withColumns(metadataColumns);
+        tableSchemaBuilder.withColumns(dataColumn);
         if (Objects.nonNull(partitionColumn)) {
             tableSchemaBuilder.withPartitionColumn(partitionColumn);
         }
