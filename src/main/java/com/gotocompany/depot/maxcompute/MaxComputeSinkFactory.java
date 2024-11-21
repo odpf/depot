@@ -53,6 +53,7 @@ public class MaxComputeSinkFactory {
     }
 
     public void init() {
+        validateConfig();
         String schemaClass = SinkConnectorSchemaMessageMode.LOG_MESSAGE == sinkConfig.getSinkConnectorSchemaMessageMode() ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
         Descriptors.Descriptor descriptor = stencilClient.get(schemaClass);
         this.partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(descriptor);
@@ -79,4 +80,8 @@ public class MaxComputeSinkFactory {
                 new Instrumentation(statsDReporter, MaxComputeSink.class), maxComputeMetrics);
     }
 
+    private void validateConfig() {
+        this.maxComputeSinkConfig.getMaxComputeCompressionAlgorithm();
+        this.maxComputeSinkConfig.getZoneId();
+    }
 }

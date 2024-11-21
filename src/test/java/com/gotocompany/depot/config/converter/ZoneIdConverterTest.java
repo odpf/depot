@@ -1,5 +1,6 @@
 package com.gotocompany.depot.config.converter;
 
+import com.gotocompany.depot.exception.ConfigurationException;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -18,7 +19,7 @@ public class ZoneIdConverterTest {
         assertEquals(ZoneId.of(zoneId), result);
     }
 
-    @Test(expected = java.time.DateTimeException.class)
+    @Test(expected = ConfigurationException.class)
     public void shouldThrowDateTimeExceptionGivenInvalidZoneId() {
         String zoneId = "InvalidZoneId";
         ZoneIdConverter zoneIdConverter = new ZoneIdConverter();
