@@ -13,7 +13,7 @@ public class ZoneIdConverter implements Converter<ZoneId> {
     public ZoneId convert(Method method, String s) {
         try {
             return ZoneId.of(s);
-        } catch (DateTimeException e) {
+        } catch (Exception e) {
             throw new ConfigurationException("Invalid ZoneId: " + s, e);
         }
     }
