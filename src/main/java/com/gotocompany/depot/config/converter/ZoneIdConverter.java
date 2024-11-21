@@ -4,7 +4,6 @@ import com.gotocompany.depot.exception.ConfigurationException;
 import org.aeonbits.owner.Converter;
 
 import java.lang.reflect.Method;
-import java.time.DateTimeException;
 import java.time.ZoneId;
 
 public class ZoneIdConverter implements Converter<ZoneId> {
