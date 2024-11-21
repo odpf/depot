@@ -8,6 +8,7 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -57,12 +58,12 @@ public class MetadataUtil {
         return METADATA_MAPPER_MAP.get(type.toLowerCase()).apply(value);
     }
 
-    public static StructTypeInfo getMetadataTypeInfo(MaxComputeSinkConfig maxComputeSinkConfig) {
-        return TypeInfoFactory.getStructTypeInfo(maxComputeSinkConfig.getMetadataColumnsTypes()
+    public static StructTypeInfo getMetadataTypeInfo(List<TupleString> metadataColumnsTypes) {
+        return TypeInfoFactory.getStructTypeInfo(metadataColumnsTypes
                         .stream()
                         .map(TupleString::getFirst)
                         .collect(Collectors.toList()),
-                maxComputeSinkConfig.getMetadataColumnsTypes()
+                metadataColumnsTypes
                         .stream()
                         .map(tuple -> METADATA_TYPE_MAP.get(tuple.getSecond().toLowerCase()))
                         .collect(Collectors.toList()));

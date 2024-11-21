@@ -31,7 +31,7 @@ public enum ProtoUnknownFieldValidationType {
                 return Stream.of((Message) object);
             }
             if (object instanceof List) {
-                return Optional.ofNullable(((List) object).get(0))
+                return Optional.ofNullable(((List<?>) object).get(0))
                         .filter(this::shouldFilter)
                         .map(o -> Stream.of((Message) o))
                         .orElseGet(Stream::empty);
