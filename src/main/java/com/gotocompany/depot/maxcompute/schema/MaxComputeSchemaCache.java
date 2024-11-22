@@ -65,7 +65,6 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
             }
             maxComputeSchema = new MaxComputeSchema(
                     serverSideTableSchema,
-                    localSchema.getDataColumns(),
                     localSchema.getMetadataColumns()
             );
         } catch (OdpsException e) {

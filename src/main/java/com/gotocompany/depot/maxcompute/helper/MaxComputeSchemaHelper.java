@@ -37,7 +37,6 @@ public class MaxComputeSchemaHelper {
         }
         return MaxComputeSchema.builder()
                 .tableSchema(tableSchemaBuilder.build())
-                .dataColumns(dataColumn.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
                 .metadataColumns(metadataColumns.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
                 .build();
 

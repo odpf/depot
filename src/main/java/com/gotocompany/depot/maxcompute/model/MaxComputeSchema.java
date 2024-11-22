@@ -15,7 +15,6 @@ import java.util.Map;
 public class MaxComputeSchema {
 
     private final TableSchema tableSchema;
-    private final Map<String, TypeInfo> dataColumns;
     private final Map<String, TypeInfo> metadataColumns;
 
     public Column[] getColumns() {

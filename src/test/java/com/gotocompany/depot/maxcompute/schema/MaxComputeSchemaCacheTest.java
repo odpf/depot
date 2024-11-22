@@ -30,11 +30,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         Mockito.when(protoMessageParser.getDescriptorMap()).thenReturn(newDescriptor);
-        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
-                null,
-                null
-        );
+        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
@@ -76,11 +72,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         Mockito.when(protoMessageParser.getDescriptorMap()).thenReturn(newDescriptor);
-        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
-                null,
-                null
-        );
+        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
@@ -114,11 +106,7 @@ public class MaxComputeSchemaCacheTest {
         newDescriptor.put("class", Mockito.mock(Descriptors.Descriptor.class));
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
-        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
-                null,
-                null
-        );
+        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
@@ -156,11 +144,7 @@ public class MaxComputeSchemaCacheTest {
         newDescriptor.put("class", Mockito.mock(Descriptors.Descriptor.class));
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
-        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
-                null,
-                null
-        );
+        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
@@ -198,11 +182,7 @@ public class MaxComputeSchemaCacheTest {
         newDescriptor.put("class", Mockito.mock(Descriptors.Descriptor.class));
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
-        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(
-                null,
-                null,
-                null
-        );
+        MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
         Mockito.when(maxComputeSchemaHelper.buildMaxComputeSchema(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
@@ -227,4 +207,5 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.getMaxComputeSchema();
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
     }
+
 }

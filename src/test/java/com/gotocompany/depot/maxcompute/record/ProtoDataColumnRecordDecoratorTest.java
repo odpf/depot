@@ -1,10 +1,12 @@
 package com.gotocompany.depot.maxcompute.record;
 
+import com.aliyun.odps.TableSchema;
 import com.aliyun.odps.data.ArrayRecord;
 import com.aliyun.odps.data.Record;
 import com.aliyun.odps.data.SimpleStruct;
 import com.aliyun.odps.type.ArrayTypeInfo;
 import com.aliyun.odps.type.StructTypeInfo;
+import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
@@ -64,7 +66,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 1000,
                 java.time.ZoneOffset.UTC
         );
-        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -102,7 +104,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 1000,
                 java.time.ZoneOffset.UTC
         );
-        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -139,7 +141,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 1000,
                 java.time.ZoneOffset.UTC
         );
-        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -185,7 +187,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
         Message message = new Message(null, maxComputeRecord.toByteArray());
-        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -214,7 +216,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 1000,
                 java.time.ZoneOffset.UTC
         );
-        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -251,7 +253,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 10002010L,
                 1000,
                 java.time.ZoneOffset.UTC);
-        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) maxComputeSchema.getDataColumns().get("inner_record")).getElementTypeInfo();
+        StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
         protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
@@ -295,6 +297,15 @@ public class ProtoDataColumnRecordDecoratorTest {
                 sinkConfig,
                 partitioningStrategy
         );
+    }
+
+    private static TypeInfo getDataColumnTypeByName(TableSchema tableSchema, String columnName) {
+        return tableSchema.getColumns()
+                .stream()
+                .filter(column -> column.getName().equals(columnName))
+                .findFirst()
+                .map(com.aliyun.odps.Column::getTypeInfo)
+                .orElse(null);
     }
 
     private static TestMaxComputeRecord.MaxComputeRecord getMockedMessage() {
