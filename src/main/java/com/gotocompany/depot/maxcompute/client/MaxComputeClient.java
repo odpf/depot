@@ -77,7 +77,7 @@ public class MaxComputeClient {
     private void createTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) throws OdpsException {
         Instant start = Instant.now();
         this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",
-                false, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(),
+                true, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(),
                 null, null);
         instrumentation.logInfo("Successfully created maxCompute table " + tableName);
         instrument(start, MaxComputeMetrics.MaxComputeAPIType.TABLE_CREATE);
