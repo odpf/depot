@@ -13,8 +13,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PartitioningStrategyFactory {
 
-    private final ConverterOrchestrator converterOrchestrator;
-    private final MaxComputeSinkConfig maxComputeSinkConfig;
     private static final Set<TypeInfo> ALLOWED_PARTITION_KEY_TYPE_INFO;
 
     static {
@@ -27,7 +25,10 @@ public class PartitioningStrategyFactory {
         ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.BIGINT);
     }
 
-    public PartitioningStrategy createPartitioningStrategy(Descriptors.Descriptor descriptor) {
+    public static PartitioningStrategy createPartitioningStrategy(
+            ConverterOrchestrator converterOrchestrator,
+            MaxComputeSinkConfig maxComputeSinkConfig,
+            Descriptors.Descriptor descriptor) {
         if (!maxComputeSinkConfig.isTablePartitioningEnabled()) {
             return null;
         }
@@ -46,7 +47,7 @@ public class PartitioningStrategyFactory {
         }
     }
 
-    private void checkPartitionTypePrecondition(TypeInfo typeInfo) {
+    private static void checkPartitionTypePrecondition(TypeInfo typeInfo) {
         if (!ALLOWED_PARTITION_KEY_TYPE_INFO.contains(typeInfo)) {
             throw new IllegalArgumentException("Partition key type not supported: " + typeInfo.getTypeName());
         }

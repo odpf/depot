@@ -66,6 +66,14 @@ public class MaxComputeClient {
         instrument(start, MaxComputeMetrics.MaxComputeAPIType.TABLE_UPDATE);
     }
 
+    public TableSchema getLatestTableSchema() {
+        return odps.tables()
+                .get(maxComputeSinkConfig.getMaxComputeProjectId(),
+                        maxComputeSinkConfig.getMaxComputeSchema(),
+                        maxComputeSinkConfig.getMaxComputeTableName())
+                .getSchema();
+    }
+
     private void createTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) throws OdpsException {
         Instant start = Instant.now();
         this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",

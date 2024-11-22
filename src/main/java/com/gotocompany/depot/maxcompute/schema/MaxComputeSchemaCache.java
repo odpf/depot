@@ -1,6 +1,7 @@
 package com.gotocompany.depot.maxcompute.schema;
 
 import com.aliyun.odps.OdpsException;
+import com.aliyun.odps.TableSchema;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
@@ -52,11 +53,21 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
         } else {
             descriptor = newDescriptor.get(getSchemaClass());
         }
-        maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        MaxComputeSchema localSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
         converterOrchestrator.clearCache();
         try {
-            maxComputeClient.upsertTable(maxComputeSchema.getTableSchema());
+            maxComputeClient.upsertTable(localSchema.getTableSchema());
             log.info("MaxCompute table upserted successfully");
+            TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
+            if (!serverSideTableSchema.getPartitionColumns().isEmpty()) {
+                serverSideTableSchema.getPartitionColumns().get(0)
+                        .setGenerateExpression(localSchema.getTableSchema().getPartitionColumns().get(0).getGenerateExpression());
+            }
+            maxComputeSchema = new MaxComputeSchema(
+                    serverSideTableSchema,
+                    localSchema.getDataColumns(),
+                    localSchema.getMetadataColumns()
+            );
         } catch (OdpsException e) {
             throw new MaxComputeTableOperationException("Error while updating MaxCompute table", e);
         }

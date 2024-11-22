@@ -7,6 +7,7 @@ import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
+import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategyFactory;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
@@ -35,11 +36,13 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("event_timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(
-                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig
+        PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
+                new ConverterOrchestrator(maxComputeSinkConfig),
+                maxComputeSinkConfig,
+                descriptor
         );
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ConverterOrchestrator(maxComputeSinkConfig),
-                maxComputeSinkConfig, partitioningStrategyFactory.createPartitioningStrategy(descriptor));
+                maxComputeSinkConfig, partitioningStrategy);
         int expectedNonPartitionColumnCount = 7;
         int expectedPartitionColumnCount = 1;
 
@@ -89,11 +92,13 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         int expectedNonPartitionColumnCount = 5;
         int expectedPartitionColumnCount = 1;
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(
-                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig
+        PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
+                new ConverterOrchestrator(maxComputeSinkConfig),
+                maxComputeSinkConfig,
+                descriptor
         );
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(
-                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig, partitioningStrategyFactory.createPartitioningStrategy(descriptor));
+                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig, partitioningStrategy);
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
 
@@ -133,11 +138,13 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         int expectedNonPartitionColumnCount = 4;
         int expectedPartitionColumnCount = 0;
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(
-                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig
+        PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
+                new ConverterOrchestrator(maxComputeSinkConfig),
+                maxComputeSinkConfig,
+                descriptor
         );
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ConverterOrchestrator(maxComputeSinkConfig),
-                maxComputeSinkConfig, partitioningStrategyFactory.createPartitioningStrategy(descriptor));
+                maxComputeSinkConfig, partitioningStrategy);
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
 
@@ -175,11 +182,13 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("non_existent_partition_key");
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(
-                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig
+        PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
+                new ConverterOrchestrator(maxComputeSinkConfig),
+                maxComputeSinkConfig,
+                descriptor
         );
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ConverterOrchestrator(maxComputeSinkConfig),
-                maxComputeSinkConfig, partitioningStrategyFactory.createPartitioningStrategy(descriptor));
+                maxComputeSinkConfig, partitioningStrategy);
 
         maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
     }

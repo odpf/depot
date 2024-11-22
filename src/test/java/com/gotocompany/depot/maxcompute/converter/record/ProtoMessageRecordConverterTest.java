@@ -76,8 +76,9 @@ public class ProtoMessageRecordConverterTest {
         sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        PartitioningStrategyFactory partitioningStrategyFactory = new PartitioningStrategyFactory(converterOrchestrator, maxComputeSinkConfig);
-        PartitioningStrategy partitioningStrategy = partitioningStrategyFactory.createPartitioningStrategy(
+        PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
+                converterOrchestrator,
+                maxComputeSinkConfig,
                 descriptor
         );
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy);

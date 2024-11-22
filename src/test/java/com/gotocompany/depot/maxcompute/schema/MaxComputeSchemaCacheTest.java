@@ -1,6 +1,7 @@
 package com.gotocompany.depot.maxcompute.schema;
 
 import com.aliyun.odps.OdpsException;
+import com.aliyun.odps.TableSchema;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
@@ -56,12 +57,16 @@ public class MaxComputeSchemaCacheTest {
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .upsertTable(Mockito.any());
+        TableSchema finalMockedTableSchema = Mockito.mock(TableSchema.class);
+        Mockito.doReturn(finalMockedTableSchema)
+                .when(maxComputeClient)
+                .getLatestTableSchema();
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
 
         Mockito.verify(maxComputeClient, Mockito.times(1))
                 .upsertTable(Mockito.any());
-        Assertions.assertEquals(mockedMaxComputeSchema, maxComputeSchema);
+        Assertions.assertEquals(finalMockedTableSchema, maxComputeSchema.getTableSchema());
     }
 
     @Test
@@ -134,6 +139,9 @@ public class MaxComputeSchemaCacheTest {
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .upsertTable(Mockito.any());
+        Mockito.doReturn(Mockito.mock(TableSchema.class))
+                .when(maxComputeClient)
+                .getLatestTableSchema();
 
         maxComputeSchemaCache.getMaxComputeSchema();
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
@@ -173,6 +181,9 @@ public class MaxComputeSchemaCacheTest {
         Mockito.doNothing()
                 .when(maxComputeClient)
                 .upsertTable(Mockito.any());
+        Mockito.doReturn(Mockito.mock(TableSchema.class))
+                .when(maxComputeClient)
+                .getLatestTableSchema();
 
         maxComputeSchemaCache.getMaxComputeSchema();
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
