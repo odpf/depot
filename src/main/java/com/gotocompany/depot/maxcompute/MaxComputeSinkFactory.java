@@ -55,9 +55,10 @@ public class MaxComputeSinkFactory {
         validateConfig();
         Descriptors.Descriptor descriptor = stencilClient.get(SinkConfigUtils.getProtoSchemaClassName(sinkConfig));
         this.partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(converterOrchestrator, maxComputeSinkConfig, descriptor);
-        this.messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
         this.maxComputeSchemaCache = MaxComputeSchemaCacheFactory.createMaxComputeSchemaCache(converterOrchestrator,
-                maxComputeSinkConfig, partitioningStrategy, sinkConfig, maxComputeClient, messageParser);
+                maxComputeSinkConfig, partitioningStrategy, sinkConfig, maxComputeClient);
+        this.messageParser = MessageParserFactory.getParser(sinkConfig, statsDReporter, maxComputeSchemaCache);
+        maxComputeSchemaCache.setMessageParser(messageParser);
         Optional.ofNullable(this.partitioningStrategy)
                 .ifPresent(ps -> ps.setMaxComputeSchemaCache(maxComputeSchemaCache));
         maxComputeSchemaCache.updateSchema();

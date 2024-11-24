@@ -6,7 +6,6 @@ import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
-import com.gotocompany.depot.message.MessageParser;
 
 public class MaxComputeSchemaCacheFactory {
 
@@ -15,12 +14,9 @@ public class MaxComputeSchemaCacheFactory {
             MaxComputeSinkConfig maxComputeSinkConfig,
             PartitioningStrategy partitioningStrategy,
             SinkConfig sinkConfig,
-            MaxComputeClient maxComputeClient,
-            MessageParser messageParser
+            MaxComputeClient maxComputeClient
     ) {
-        MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy), sinkConfig,
+        return new MaxComputeSchemaCache(new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy), sinkConfig,
                 converterOrchestrator, maxComputeClient);
-        maxComputeSchemaCache.setMessageParser(messageParser);
-        return maxComputeSchemaCache;
     }
 }

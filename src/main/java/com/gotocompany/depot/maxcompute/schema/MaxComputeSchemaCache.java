@@ -59,10 +59,6 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
             maxComputeClient.upsertTable(localSchema.getTableSchema());
             log.info("MaxCompute table upserted successfully");
             TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
-            if (!serverSideTableSchema.getPartitionColumns().isEmpty()) {
-                serverSideTableSchema.getPartitionColumns().get(0)
-                        .setGenerateExpression(localSchema.getTableSchema().getPartitionColumns().get(0).getGenerateExpression());
-            }
             maxComputeSchema = new MaxComputeSchema(
                     serverSideTableSchema,
                     localSchema.getMetadataColumns()

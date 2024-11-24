@@ -87,4 +87,12 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("Asia/Bangkok")
     ZoneId getZoneId();
 
+    @Key("SINK_MAXCOMPUTE_MAX_DDL_RETRY_COUNT")
+    @DefaultValue("10")
+    int getMaxDdlRetryCount();
+
+    @Key("SINK_MAXCOMPUTE_DDL_RETRY_BACKOFF_MILLIS")
+    @DefaultValue("1000")
+    long getDdlRetryBackoffMillis();
+
 }
