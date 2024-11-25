@@ -82,6 +82,9 @@ Supported time units are `YEAR`, `MONTH`, `DAY`, `HOUR`. Configuration is case-s
 ## SINK_MAXCOMPUTE_TABLE_PARTITION_COLUMN_NAME
 
 Contains the partition column name of the MaxCompute table. This could be the same as the partition key or different. This will reflect the column name in the MaxCompute table.
+Here the SINK_MAXCOMPUTE_TABLE_PARTITION_COLUMN_NAME is differentiated with SINK_MAXCOMPUTE_TABLE_PARTITION_KEY to allow the user to have a different column name in the MaxCompute table.
+This is used for timestamp auto-partitioning feature where the partition column coexists with the original column.
+
 * Example value: `column1`
 * Type: `optional`
 
@@ -100,7 +103,7 @@ Not setting this config will result in table with lifecycle. Lifecycle is applie
 
 ## SINK_MAXCOMPUTE_RECORD_PACK_FLUSH_TIMEOUT_MS
 
-Contains the timeout for flushing the record pack in milliseconds. This config will be used for setting the timeout for flushing the record pack.
+Contains the timeout for flushing the record pack in milliseconds. This config will be used for setting the timeout for flushing the record pack. Negative value indicates no timeout.
 * Example value: `1000`
 * Type: `required`
 * Default value: `-1`
@@ -108,14 +111,14 @@ Contains the timeout for flushing the record pack in milliseconds. This config w
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ENABLED
 
 Configuration for enabling compression in the streaming insert operation. This config will be used for enabling compression in the streaming insert operation.
-* Example value: `true`
+* Example value: `false`
 * Type: `required`
-* Default value: `false`
+* Default value: `true`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ALGORITHM
 
 Configuration for defining the compression algorithm in the streaming insert operation. This config will be used for defining the compression algorithm in the streaming insert operation.
-Supported algorithms are ODPS_RAW, ODPS_ZLIB, ODPS_LZ4_FRAME, ODPS_ARROW_LZ4_FRAME, ODPS_ARROW_ZSTD
+Supported values are ODPS_RAW, ODPS_ZLIB, ODPS_LZ4_FRAME, ODPS_ARROW_LZ4_FRAME, ODPS_ARROW_ZSTD
 * Example value: `ODPS_ZLIB`
 * Type: `required`
 * Default value: `ODPS_LZ4_FRAME`
@@ -123,6 +126,7 @@ Supported algorithms are ODPS_RAW, ODPS_ZLIB, ODPS_LZ4_FRAME, ODPS_ARROW_LZ4_FRA
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_LEVEL
 
 Configuration for defining the compression level in the streaming insert operation. This config will be used for defining the compression level in the streaming insert operation.
+Further documentation on MaxCompute [Compression](https://www.alibabacloud.com/help/en/maxcompute/user-guide/sdk-interfaces#section-cg2-7mb-849).
 * Example value: `1`
 * Type: `required`
 * Default value: `1`
@@ -130,6 +134,8 @@ Configuration for defining the compression level in the streaming insert operati
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_STRATEGY
 
 Configuration for defining the compression strategy in the streaming insert operation. This config will be used for defining the compression strategy in the streaming insert operation.
+Further documentation on MaxCompute [Compression](https://www.alibabacloud.com/help/en/maxcompute/user-guide/sdk-interfaces#section-cg2-7mb-849).
+
 * Example value: `1`
 * Type: `required`
 * Default value: `0`

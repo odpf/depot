@@ -10,6 +10,8 @@ MaxCompute sink has several responsibilities, including :
 
 ## MaxCompute Table Schema Update
 
+### JSON (ToDo)
+
 ### Protobuf
 
 MaxCompute Sink update the MaxCompute table schema on separate table update operation. MaxCompute
