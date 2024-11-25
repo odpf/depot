@@ -23,7 +23,6 @@ import com.gotocompany.stencil.client.StencilClient;
 import org.aeonbits.owner.ConfigFactory;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class MaxComputeSinkFactory {
 
