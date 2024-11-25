@@ -5,6 +5,8 @@ import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManager;
+import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
@@ -56,7 +58,10 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        StreamingSessionManager streamingSessionManager = StreamingSessionManagerFactory.createStreamingSessionManager(
+                tableTunnel, maxComputeSinkConfig
+        );
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
                 Mockito.mock(RecordWrapper.class)
         );
@@ -113,7 +118,10 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        StreamingSessionManager streamingSessionManager = StreamingSessionManagerFactory.createStreamingSessionManager(
+                tableTunnel, maxComputeSinkConfig
+        );
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
                 Mockito.mock(RecordWrapper.class)
         );

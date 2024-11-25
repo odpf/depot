@@ -3,6 +3,7 @@ package com.gotocompany.depot.maxcompute.client.insert;
 import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManager;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
@@ -15,16 +16,30 @@ import java.util.List;
 @Slf4j
 public class NonPartitionedInsertManager extends InsertManager {
 
-    public NonPartitionedInsertManager(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig, Instrumentation instrumentation, MaxComputeMetrics maxComputeMetrics) {
+    private static final String NON_PARTITIONED = "non-partitioned";
+    private final StreamingSessionManager streamingSessionManager;
+
+    public NonPartitionedInsertManager(TableTunnel tableTunnel,
+                                       MaxComputeSinkConfig maxComputeSinkConfig,
+                                       Instrumentation instrumentation,
+                                       MaxComputeMetrics maxComputeMetrics,
+                                       StreamingSessionManager streamingSessionManager) {
         super(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        this.streamingSessionManager = streamingSessionManager;
     }
 
     @Override
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
-        TableTunnel.StreamUploadSession streamUploadSession = getStreamUploadSession();
+        TableTunnel.StreamUploadSession streamUploadSession = streamingSessionManager.getSession(NON_PARTITIONED);
         TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession);
         for (RecordWrapper recordWrapper : recordWrappers) {
-            recordPack.append(recordWrapper.getRecord());
+            try {
+                recordPack.append(recordWrapper.getRecord());
+            } catch (IOException e) {
+                log.error("Schema Mismatch, rebuilding the session", e);
+                streamingSessionManager.clearSession(NON_PARTITIONED);
+                throw e;
+            }
         }
         Instant start = Instant.now();
         TableTunnel.FlushResult flushResult = recordPack.flush(
@@ -33,12 +48,5 @@ public class NonPartitionedInsertManager extends InsertManager {
         instrument(start, flushResult);
     }
 
-    private TableTunnel.StreamUploadSession getStreamUploadSession() throws TunnelException {
-        return super.getTableTunnel().buildStreamUploadSession(
-                        super.getMaxComputeSinkConfig().getMaxComputeProjectId(),
-                        super.getMaxComputeSinkConfig().getMaxComputeTableName())
-                .allowSchemaMismatch(false)
-                .build();
-    }
 
 }
