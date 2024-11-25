@@ -57,6 +57,10 @@ public interface MaxComputeSinkConfig extends Config {
     @Key("SINK_MAXCOMPUTE_TABLE_PARTITION_COLUMN_NAME")
     String getTablePartitionColumnName();
 
+    @Key("SINK_MAXCOMPUTE_TABLE_PARTITION_BY_TIMESTAMP_TIME_UNIT")
+    @DefaultValue("DAY")
+    String getTablePartitionByTimestampTimeUnit();
+
     @Key("SINK_MAXCOMPUTE_TABLE_NAME")
     String getMaxComputeTableName();
 

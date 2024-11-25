@@ -10,8 +10,6 @@ import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 
 public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
-    private static final String DAY = "DAY";
-
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private MaxComputeSchemaCache maxComputeSchemaCache;
 
@@ -33,7 +31,8 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     public Column getPartitionColumn() {
         Column column = Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), TypeInfoFactory.STRING)
                 .build();
-        column.setGenerateExpression(new TruncTime(maxComputeSinkConfig.getTablePartitionKey(), DAY));
+        column.setGenerateExpression(new TruncTime(maxComputeSinkConfig.getTablePartitionKey(),
+                maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()));
         return column;
     }
 

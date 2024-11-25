@@ -125,6 +125,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
@@ -163,6 +164,7 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);

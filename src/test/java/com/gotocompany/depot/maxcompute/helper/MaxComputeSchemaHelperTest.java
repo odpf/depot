@@ -36,6 +36,7 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("event_timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
                 new ConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
@@ -89,6 +90,7 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("event_timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         int expectedNonPartitionColumnCount = 5;
         int expectedPartitionColumnCount = 1;

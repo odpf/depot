@@ -70,6 +70,15 @@ Supported MaxCompute type for partition key is `string`, `tinyint`, `smallint`, 
 * Type: `optional`
 * Default value: `default`
 
+## SINK_MAXCOMPUTE_TABLE_PARTITION_BY_TIMESTAMP_TIME_UNIT
+
+Contains the time unit for partitioning by timestamp. This config will be used for setting the time unit for partitioning by timestamp.
+Supported time units are `YEAR`, `MONTH`, `DAY`, `HOUR`. Configuration is case-sensitive.
+
+* Example value: `DAYS`
+* Type: `required`
+* Default value: `DAYS`
+
 ## SINK_MAXCOMPUTE_TABLE_PARTITION_COLUMN_NAME
 
 Contains the partition column name of the MaxCompute table. This could be the same as the partition key or different. This will reflect the column name in the MaxCompute table.

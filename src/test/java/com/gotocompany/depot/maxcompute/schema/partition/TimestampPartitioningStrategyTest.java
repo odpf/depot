@@ -113,6 +113,8 @@ public class TimestampPartitioningStrategyTest {
                 .thenReturn("tablePartitionColumnName");
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey())
                 .thenReturn("tablePartitionKey");
+        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit())
+                .thenReturn("DAY");
         return maxComputeSinkConfig;
     }
 
