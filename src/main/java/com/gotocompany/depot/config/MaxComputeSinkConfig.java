@@ -4,11 +4,13 @@ import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.converter.ConfToListConverter;
 import com.gotocompany.depot.config.converter.MaxComputeCompressionAlgorithmConverter;
+import com.gotocompany.depot.config.converter.MaxComputeOdpsGlobalSettingsConverter;
 import com.gotocompany.depot.config.converter.ZoneIdConverter;
 import org.aeonbits.owner.Config;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 public interface MaxComputeSinkConfig extends Config {
 
@@ -94,5 +96,10 @@ public interface MaxComputeSinkConfig extends Config {
     @Key("SINK_MAXCOMPUTE_DDL_RETRY_BACKOFF_MILLIS")
     @DefaultValue("1000")
     long getDdlRetryBackoffMillis();
+
+    @Key("SINK_MAXCOMPUTE_ODPS_GLOBAL_SETTINGS")
+    @ConverterClass(MaxComputeOdpsGlobalSettingsConverter.class)
+    @DefaultValue("odps.schema.evolution.enable=true,odps.namespace.schema=true")
+    Map<String, String> getOdpsGlobalSettings();
 
 }

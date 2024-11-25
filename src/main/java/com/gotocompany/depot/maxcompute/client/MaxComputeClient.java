@@ -19,9 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -70,7 +68,7 @@ public class MaxComputeClient {
         odpsClient.setDefaultProject(maxComputeSinkConfig.getMaxComputeProjectId());
         odpsClient.setEndpoint(maxComputeSinkConfig.getMaxComputeOdpsUrl());
         odpsClient.setCurrentSchema(maxComputeSinkConfig.getMaxComputeSchema());
-        odpsClient.setGlobalSettings(getGlobalSettings());
+        odpsClient.setGlobalSettings(maxComputeSinkConfig.getOdpsGlobalSettings());
         return odpsClient;
     }
 
@@ -80,13 +78,6 @@ public class MaxComputeClient {
 
     private DdlManager initializeDdlManager() {
         return new DdlManager(odps, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
-    }
-
-    private Map<String, String> getGlobalSettings() {
-        Map<String, String> globalSettings = new HashMap<>();
-        globalSettings.put("odps.schema.evolution.enable", "true");
-        globalSettings.put("odps.namespace.schema", "true");
-        return globalSettings;
     }
 
 }

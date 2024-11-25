@@ -8,7 +8,6 @@ Contains the URL of the MaxCompute endpoint. Further documentation on MaxCompute
 * Example value: `http://service.ap-southeast-5.maxcompute.aliyun.com/api`
 * Type: `required`
 
-
 ## SINK_MAXCOMPUTE_ACCESS_ID
 
 Contains the access id of the MaxCompute project. Further documentation on MaxCompute [Access ID](https://www.alibabacloud.com/help/en/tablestore/support/obtain-an-accesskey-pair).
@@ -30,8 +29,8 @@ Contains the identifier of a MaxCompute project. Further documentation on MaxCom
 ## SINK_MAXCOMPUTE_ADD_METADATA_ENABLED
 
 Configuration for enabling metadata in top of the record. This config will be used for adding metadata information to the record. Metadata information will be added to the record in the form of key-value pair.
-* Example value: `true`
-* Type: `optional`
+* Example value: `false`
+* Type: `required`
 * Default value: `true`
 
 ## SINK_MAXCOMPUTE_METADATA_NAMESPACE
@@ -60,7 +59,7 @@ Contains the schema of the MaxCompute table. Schema is a dataset grouping of tab
 
 Configuration for enabling partitioning in the MaxCompute table. This config will be used for enabling partitioning in the MaxCompute table.
 * Example value: `true`
-* Type: `optional`
+* Type: `required`
 * Default value: `false`
 
 ## SINK_MAXCOMPUTE_TABLE_PARTITION_KEY
@@ -75,7 +74,7 @@ Supported MaxCompute type for partition key is `string`, `tinyint`, `smallint`, 
 
 Contains the partition column name of the MaxCompute table. This could be the same as the partition key or different. This will reflect the column name in the MaxCompute table.
 * Example value: `column1`
-* Type: `required`
+* Type: `optional`
 
 ## SINK_MAXCOMPUTE_TABLE_NAME
 
@@ -94,14 +93,14 @@ Not setting this config will result in table with lifecycle. Lifecycle is applie
 
 Contains the timeout for flushing the record pack in milliseconds. This config will be used for setting the timeout for flushing the record pack.
 * Example value: `1000`
-* Type: `optional`
+* Type: `required`
 * Default value: `-1`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ENABLED
 
 Configuration for enabling compression in the streaming insert operation. This config will be used for enabling compression in the streaming insert operation.
 * Example value: `true`
-* Type: `optional`
+* Type: `required`
 * Default value: `false`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ALGORITHM
@@ -109,21 +108,21 @@ Configuration for enabling compression in the streaming insert operation. This c
 Configuration for defining the compression algorithm in the streaming insert operation. This config will be used for defining the compression algorithm in the streaming insert operation.
 Supported algorithms are ODPS_RAW, ODPS_ZLIB, ODPS_LZ4_FRAME, ODPS_ARROW_LZ4_FRAME, ODPS_ARROW_ZSTD
 * Example value: `ODPS_ZLIB`
-* Type: `optional`
+* Type: `required`
 * Default value: `ODPS_LZ4_FRAME`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_LEVEL
 
 Configuration for defining the compression level in the streaming insert operation. This config will be used for defining the compression level in the streaming insert operation.
 * Example value: `1`
-* Type: `optional`
+* Type: `required`
 * Default value: `1`
 
 ## SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_STRATEGY
 
 Configuration for defining the compression strategy in the streaming insert operation. This config will be used for defining the compression strategy in the streaming insert operation.
 * Example value: `1`
-* Type: `optional`
+* Type: `required`
 * Default value: `0`
 
 ## SINK_MAXCOMPUTE_ZONE_ID
@@ -131,5 +130,29 @@ Configuration for defining the compression strategy in the streaming insert oper
 Contains ZoneID used for parsing the timestamp in the record. This config will be used for parsing the timestamp in the record.
 
 * Example value: `Asia/Bangkok`
-* Type: `optional`
+* Type: `required`
 * Default value: `Asia/Bangkok`
+
+## SINK_MAXCOMPUTE_MAX_DDL_RETRY_COUNT
+
+Contains the maximum retry count for DDL operations. This config will be used for setting the maximum retry count for DDL operations (create and update table schema).
+
+* Example value: `3`
+* Type: `required`
+* Default value: `3`
+
+## SINK_MAXCOMPUTE_DDL_RETRY_BACKOFF_MILLIS
+
+Contains the backoff time in milliseconds for DDL operations. This config will be used for setting the backoff time in milliseconds for DDL operations (create and update table schema).
+
+* Example value: `10000`
+* Type: `required`
+* Default value: `1000`
+
+## SINK_MAXCOMPUTE_ODPS_GLOBAL_SETTINGS
+
+Contains the global settings for the MaxCompute sink. This config will be used for setting the global settings for the MaxCompute sink. The format of this config is `key1=value1,key2=value2`.
+
+* Example value: `odps.schema.evolution.enable=true,odps.namespace.schema=true,odps.sql.type.system.odps2=true`
+* Type: `optional`
+* Default value: `odps.schema.evolution.enable=true,odps.namespace.schema=true`
