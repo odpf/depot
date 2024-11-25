@@ -51,7 +51,7 @@ Supported types are `string`, `integer`, `long`, `timestamp`, `float`, `double`,
 ## SINK_MAXCOMPUTE_SCHEMA
 
 Contains the schema of the MaxCompute table. Schema is a dataset grouping of table columns. Further documentation on MaxCompute [Schema](https://www.alibabacloud.com/help/en/maxcompute/user-guide/schemas).
-* Example value: `column1=string,column2=integer,column3=double`
+* Example value: `your_dataset_name`
 * Type: `required`
 * Default value: `default`
 
