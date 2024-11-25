@@ -78,6 +78,16 @@ public class TimestampPartitioningStrategyTest {
     }
 
     @Test
+    public void shouldEmptyPartitionSpecIfObjectIsNotRecord() {
+        MaxComputeSinkConfig maxComputeSinkConfig = getMaxComputeSinkConfig();
+        TimestampPartitioningStrategy timestampPartitioningStrategy =
+                new TimestampPartitioningStrategy(maxComputeSinkConfig);
+
+        Assertions.assertEquals("",
+                timestampPartitioningStrategy.getPartitionSpec("").toString());
+    }
+
+    @Test
     public void shouldReturnDefaultPartitionSpec() {
         String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='__NULL__'";
         TimestampPartitioningStrategy timestampPartitioningStrategy = new TimestampPartitioningStrategy(getMaxComputeSinkConfig());
