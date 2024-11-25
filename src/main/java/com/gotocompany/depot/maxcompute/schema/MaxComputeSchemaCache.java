@@ -46,25 +46,27 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
 
     @Override
     public void onSchemaUpdate(Map<String, Descriptors.Descriptor> newDescriptor) {
-        Descriptors.Descriptor descriptor;
-        if (newDescriptor == null) {
-            Map<String, Descriptors.Descriptor> descriptorMap = ((ProtoMessageParser) getMessageParser()).getDescriptorMap();
-            descriptor = descriptorMap.get(getSchemaClass());
-        } else {
-            descriptor = newDescriptor.get(getSchemaClass());
-        }
-        MaxComputeSchema localSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
-        converterOrchestrator.clearCache();
-        try {
-            maxComputeClient.upsertTable(localSchema.getTableSchema());
-            log.info("MaxCompute table upserted successfully");
-            TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
-            maxComputeSchema = new MaxComputeSchema(
-                    serverSideTableSchema,
-                    localSchema.getMetadataColumns()
-            );
-        } catch (OdpsException e) {
-            throw new MaxComputeTableOperationException("Error while updating MaxCompute table", e);
+        synchronized (this) {
+            Descriptors.Descriptor descriptor;
+            if (newDescriptor == null) {
+                Map<String, Descriptors.Descriptor> descriptorMap = ((ProtoMessageParser) getMessageParser()).getDescriptorMap();
+                descriptor = descriptorMap.get(getSchemaClass());
+            } else {
+                descriptor = newDescriptor.get(getSchemaClass());
+            }
+            MaxComputeSchema localSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+            converterOrchestrator.clearCache();
+            try {
+                maxComputeClient.upsertTable(localSchema.getTableSchema());
+                log.info("MaxCompute table upserted successfully");
+                TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
+                maxComputeSchema = new MaxComputeSchema(
+                        serverSideTableSchema,
+                        localSchema.getMetadataColumns()
+                );
+            } catch (OdpsException e) {
+                throw new MaxComputeTableOperationException("Error while updating MaxCompute table", e);
+            }
         }
     }
 
