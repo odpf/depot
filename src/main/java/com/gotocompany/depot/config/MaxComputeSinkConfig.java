@@ -33,8 +33,8 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("")
     String getMaxcomputeMetadataNamespace();
 
-    @DefaultValue("true")
     @Key("SINK_MAXCOMPUTE_ADD_METADATA_ENABLED")
+    @DefaultValue("true")
     boolean shouldAddMetadata();
 
     @DefaultValue("")
