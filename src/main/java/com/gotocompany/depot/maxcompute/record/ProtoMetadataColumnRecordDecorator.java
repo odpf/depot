@@ -16,6 +16,7 @@ import com.gotocompany.depot.message.Message;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,6 +46,9 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
     }
 
     private void appendNamespacedMetadata(Record record, Message message) {
+        if (Objects.isNull(message.getMetadata())) {
+            return;
+        }
         Map<String, Object> metadata = message.getMetadata(maxComputeSinkConfig.getMetadataColumnsTypes());
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
         StructTypeInfo typeInfo = (StructTypeInfo) maxComputeSchema.getMetadataColumns().get(maxComputeSinkConfig.getMaxcomputeMetadataNamespace());
@@ -57,8 +61,10 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
     }
 
     private void appendMetadata(Record record, Message message) {
+        if(Objects.isNull(message.getMetadata())) {
+            return;
+        }
         Map<String, Object> metadata = message.getMetadata(maxComputeSinkConfig.getMetadataColumnsTypes());
-
         for (Map.Entry<String, TypeInfo> entry : maxComputeSchemaCache.getMaxComputeSchema()
                 .getMetadataColumns()
                 .entrySet()) {

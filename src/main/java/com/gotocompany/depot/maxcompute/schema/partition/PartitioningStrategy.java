@@ -9,7 +9,4 @@ public interface PartitioningStrategy {
     boolean shouldReplaceOriginalColumn();
     Column getPartitionColumn();
     PartitionSpec getPartitionSpec(Object object);
-    default void setMaxComputeSchemaCache(MaxComputeSchemaCache maxComputeSchemaCache) {
-
-    }
 }

@@ -284,9 +284,6 @@ public class ProtoDataColumnRecordDecoratorTest {
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
         MaxComputeSchemaCache maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
-        if (partitioningStrategy != null) {
-            partitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
-        }
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);
         Mockito.when(parsedMessage.getRaw()).thenReturn(mockedMessage);

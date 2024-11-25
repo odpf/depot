@@ -23,7 +23,7 @@ public class TimestampPartitioningStrategyTest {
         TimestampPartitioningStrategy defaultPartitioningStrategy =
                 new TimestampPartitioningStrategy(getMaxComputeSinkConfig());
 
-        Assertions.assertEquals("tablePartitionKey",
+        Assertions.assertEquals("event_timestamp",
                 defaultPartitioningStrategy.getOriginalPartitionColumnName());
     }
 
@@ -68,7 +68,6 @@ public class TimestampPartitioningStrategyTest {
         Mockito.when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema())
                 .thenReturn(maxComputeSchema);
-        timestampPartitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
         String expectedStartOfDayEpoch = "2024-10-28";
         Record record = new ArrayRecord(tableSchema);
         record.set("str", "strVal");
@@ -98,7 +97,6 @@ public class TimestampPartitioningStrategyTest {
         Record record = new ArrayRecord(tableSchema);
         record.set("str", "strVal");
         record.set("event_timestamp", null);
-        timestampPartitioningStrategy.setMaxComputeSchemaCache(maxComputeSchemaCache);
 
         Assertions.assertEquals(expectedPartitionSpecStringRepresentation,
                 timestampPartitioningStrategy.getPartitionSpec(record)
@@ -112,7 +110,7 @@ public class TimestampPartitioningStrategyTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName())
                 .thenReturn("tablePartitionColumnName");
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey())
-                .thenReturn("tablePartitionKey");
+                .thenReturn("event_timestamp");
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit())
                 .thenReturn("DAY");
         return maxComputeSinkConfig;
