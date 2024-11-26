@@ -8,7 +8,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 
-public class StreamingSessionManager {
+public final class StreamingSessionManager {
 
     private final LoadingCache<String, TableTunnel.StreamUploadSession> sessionCache;
 
