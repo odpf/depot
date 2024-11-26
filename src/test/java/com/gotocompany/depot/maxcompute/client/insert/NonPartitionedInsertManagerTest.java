@@ -138,4 +138,67 @@ public class NonPartitionedInsertManagerTest {
         Assertions.assertEquals(compressOptionArgumentCaptor.getValue().level, 1);
     }
 
+    @Test(expected = IOException.class)
+    public void shouldRefreshSessionWhenIOExceptionOccurred() throws IOException, TunnelException {
+        TableTunnel.FlushResult flushResult = Mockito.mock(TableTunnel.FlushResult.class);
+        Mockito.when(flushResult.getRecordCount())
+                .thenReturn(2L);
+        TableTunnel.StreamRecordPack streamRecordPack = Mockito.mock(TableTunnel.StreamRecordPack.class);
+        TableTunnel.StreamUploadSession streamUploadSession = Mockito.spy(TableTunnel.StreamUploadSession.class);
+        Mockito.when(streamRecordPack.flush(Mockito.any(TableTunnel.FlushOption.class)))
+                .thenReturn(flushResult);
+        ArgumentCaptor<CompressOption> compressOptionArgumentCaptor = ArgumentCaptor.forClass(CompressOption.class);
+        Mockito.when(streamUploadSession.newRecordPack(compressOptionArgumentCaptor.capture()))
+                .thenReturn(streamRecordPack);
+        Mockito.doThrow(IOException.class)
+                .when(streamRecordPack)
+                .append(Mockito.any());
+        TableTunnel tableTunnel = Mockito.mock(TableTunnel.class);
+        TableTunnel.StreamUploadSession.Builder builder = Mockito.mock(TableTunnel.StreamUploadSession.Builder.class);
+        Mockito.when(tableTunnel.buildStreamUploadSession(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(builder);
+        Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
+                .thenReturn(builder);
+        Mockito.when(builder.build())
+                .thenReturn(streamUploadSession);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+                .thenReturn("project");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
+                .thenReturn("table");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
+                .thenReturn(1000L);
+        Mockito.when(maxComputeSinkConfig.isStreamingInsertCompressEnabled())
+                .thenReturn(true);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeCompressionAlgorithm())
+                .thenReturn(CompressOption.CompressAlgorithm.ODPS_RAW);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeCompressionLevel())
+                .thenReturn(1);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeCompressionStrategy())
+                .thenReturn(1);
+        Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .thenReturn(1);
+        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
+        Mockito.doNothing()
+                .when(instrumentation)
+                .captureCount(Mockito.anyString(), Mockito.anyLong());
+        MaxComputeMetrics maxComputeMetrics = Mockito.mock(MaxComputeMetrics.class);
+        Mockito.when(maxComputeMetrics.getMaxComputeFlushRecordMetric())
+                .thenReturn("flush_record");
+        Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
+                .thenReturn("flush_size");
+        StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.nonParititonedStreamingSessionManager(
+                tableTunnel, maxComputeSinkConfig
+        ));
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+        List<RecordWrapper> recordWrappers = Collections.singletonList(
+                Mockito.mock(RecordWrapper.class)
+        );
+
+        nonPartitionedInsertManager.insert(recordWrappers);
+
+        Mockito.verify(streamingSessionManager, Mockito.times(1))
+                .refreshSession(Mockito.anyString());
+    }
+
 }
