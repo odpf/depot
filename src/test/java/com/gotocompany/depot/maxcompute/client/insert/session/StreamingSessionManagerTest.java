@@ -173,4 +173,32 @@ public class StreamingSessionManagerTest {
         Assertions.assertEquals(streamUploadSession, secondStreamUploadSession);
     }
 
+    @Test
+    public void shouldReturnRefreshTheSession() throws TunnelException {
+        TableTunnel tableTunnel = Mockito.mock(TableTunnel.class);
+        TableTunnel.StreamUploadSession.Builder builder = Mockito.mock(TableTunnel.StreamUploadSession.Builder.class);
+        Mockito.when(tableTunnel.buildStreamUploadSession(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(builder);
+        Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
+                .thenReturn(builder);
+        TableTunnel.StreamUploadSession streamUploadSessionMock = Mockito.mock(TableTunnel.StreamUploadSession.class);
+        Mockito.when(builder.build())
+                .thenReturn(streamUploadSessionMock);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+                .thenReturn("test_project");
+        Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
+                .thenReturn("test_table");
+        Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .thenReturn(1);
+        StreamingSessionManager nonPartitionedStreamingSessionManager =
+                StreamingSessionManager.nonParititonedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+
+        nonPartitionedStreamingSessionManager.getSession("test_session");
+        nonPartitionedStreamingSessionManager.refreshSession("test_session");
+
+        Mockito.verify(tableTunnel, Mockito.times(2))
+                .buildStreamUploadSession("test_project", "test_table");
+    }
+
 }
