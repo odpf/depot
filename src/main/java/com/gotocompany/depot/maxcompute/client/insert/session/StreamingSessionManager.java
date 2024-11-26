@@ -48,11 +48,7 @@ public class StreamingSessionManager {
     }
 
     public TableTunnel.StreamUploadSession getSession(String sessionId) {
-        try {
-            return sessionCache.get(sessionId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return sessionCache.getUnchecked(sessionId);
     }
 
     public void refreshSession(String sessionId) {
