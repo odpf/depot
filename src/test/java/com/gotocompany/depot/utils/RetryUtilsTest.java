@@ -11,7 +11,7 @@ public class RetryUtilsTest {
         int repeatCountBeforeSuccess = 3;
         RunnableMock runnableMock = Mockito.spy(new RunnableMock(repeatCountBeforeSuccess));
 
-        RetryUtils.executeWithRetry(runnableMock::execute, 5, 0, Exception.class);
+        RetryUtils.executeWithRetry(runnableMock::execute, 5, 0, e -> e instanceof Exception);
 
         Mockito.verify(runnableMock, Mockito.times(repeatCountBeforeSuccess)).execute();
     }
@@ -21,7 +21,7 @@ public class RetryUtilsTest {
         int repeatCountBeforeSuccess = 5;
         RunnableMock runnableMock = Mockito.spy(new RunnableMock(repeatCountBeforeSuccess));
 
-        RetryUtils.executeWithRetry(runnableMock::execute, 3, 0, RuntimeException.class);
+        RetryUtils.executeWithRetry(runnableMock::execute, 3, 0, e -> e instanceof RuntimeException);
 
         Mockito.verify(runnableMock, Mockito.times(3)).execute();
     }
@@ -30,7 +30,7 @@ public class RetryUtilsTest {
     public void shouldThrowNonRetryableExceptionWhenNonMatchingExceptionIsThrown() throws Exception {
         RunnableMock runnableMock = Mockito.spy(new RunnableMock(3));
 
-        RetryUtils.executeWithRetry(runnableMock::execute, 3, 0, IllegalArgumentException.class);
+        RetryUtils.executeWithRetry(runnableMock::execute, 3, 0, e -> e instanceof IllegalArgumentException);
 
         Mockito.verify(runnableMock, Mockito.times(1)).execute();
     }

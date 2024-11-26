@@ -3,13 +3,15 @@ package com.gotocompany.depot.utils;
 import com.gotocompany.depot.exception.NonRetryableException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.function.Predicate;
+
 @Slf4j
 public class RetryUtils {
 
     public static void executeWithRetry(RunnableWithException runnableWithException,
                                         int maxRetries,
                                         long backoffMillis,
-                                        Class<?> retryExceptionClass) {
+                                        Predicate<Exception> retryPredicate) {
         int retryCount = 0;
         Exception lastException = null;
         while (retryCount < maxRetries) {
@@ -17,7 +19,7 @@ public class RetryUtils {
                 runnableWithException.run();
                 break;
             } catch (Exception e) {
-                if (retryExceptionClass.isInstance(e)) {
+                if (retryPredicate.test(e)) {
                     retryCount++;
                     lastException = e;
                     log.info("Retrying operation, retry count: {}", retryCount);

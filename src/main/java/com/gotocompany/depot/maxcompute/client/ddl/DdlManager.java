@@ -52,7 +52,7 @@ public class DdlManager {
                     instrumentation.logInfo("Successfully created maxCompute table " + tableName);
                     instrument(start, MaxComputeMetrics.MaxComputeAPIType.TABLE_CREATE);
                 }, maxComputeSinkConfig.getMaxDdlRetryCount(), maxComputeSinkConfig.getDdlRetryBackoffMillis(),
-                OdpsException.class);
+                e -> e instanceof OdpsException);
     }
 
     private void updateTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) {
@@ -76,7 +76,7 @@ public class DdlManager {
                     instrumentation.logInfo("Successfully updated maxCompute table " + tableName);
                     instrument(start, MaxComputeMetrics.MaxComputeAPIType.TABLE_UPDATE);
                 }, maxComputeSinkConfig.getMaxDdlRetryCount(), maxComputeSinkConfig.getDdlRetryBackoffMillis(),
-                OdpsException.class);
+                e -> e instanceof OdpsException);
     }
 
     private void checkPartitionPrecondition(TableSchema oldSchema) {
