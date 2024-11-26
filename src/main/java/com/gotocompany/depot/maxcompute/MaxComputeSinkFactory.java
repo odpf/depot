@@ -51,7 +51,6 @@ public class MaxComputeSinkFactory {
     }
 
     public void init() {
-        validateConfig();
         Descriptors.Descriptor descriptor = stencilClient.get(SinkConfigUtils.getProtoSchemaClassName(sinkConfig));
         this.partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(converterOrchestrator, maxComputeSinkConfig, descriptor);
         this.maxComputeSchemaCache = MaxComputeSchemaCacheFactory.createMaxComputeSchemaCache(converterOrchestrator,
@@ -73,11 +72,6 @@ public class MaxComputeSinkFactory {
         ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter,
                 new Instrumentation(statsDReporter, MaxComputeSink.class), maxComputeMetrics);
-    }
-
-    private void validateConfig() {
-        this.maxComputeSinkConfig.getMaxComputeCompressionAlgorithm();
-        this.maxComputeSinkConfig.getZoneId();
     }
 
 }
