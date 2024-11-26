@@ -37,12 +37,12 @@ public class MetadataUtil {
         METADATA_TYPE_MAP.put(TIMESTAMP, TypeInfoFactory.TIMESTAMP_NTZ);
 
         METADATA_MAPPER_MAP = new HashMap<>();
-        METADATA_MAPPER_MAP.put("integer", obj -> ((Number) obj).intValue());
-        METADATA_MAPPER_MAP.put("long", obj -> ((Number) obj).longValue());
-        METADATA_MAPPER_MAP.put("float", obj -> ((Number) obj).floatValue());
-        METADATA_MAPPER_MAP.put("double", obj -> ((Number) obj).doubleValue());
-        METADATA_MAPPER_MAP.put("string", Function.identity());
-        METADATA_MAPPER_MAP.put("boolean", Function.identity());
+        METADATA_MAPPER_MAP.put(INTEGER, obj -> ((Number) obj).intValue());
+        METADATA_MAPPER_MAP.put(LONG, obj -> ((Number) obj).longValue());
+        METADATA_MAPPER_MAP.put(FLOAT, obj -> ((Number) obj).floatValue());
+        METADATA_MAPPER_MAP.put(DOUBLE, obj -> ((Number) obj).doubleValue());
+        METADATA_MAPPER_MAP.put(STRING, Function.identity());
+        METADATA_MAPPER_MAP.put(BOOLEAN, Function.identity());
     }
 
     public static TypeInfo getMetadataTypeInfo(String type) {
