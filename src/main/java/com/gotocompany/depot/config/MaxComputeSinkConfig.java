@@ -3,7 +3,6 @@ package com.gotocompany.depot.config;
 import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.converter.ConfToListConverter;
-import com.gotocompany.depot.config.converter.MaxComputeCompressionAlgorithmConverter;
 import com.gotocompany.depot.config.converter.MaxComputeOdpsGlobalSettingsConverter;
 import com.gotocompany.depot.config.converter.ZoneIdConverter;
 import org.aeonbits.owner.Config;
@@ -76,7 +75,6 @@ public interface MaxComputeSinkConfig extends Config {
     boolean isStreamingInsertCompressEnabled();
 
     @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_COMPRESSION_ALGORITHM")
-    @ConverterClass(MaxComputeCompressionAlgorithmConverter.class)
     @DefaultValue("ODPS_LZ4_FRAME")
     CompressOption.CompressAlgorithm getMaxComputeCompressionAlgorithm();
 

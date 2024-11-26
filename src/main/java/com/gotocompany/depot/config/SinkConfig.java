@@ -1,7 +1,6 @@
 package com.gotocompany.depot.config;
 
 import com.gotocompany.depot.config.converter.ConfToListConverter;
-import com.gotocompany.depot.config.converter.ProtoUnknownFieldValidationTypeConverter;
 import com.gotocompany.depot.config.converter.SchemaRegistryHeadersConverter;
 import com.gotocompany.depot.config.converter.SchemaRegistryRefreshConverter;
 import com.gotocompany.depot.config.converter.SinkConnectorSchemaDataTypeConverter;
@@ -103,7 +102,6 @@ public interface SinkConfig extends Config {
 
     @Key("SINK_CONNECTOR_SCHEMA_PROTO_UNKNOWN_FIELDS_VALIDATION")
     @DefaultValue("MESSAGE")
-    @ConverterClass(ProtoUnknownFieldValidationTypeConverter.class)
     ProtoUnknownFieldValidationType getSinkConnectorSchemaProtoUnknownFieldsValidation();
 
 }
