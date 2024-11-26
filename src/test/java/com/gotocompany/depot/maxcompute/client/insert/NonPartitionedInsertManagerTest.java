@@ -6,7 +6,6 @@ import com.aliyun.odps.tunnel.TunnelException;
 import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManager;
-import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
@@ -49,6 +48,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("table");
         Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
                 .thenReturn(1000L);
+        Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .thenReturn(1);
         Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
@@ -58,7 +59,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        StreamingSessionManager streamingSessionManager = StreamingSessionManagerFactory.createStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.nonParititonedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
@@ -109,6 +110,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         Mockito.when(maxComputeSinkConfig.getMaxComputeCompressionStrategy())
                 .thenReturn(1);
+        Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .thenReturn(1);
         Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
@@ -118,7 +121,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        StreamingSessionManager streamingSessionManager = StreamingSessionManagerFactory.createStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.nonParititonedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);

@@ -140,6 +140,15 @@ Further documentation on MaxCompute [Compression](https://www.alibabacloud.com/h
 * Type: `required`
 * Default value: `0`
 
+## SINK_MAXCOMPUTE_STREAMING_INSERT_MAXIMUM_SESSION_COUNT
+
+Contains the maximum session cached count for the streaming insert operation. This config will be used for setting the maximum session cache capacity for the streaming insert operation.
+Least recently used session will be removed if the cache is full.
+
+* Example value: `7`
+* Type: `required`
+* Default value: `1`
+
 ## SINK_MAXCOMPUTE_ZONE_ID
 
 Contains ZoneID used for parsing the timestamp in the record. This config will be used for parsing the timestamp in the record.

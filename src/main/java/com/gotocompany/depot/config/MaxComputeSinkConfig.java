@@ -86,6 +86,10 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("0")
     int getMaxComputeCompressionStrategy();
 
+    @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_MAXIMUM_SESSION_COUNT")
+    @DefaultValue("1")
+    int getStreamingInsertMaximumSessionCount();
+
     @Key("SINK_MAXCOMPUTE_ZONE_ID")
     @ConverterClass(ZoneIdConverter.class)
     @DefaultValue("Asia/Bangkok")

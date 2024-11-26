@@ -43,7 +43,7 @@ public class PartitionedInsertManager extends InsertManager {
                     recordPack.append(recordWrapper.getRecord());
                 } catch (IOException e) {
                     log.error("Schema Mismatch, clearing the session", e);
-                    streamingSessionManager.clearSession(recordWrapper.getPartitionSpec().toString());
+                    streamingSessionManager.refreshSession(recordWrapper.getPartitionSpec().toString());
                     throw e;
                 }
             }

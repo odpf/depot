@@ -6,7 +6,6 @@ import com.aliyun.odps.tunnel.TunnelException;
 import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManager;
-import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionManagerFactory;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
@@ -40,7 +39,7 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(builder);
         Mockito.when(builder.setCreatePartition(Mockito.anyBoolean()))
                 .thenReturn(builder);
-        Mockito.when(builder.setPartitionSpec(Mockito.any(PartitionSpec.class)))
+        Mockito.when(builder.setPartitionSpec(Mockito.anyString()))
                 .thenReturn(builder);
         Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
@@ -53,6 +52,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn("table");
         Mockito.when(maxComputeSinkConfig.getMaxComputeRecordPackFlushTimeoutMs())
                 .thenReturn(1000L);
+        Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .thenReturn(1);
         RecordWrapper firstPartitionRecordWrapper = Mockito.mock(RecordWrapper.class);
         Mockito.when(firstPartitionRecordWrapper.getPartitionSpec())
                 .thenReturn(new PartitionSpec("ds=1"));
@@ -67,7 +68,7 @@ public class PartitionedInsertManagerTest {
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
-        StreamingSessionManager streamingSessionManager = StreamingSessionManagerFactory.createStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.partitionedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
         PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel,
@@ -100,7 +101,7 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(builder);
         Mockito.when(builder.setCreatePartition(Mockito.anyBoolean()))
                 .thenReturn(builder);
-        Mockito.when(builder.setPartitionSpec(Mockito.any(PartitionSpec.class)))
+        Mockito.when(builder.setPartitionSpec(Mockito.anyString()))
                 .thenReturn(builder);
         Mockito.when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
@@ -121,6 +122,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(1);
         Mockito.when(maxComputeSinkConfig.getMaxComputeCompressionStrategy())
                 .thenReturn(1);
+        Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .thenReturn(1);
         RecordWrapper firstPartitionRecordWrapper = Mockito.mock(RecordWrapper.class);
         Mockito.when(firstPartitionRecordWrapper.getPartitionSpec())
                 .thenReturn(new PartitionSpec("ds=1"));
@@ -135,7 +138,7 @@ public class PartitionedInsertManagerTest {
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
-        StreamingSessionManager streamingSessionManager = StreamingSessionManagerFactory.createStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.partitionedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
         PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig,

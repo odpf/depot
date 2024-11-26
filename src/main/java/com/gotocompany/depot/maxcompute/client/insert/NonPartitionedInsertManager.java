@@ -37,7 +37,7 @@ public class NonPartitionedInsertManager extends InsertManager {
                 recordPack.append(recordWrapper.getRecord());
             } catch (IOException e) {
                 log.error("Schema Mismatch, rebuilding the session", e);
-                streamingSessionManager.clearSession(NON_PARTITIONED);
+                streamingSessionManager.refreshSession(NON_PARTITIONED);
                 throw e;
             }
         }
