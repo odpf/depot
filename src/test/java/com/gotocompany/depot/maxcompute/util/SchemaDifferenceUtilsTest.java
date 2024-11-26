@@ -37,11 +37,11 @@ public class SchemaDifferenceUtilsTest {
                         .build())
                 .build();
         Set<String> expectedMetadataColumns = new HashSet<>(Arrays.asList(
-                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS col3.f3 ARRAY<STRING>;",
-                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS col4.element.f42 STRUCT<`f421`:STRING>;",
-                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS col5 ARRAY<STRUCT<`f51`:INT>>;",
-                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS col6 STRUCT<`f61`:STRING>;",
-                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS metadata_2 STRING;"
+                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS `col3`.`f3` ARRAY<STRING>;",
+                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS `col4`.element.`f42` STRUCT<`f421`:STRING>;",
+                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS `col5` ARRAY<STRUCT<`f51`:INT>>;",
+                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS `col6` STRUCT<`f61`:STRING>;",
+                "ALTER TABLE test_schema.test_table ADD COLUMN IF NOT EXISTS `metadata_2` STRING;"
         ));
 
         Set<String> actualMetadataColumns = new HashSet<>(SchemaDifferenceUtils.getSchemaDifferenceSql(oldTableSchema, newTableSchema, "test_schema", "test_table"));

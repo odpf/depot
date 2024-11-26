@@ -18,6 +18,6 @@ public class MaxComputeColumnDetail {
     }
 
     public String getFullName() {
-        return StringUtils.isBlank(prefix) ? name : String.format("%s%s.%s", prefix, isArrayElement ? ".element" : "", name);
+        return StringUtils.isBlank(prefix) ? String.format("`%s`", name) : String.format("%s%s.`%s`", prefix, isArrayElement ? ".element" : "", name);
     }
 }

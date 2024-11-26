@@ -83,6 +83,6 @@ public class SchemaDifferenceUtils {
     }
 
     private static String getPathName(String prefix, String name, boolean isArrayElement) {
-        return StringUtils.isBlank(prefix) ? name : String.format("%s%s.%s", prefix, isArrayElement ? ".element" : "", name);
+        return StringUtils.isBlank(prefix) ? String.format("`%s`", name) : String.format("%s%s.`%s`", prefix, isArrayElement ? ".element" : "", name);
     }
 }
