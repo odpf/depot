@@ -54,12 +54,10 @@ public class MaxComputeSink implements Sink {
     public void close() throws IOException {
     }
 
-    private void mapInsertionError(List<RecordWrapper> recordWrappers,
+    private void mapInsertionError(List<RecordWrapper> recordWrapperList,
                                    SinkResponse sinkResponse,
                                    ErrorInfo errorInfo) {
-        recordWrappers.forEach(recordWrapper -> {
-            recordWrapper.setErrorInfo(errorInfo);
-            sinkResponse.getErrors().put(recordWrapper.getIndex(), errorInfo);
-        });
+        recordWrapperList.forEach(recordWrapper -> sinkResponse.getErrors().put(recordWrapper.getIndex(), errorInfo));
     }
+
 }

@@ -55,7 +55,7 @@ public class ProtoDataColumnRecordDecoratorTest {
     }
 
     @Test
-    public void decorateShouldAppendDataColumnToRecord() throws IOException {
+    public void decorateShouldProcessDataColumnToRecord() throws IOException {
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
         Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
         RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
@@ -68,9 +68,9 @@ public class ProtoDataColumnRecordDecoratorTest {
         );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
-        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+        RecordWrapper decoratedRecordWrapper = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        Assertions.assertThat(decoratedRecordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Object[]{"id",
                         Arrays.asList(
@@ -81,7 +81,7 @@ public class ProtoDataColumnRecordDecoratorTest {
     }
 
     @Test
-    public void decorateShouldAppendDataColumnToRecordAndOmitPartitionColumnIfPartitionedByPrimitiveTypes() throws IOException {
+    public void decorateShouldProcessDataColumnToRecordAndOmitPartitionColumnIfPartitionedByPrimitiveTypes() throws IOException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
@@ -106,9 +106,9 @@ public class ProtoDataColumnRecordDecoratorTest {
         );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
-        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+        RecordWrapper decoratedRecordWrapper = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        Assertions.assertThat(decoratedRecordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Object[]{
                         Arrays.asList(
@@ -119,7 +119,7 @@ public class ProtoDataColumnRecordDecoratorTest {
     }
 
     @Test
-    public void decorateShouldAppendDataColumnToRecordAndShouldNotOmitOriginalColumnIfPartitionedByTimestamp() throws IOException {
+    public void decorateShouldProcessDataColumnToRecordAndShouldNotOmitOriginalColumnIfPartitionedByTimestamp() throws IOException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
@@ -144,9 +144,9 @@ public class ProtoDataColumnRecordDecoratorTest {
         );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
-        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+        RecordWrapper decoratedRecordWrapper = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        Assertions.assertThat(decoratedRecordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Object[]{
                         "id",
@@ -191,9 +191,10 @@ public class ProtoDataColumnRecordDecoratorTest {
         Message message = new Message(null, maxComputeRecord.toByteArray());
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
-        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+        RecordWrapper decoratedWrapper =
+                protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        Assertions.assertThat(decoratedWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Object[]{
                         "id",
@@ -202,7 +203,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
                         ),
                         null});
-        Assertions.assertThat(recordWrapper.getPartitionSpec().toString())
+        Assertions.assertThat(decoratedWrapper.getPartitionSpec().toString())
                 .isEqualTo("__partition_key='__NULL__'");
     }
 
@@ -220,9 +221,9 @@ public class ProtoDataColumnRecordDecoratorTest {
         );
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
-        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+        RecordWrapper decoratedRecordWrapper = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        Assertions.assertThat(decoratedRecordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Object[]{"id",
                         Arrays.asList(
@@ -235,8 +236,8 @@ public class ProtoDataColumnRecordDecoratorTest {
     @Test
     public void decorateShouldCallInjectedDecorator() throws IOException {
         RecordDecorator recordDecorator = Mockito.mock(RecordDecorator.class);
-        Mockito.doNothing().when(recordDecorator)
-                .decorate(Mockito.any(), Mockito.any());
+        Mockito.when(recordDecorator.decorate(Mockito.any(), Mockito.any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
@@ -244,7 +245,6 @@ public class ProtoDataColumnRecordDecoratorTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, null, getMockedMessage());
         instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, recordDecorator, null, getMockedMessage());
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(DESCRIPTOR);
         Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
@@ -257,9 +257,9 @@ public class ProtoDataColumnRecordDecoratorTest {
                 java.time.ZoneOffset.UTC);
         StructTypeInfo expectedArrayStructElementTypeInfo = (StructTypeInfo) ((ArrayTypeInfo) getDataColumnTypeByName(maxComputeSchema.getTableSchema(), "inner_record")).getElementTypeInfo();
 
-        protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+        RecordWrapper decoratedRecord = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        Assertions.assertThat(decoratedRecord.getRecord())
                 .extracting("values")
                 .isEqualTo(new Object[]{"id",
                         Arrays.asList(

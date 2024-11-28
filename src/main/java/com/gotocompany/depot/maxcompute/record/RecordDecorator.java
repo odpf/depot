@@ -7,18 +7,20 @@ import com.gotocompany.depot.message.Message;
 import java.io.IOException;
 
 public abstract class RecordDecorator {
+
     private final RecordDecorator decorator;
 
     public RecordDecorator(RecordDecorator decorator) {
         this.decorator = decorator;
     }
 
-    public void decorate(RecordWrapper recordWrapper, Message message) throws IOException {
-        append(recordWrapper, message);
+    public RecordWrapper decorate(RecordWrapper recordWrapper, Message message) throws IOException {
         if (decorator != null) {
-            decorator.decorate(recordWrapper, message);
+            return decorator.decorate(process(recordWrapper, message), message);
         }
+        return process(recordWrapper, message);
     }
 
-    public abstract void append(RecordWrapper recordWrapper, Message message) throws IOException;
+    public abstract RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException;
+
 }

@@ -32,20 +32,21 @@ public class ProtoMessageRecordConverter implements MessageRecordConverter {
                     Record record = new ArrayRecord(maxComputeSchema.getColumns());
                     RecordWrapper recordWrapper = new RecordWrapper(record, index, null, null);
                     try {
-                        recordDecorator.decorate(recordWrapper, messages.get(index));
-                        recordWrappers.addValidRecord(recordWrapper);
+                        recordWrappers.addValidRecord(recordDecorator.decorate(recordWrapper, messages.get(index)));
                     } catch (IOException e) {
-                        handleException(recordWrapper, new ErrorInfo(e, ErrorType.DESERIALIZATION_ERROR), recordWrappers);
+                        recordWrappers.addInvalidRecord(
+                                toErrorRecordWrapper(recordWrapper, new ErrorInfo(e, ErrorType.DESERIALIZATION_ERROR))
+                        );
                     } catch (UnknownFieldsException e) {
-                        handleException(recordWrapper, new ErrorInfo(e, ErrorType.UNKNOWN_FIELDS_ERROR), recordWrappers);
+                        recordWrappers.addInvalidRecord(
+                                toErrorRecordWrapper(recordWrapper, new ErrorInfo(e, ErrorType.UNKNOWN_FIELDS_ERROR))
+                        );
                     }
                 });
         return recordWrappers;
     }
 
-    private void handleException(RecordWrapper recordWrapper, ErrorInfo e, RecordWrappers recordWrappers) {
-        recordWrapper.setRecord(null);
-        recordWrapper.setErrorInfo(e);
-        recordWrappers.addInvalidRecord(recordWrapper);
+    private RecordWrapper toErrorRecordWrapper(RecordWrapper recordWrapper, ErrorInfo e) {
+        return new RecordWrapper(null, recordWrapper.getIndex(), e, recordWrapper.getPartitionSpec());
     }
 }

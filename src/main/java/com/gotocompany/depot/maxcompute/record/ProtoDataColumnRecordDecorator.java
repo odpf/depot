@@ -1,5 +1,6 @@
 package com.gotocompany.depot.maxcompute.record;
 
+import com.aliyun.odps.PartitionSpec;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
@@ -36,7 +37,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     }
 
     @Override
-    public void append(RecordWrapper recordWrapper, Message message) throws IOException {
+    public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         String schemaClass = getSchemaClass();
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
         parsedMessage.validate(sinkConfig);
@@ -49,14 +50,16 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
             recordWrapper.getRecord()
                     .set(entry.getKey().getName(), converterOrchestrator.convert(entry.getKey(), entry.getValue()));
         }
+        PartitionSpec partitionSpec = null;
         if (partitioningStrategy != null && partitioningStrategy instanceof DefaultPartitioningStrategy) {
             Descriptors.FieldDescriptor partitionFieldDescriptor = protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName());
             Object object = protoMessage.hasField(partitionFieldDescriptor) ? protoMessage.getField(protoMessage.getDescriptorForType().findFieldByName(partitioningStrategy.getOriginalPartitionColumnName())) : null;
-            recordWrapper.setPartitionSpec(partitioningStrategy.getPartitionSpec(object));
+            partitionSpec = partitioningStrategy.getPartitionSpec(object);
         }
         if (partitioningStrategy != null && partitioningStrategy instanceof TimestampPartitioningStrategy) {
-            recordWrapper.setPartitionSpec(partitioningStrategy.getPartitionSpec(recordWrapper.getRecord()));
+            partitionSpec = partitioningStrategy.getPartitionSpec(recordWrapper.getRecord());
         }
+        return new RecordWrapper(recordWrapper.getRecord(), recordWrapper.getIndex(), recordWrapper.getErrorInfo(), partitionSpec);
     }
 
     private String getPartitionFieldName() {

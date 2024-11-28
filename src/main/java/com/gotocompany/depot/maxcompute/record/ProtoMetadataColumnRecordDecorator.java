@@ -24,6 +24,7 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final MaxComputeSchemaCache maxComputeSchemaCache;
     private final Map<String, String> metadataTypePairs;
+
     public ProtoMetadataColumnRecordDecorator(RecordDecorator recordDecorator,
                                               MaxComputeSinkConfig maxComputeSinkConfig,
                                               MaxComputeSchemaCache maxComputeSchemaCache) {
@@ -36,12 +37,13 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
     }
 
     @Override
-    public void append(RecordWrapper recordWrapper, Message message) throws IOException {
+    public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         if (StringUtils.isNotBlank(maxComputeSinkConfig.getMaxcomputeMetadataNamespace())) {
             appendNamespacedMetadata(recordWrapper.getRecord(), message);
-            return;
+        } else {
+            appendMetadata(recordWrapper.getRecord(), message);
         }
-        appendMetadata(recordWrapper.getRecord(), message);
+        return new RecordWrapper(recordWrapper.getRecord(), recordWrapper.getIndex(), recordWrapper.getErrorInfo(), recordWrapper.getPartitionSpec());
     }
 
     private void appendNamespacedMetadata(Record record, Message message) {
