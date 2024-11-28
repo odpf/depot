@@ -15,11 +15,11 @@ public class MaxComputeOdpsGlobalSettingsConverter implements Converter<Map<Stri
 
     @Override
     public Map<String, String> convert(Method method, String s) {
+        Map<String, String> settings = new HashMap<>();
         if (Objects.isNull(s) || StringUtils.isEmpty(s.trim())) {
-            return new HashMap<>();
+            return settings;
         }
         String[] pairs = s.split(CONFIG_SEPARATOR);
-        Map<String, String> settings = new HashMap<>();
         for (String pair : pairs) {
             String[] keyValue = pair.split(KEY_VALUE_SEPARATOR);
             if (keyValue.length != 2) {
