@@ -59,7 +59,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        StreamingSessionManager streamingSessionManager = StreamingSessionManager.nonParititonedStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.createNonPartitioned(
                 tableTunnel, maxComputeSinkConfig
         );
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
@@ -121,7 +121,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        StreamingSessionManager streamingSessionManager = StreamingSessionManager.nonParititonedStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.createNonPartitioned(
                 tableTunnel, maxComputeSinkConfig
         );
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
@@ -187,7 +187,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn("flush_record");
         Mockito.when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
-        StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.nonParititonedStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.createNonPartitioned(
                 tableTunnel, maxComputeSinkConfig
         ));
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);

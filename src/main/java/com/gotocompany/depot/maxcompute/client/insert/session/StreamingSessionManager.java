@@ -19,7 +19,7 @@ public final class StreamingSessionManager {
                 .build(cacheLoader);
     }
 
-    public static StreamingSessionManager nonParititonedStreamingSessionManager(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig) {
+    public static StreamingSessionManager createNonPartitioned(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig) {
         return new StreamingSessionManager(new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
             public TableTunnel.StreamUploadSession load(String sessionId) throws TunnelException {
@@ -32,7 +32,7 @@ public final class StreamingSessionManager {
         }, maxComputeSinkConfig);
     }
 
-    public static StreamingSessionManager partitionedStreamingSessionManager(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig) {
+    public static StreamingSessionManager createPartitioned(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig) {
         return new StreamingSessionManager(new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
             public TableTunnel.StreamUploadSession load(String partitionSpecKey) throws TunnelException {

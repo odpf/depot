@@ -68,7 +68,7 @@ public class PartitionedInsertManagerTest {
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
-        StreamingSessionManager streamingSessionManager = StreamingSessionManager.partitionedStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.createPartitioned(
                 tableTunnel, maxComputeSinkConfig
         );
         PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(maxComputeSinkConfig, instrumentation, Mockito.mock(MaxComputeMetrics.class), streamingSessionManager);
@@ -137,7 +137,7 @@ public class PartitionedInsertManagerTest {
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
-        StreamingSessionManager streamingSessionManager = StreamingSessionManager.partitionedStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = StreamingSessionManager.createPartitioned(
                 tableTunnel, maxComputeSinkConfig
         );
         PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(maxComputeSinkConfig,
@@ -213,7 +213,7 @@ public class PartitionedInsertManagerTest {
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
-        StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.partitionedStreamingSessionManager(
+        StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.createPartitioned(
                 tableTunnel, maxComputeSinkConfig
         ));
         PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(maxComputeSinkConfig,

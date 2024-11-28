@@ -32,7 +32,7 @@ public class StreamingSessionManagerTest {
         Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
         StreamingSessionManager partitionedStreamingSessionManager =
-                StreamingSessionManager.partitionedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 partitionedStreamingSessionManager.getSession("test_session");
@@ -65,7 +65,7 @@ public class StreamingSessionManagerTest {
         Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
         StreamingSessionManager partitionedStreamingSessionManager =
-                StreamingSessionManager.partitionedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 partitionedStreamingSessionManager.getSession("test_session");
@@ -101,7 +101,7 @@ public class StreamingSessionManagerTest {
         Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
         StreamingSessionManager partitionedStreamingSessionManager =
-                StreamingSessionManager.partitionedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 partitionedStreamingSessionManager.getSession("test_session");
@@ -131,7 +131,7 @@ public class StreamingSessionManagerTest {
         Mockito.when(maxComputeSinkConfig.getMaxComputeTableName())
                 .thenReturn("test_table");
         StreamingSessionManager nonPartitionedStreamingSessionManager =
-                StreamingSessionManager.nonParititonedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 nonPartitionedStreamingSessionManager.getSession("test_session");
@@ -160,7 +160,7 @@ public class StreamingSessionManagerTest {
         Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
         StreamingSessionManager nonPartitionedStreamingSessionManager =
-                StreamingSessionManager.nonParititonedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 nonPartitionedStreamingSessionManager.getSession("test_session");
@@ -192,7 +192,7 @@ public class StreamingSessionManagerTest {
         Mockito.when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
         StreamingSessionManager nonPartitionedStreamingSessionManager =
-                StreamingSessionManager.nonParititonedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
 
         nonPartitionedStreamingSessionManager.getSession("test_session");
         nonPartitionedStreamingSessionManager.refreshSession("test_session");
