@@ -71,8 +71,7 @@ public class PartitionedInsertManagerTest {
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.partitionedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
-        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel,
-                maxComputeSinkConfig, instrumentation, Mockito.mock(MaxComputeMetrics.class), streamingSessionManager);
+        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(maxComputeSinkConfig, instrumentation, Mockito.mock(MaxComputeMetrics.class), streamingSessionManager);
         int expectedPartitionFlushInvocation = 2;
 
         partitionedInsertManager.insert(recordWrappers);
@@ -141,7 +140,7 @@ public class PartitionedInsertManagerTest {
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.partitionedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
-        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig,
+        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(maxComputeSinkConfig,
                 instrumentation, Mockito.mock(MaxComputeMetrics.class), streamingSessionManager);
         int expectedPartitionFlushInvocation = 2;
 
@@ -217,7 +216,7 @@ public class PartitionedInsertManagerTest {
         StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.partitionedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         ));
-        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig,
+        PartitionedInsertManager partitionedInsertManager = new PartitionedInsertManager(maxComputeSinkConfig,
                 instrumentation, Mockito.mock(MaxComputeMetrics.class), streamingSessionManager);
 
         partitionedInsertManager.insert(recordWrappers);

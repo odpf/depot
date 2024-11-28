@@ -15,9 +15,9 @@ public class InsertManagerFactory {
         StreamingSessionManager streamingSessionManager = maxComputeSinkConfig.isTablePartitioningEnabled()
                 ? StreamingSessionManager.partitionedStreamingSessionManager(tableTunnel, maxComputeSinkConfig) : StreamingSessionManager.nonParititonedStreamingSessionManager(tableTunnel, maxComputeSinkConfig);
         if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
-            return new PartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+            return new PartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         } else {
-            return new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+            return new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         }
     }
 

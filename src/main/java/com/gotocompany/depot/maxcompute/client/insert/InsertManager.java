@@ -18,7 +18,6 @@ import java.util.List;
 @Getter
 public abstract class InsertManager {
 
-    private final TableTunnel tableTunnel;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final Instrumentation instrumentation;
     private final MaxComputeMetrics maxComputeMetrics;

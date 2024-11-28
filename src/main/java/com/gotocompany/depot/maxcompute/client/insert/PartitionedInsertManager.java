@@ -20,12 +20,11 @@ public class PartitionedInsertManager extends InsertManager {
 
     private final StreamingSessionManager streamingSessionManager;
 
-    public PartitionedInsertManager(TableTunnel tableTunnel,
-                                    MaxComputeSinkConfig maxComputeSinkConfig,
+    public PartitionedInsertManager(MaxComputeSinkConfig maxComputeSinkConfig,
                                     Instrumentation instrumentation,
                                     MaxComputeMetrics maxComputeMetrics,
                                     StreamingSessionManager streamingSessionManager) {
-        super(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        super(maxComputeSinkConfig, instrumentation, maxComputeMetrics);
         this.streamingSessionManager = streamingSessionManager;
     }
 

@@ -62,7 +62,7 @@ public class NonPartitionedInsertManagerTest {
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.nonParititonedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
-        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
                 Mockito.mock(RecordWrapper.class)
         );
@@ -124,7 +124,7 @@ public class NonPartitionedInsertManagerTest {
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.nonParititonedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         );
-        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
                 Mockito.mock(RecordWrapper.class)
         );
@@ -190,7 +190,7 @@ public class NonPartitionedInsertManagerTest {
         StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.nonParititonedStreamingSessionManager(
                 tableTunnel, maxComputeSinkConfig
         ));
-        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+        NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
                 Mockito.mock(RecordWrapper.class)
         );

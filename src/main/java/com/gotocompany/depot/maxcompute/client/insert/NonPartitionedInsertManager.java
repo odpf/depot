@@ -19,12 +19,11 @@ public class NonPartitionedInsertManager extends InsertManager {
     private static final String NON_PARTITIONED = "non-partitioned";
     private final StreamingSessionManager streamingSessionManager;
 
-    public NonPartitionedInsertManager(TableTunnel tableTunnel,
-                                       MaxComputeSinkConfig maxComputeSinkConfig,
+    public NonPartitionedInsertManager(MaxComputeSinkConfig maxComputeSinkConfig,
                                        Instrumentation instrumentation,
                                        MaxComputeMetrics maxComputeMetrics,
                                        StreamingSessionManager streamingSessionManager) {
-        super(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        super(maxComputeSinkConfig, instrumentation, maxComputeMetrics);
         this.streamingSessionManager = streamingSessionManager;
     }
 
