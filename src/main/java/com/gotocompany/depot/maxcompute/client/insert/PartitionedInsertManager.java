@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class PartitionedInsertManager extends InsertManager {
 
     private final StreamingSessionManager streamingSessionManager;
+    private final TableTunnel.FlushOption flushOption;
 
     public PartitionedInsertManager(MaxComputeSinkConfig maxComputeSinkConfig,
                                     Instrumentation instrumentation,
@@ -26,6 +27,8 @@ public class PartitionedInsertManager extends InsertManager {
                                     StreamingSessionManager streamingSessionManager) {
         super(maxComputeSinkConfig, instrumentation, maxComputeMetrics);
         this.streamingSessionManager = streamingSessionManager;
+        this.flushOption = new TableTunnel.FlushOption()
+                .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs());
     }
 
     @Override
@@ -45,9 +48,7 @@ public class PartitionedInsertManager extends InsertManager {
                 }
             }
             Instant start = Instant.now();
-            TableTunnel.FlushResult flushResult = recordPack.flush(
-                    new TableTunnel.FlushOption()
-                            .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs()));
+            TableTunnel.FlushResult flushResult = recordPack.flush(flushOption);
             instrument(start, flushResult);
         }
     }

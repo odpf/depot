@@ -18,6 +18,7 @@ public class NonPartitionedInsertManager extends InsertManager {
 
     private static final String NON_PARTITIONED = "non-partitioned";
     private final StreamingSessionManager streamingSessionManager;
+    private final TableTunnel.FlushOption flushOption;
 
     public NonPartitionedInsertManager(MaxComputeSinkConfig maxComputeSinkConfig,
                                        Instrumentation instrumentation,
@@ -25,6 +26,8 @@ public class NonPartitionedInsertManager extends InsertManager {
                                        StreamingSessionManager streamingSessionManager) {
         super(maxComputeSinkConfig, instrumentation, maxComputeMetrics);
         this.streamingSessionManager = streamingSessionManager;
+        this.flushOption = new TableTunnel.FlushOption()
+                .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs());
     }
 
     @Override
@@ -41,11 +44,8 @@ public class NonPartitionedInsertManager extends InsertManager {
             }
         }
         Instant start = Instant.now();
-        TableTunnel.FlushResult flushResult = recordPack.flush(
-                new TableTunnel.FlushOption()
-                        .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs()));
+        TableTunnel.FlushResult flushResult = recordPack.flush(flushOption);
         instrument(start, flushResult);
     }
-
 
 }
