@@ -12,15 +12,12 @@ public final class StreamingSessionManager {
 
     private final LoadingCache<String, TableTunnel.StreamUploadSession> sessionCache;
 
-    private StreamingSessionManager(CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader,
-                                   MaxComputeSinkConfig maxComputeSinkConfig) {
-        sessionCache = CacheBuilder.newBuilder()
-                .maximumSize(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
-                .build(cacheLoader);
+    private StreamingSessionManager(LoadingCache<String, TableTunnel.StreamUploadSession> loadingCache) {
+        sessionCache = loadingCache;
     }
 
     public static StreamingSessionManager createNonPartitioned(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig) {
-        return new StreamingSessionManager(new CacheLoader<String, TableTunnel.StreamUploadSession>() {
+        CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
             public TableTunnel.StreamUploadSession load(String sessionId) throws TunnelException {
                 return tableTunnel.buildStreamUploadSession(
@@ -29,11 +26,14 @@ public final class StreamingSessionManager {
                         .allowSchemaMismatch(false)
                         .build();
             }
-        }, maxComputeSinkConfig);
+        };
+        return new StreamingSessionManager(CacheBuilder.newBuilder()
+                .maximumSize(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .build(cacheLoader));
     }
 
     public static StreamingSessionManager createPartitioned(TableTunnel tableTunnel, MaxComputeSinkConfig maxComputeSinkConfig) {
-        return new StreamingSessionManager(new CacheLoader<String, TableTunnel.StreamUploadSession>() {
+        CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
             public TableTunnel.StreamUploadSession load(String partitionSpecKey) throws TunnelException {
                 return tableTunnel.buildStreamUploadSession(
@@ -44,7 +44,10 @@ public final class StreamingSessionManager {
                         .allowSchemaMismatch(false)
                         .build();
             }
-        }, maxComputeSinkConfig);
+        };
+        return new StreamingSessionManager(CacheBuilder.newBuilder()
+                .maximumSize(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
+                .build(cacheLoader));
     }
 
     public TableTunnel.StreamUploadSession getSession(String sessionId) {
