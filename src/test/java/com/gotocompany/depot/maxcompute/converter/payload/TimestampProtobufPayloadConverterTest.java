@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,10 @@ public class TimestampProtobufPayloadConverterTest {
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:01", DateTimeFormatter.ISO_DATE_TIME));
         when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp_field");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
         timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
     }
 
@@ -120,6 +125,106 @@ public class TimestampProtobufPayloadConverterTest {
         Object result = timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
 
         assertThat(result).isEqualTo(expectedLocalDateTime);
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenTimeDifferenceExceedsMaxPastDuration() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp_field");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(5);
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(5);
+        timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+        Timestamp timestamp = Timestamp.newBuilder()
+                .setSeconds(3600)
+                .setNanos(0)
+                .build();
+        TestMaxComputeTypeInfo.TestRoot message = TestMaxComputeTypeInfo.TestRoot.newBuilder()
+                .setTimestampField(timestamp)
+                .build();
+
+        timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenTimeDifferenceExceedsMaxFutureDuration() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp_field");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(5);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(1);
+        timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+        Timestamp timestamp = Timestamp.newBuilder()
+                .setSeconds(System.currentTimeMillis() / 1000 + Duration.ofDays(365 * 6).toMinutes() * 60)
+                .setNanos(0)
+                .build();
+        TestMaxComputeTypeInfo.TestRoot message = TestMaxComputeTypeInfo.TestRoot.newBuilder()
+                .setTimestampField(timestamp)
+                .build();
+
+        timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+    }
+
+    @Test
+    public void shouldSkipDifferenceValidationWhenPartitionDisabled() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(false);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp_field");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(5);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(1);
+        timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+        Timestamp timestamp = Timestamp.newBuilder()
+                .setSeconds(System.currentTimeMillis() / 1000 + Duration.ofDays(365 * 6).toMinutes() * 60)
+                .setNanos(0)
+                .build();
+        TestMaxComputeTypeInfo.TestRoot message = TestMaxComputeTypeInfo.TestRoot.newBuilder()
+                .setTimestampField(timestamp)
+                .build();
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
+
+        LocalDateTime result = (LocalDateTime) timestampPayloadConverter.convertSingular(
+                new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+
+        assertThat(result)
+                .isEqualTo(expectedLocalDateTime);
+    }
+
+    @Test
+    public void shouldSkipDifferenceValidationWhenIsNotRootLevel() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(true);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp_field");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(5);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(1);
+        timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+        Timestamp timestamp = Timestamp.newBuilder()
+                .setSeconds(System.currentTimeMillis() / 1000 + Duration.ofDays(365 * 6).toMinutes() * 60)
+                .setNanos(0)
+                .build();
+        TestMaxComputeTypeInfo.TestRoot message = TestMaxComputeTypeInfo.TestRoot.newBuilder()
+                .setTimestampField(timestamp)
+                .build();
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
+
+        LocalDateTime result = (LocalDateTime) timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3),
+                message.getField(descriptor.getFields().get(3)), false));
+
+        assertThat(result)
+                .isEqualTo(expectedLocalDateTime);
     }
 
 }

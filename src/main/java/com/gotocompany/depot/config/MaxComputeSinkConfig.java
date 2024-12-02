@@ -132,4 +132,12 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("9999-12-31T23:59:59")
     LocalDateTime getValidMaxTimestamp();
 
+    @Key("SINK_MAXCOMPUTE_MAX_PAST_EVENT_TIME_DIFFERENCE_YEAR")
+    @DefaultValue("5")
+    int getMaxPastYearEventTimeDifference();
+
+    @Key("SINK_MAXCOMPUTE_MAX_FUTURE_EVENT_TIME_DIFFERENCE_YEAR")
+    @DefaultValue("1")
+    int getMaxFutureYearEventTimeDifference();
+
 }

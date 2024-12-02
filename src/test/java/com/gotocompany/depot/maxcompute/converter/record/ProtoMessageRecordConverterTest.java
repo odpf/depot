@@ -60,28 +60,30 @@ public class ProtoMessageRecordConverterTest {
     @Before
     public void setup() throws IOException {
         maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
-        Mockito.when(maxComputeSinkConfig.getMetadataColumnsTypes()).thenReturn(
+        when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
+        when(maxComputeSinkConfig.getMetadataColumnsTypes()).thenReturn(
                 Arrays.asList(new TupleString("__message_timestamp", "timestamp"),
                         new TupleString("__kafka_topic", "string"),
                         new TupleString("__kafka_offset", "long")
                 )
         );
-        Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
-        Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_column");
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
+        when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_column");
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
         when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
         protobufConverterOrchestrator = new ProtobufConverterOrchestrator(maxComputeSinkConfig);
         protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);
-        Mockito.when(parsedMessage.getRaw()).thenReturn(getMockedMessage());
-        Mockito.when(protoMessageParser.parse(Mockito.any(), Mockito.any(), Mockito.any()))
+        when(parsedMessage.getRaw()).thenReturn(getMockedMessage());
+        when(protoMessageParser.parse(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(parsedMessage);
         sinkConfig = Mockito.mock(SinkConfig.class);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+        when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
                 protobufConverterOrchestrator,
@@ -91,7 +93,7 @@ public class ProtoMessageRecordConverterTest {
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
-        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
+        when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 protobufConverterOrchestrator,
                 protoMessageParser, sinkConfig, partitioningStrategy);

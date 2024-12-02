@@ -39,6 +39,8 @@ public class MaxComputeSchemaHelperTest {
         when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
                 new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
@@ -94,6 +96,8 @@ public class MaxComputeSchemaHelperTest {
         when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partitioning_column");
         when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
         int expectedNonPartitionColumnCount = 5;
         int expectedPartitionColumnCount = 1;
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
@@ -140,6 +144,8 @@ public class MaxComputeSchemaHelperTest {
         when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
         when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
         int expectedNonPartitionColumnCount = 4;
         int expectedPartitionColumnCount = 0;
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
@@ -186,6 +192,8 @@ public class MaxComputeSchemaHelperTest {
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("non_existent_partition_key");
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
                 new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,

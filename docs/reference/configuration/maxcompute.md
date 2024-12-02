@@ -225,3 +225,20 @@ Timestamp should be in the format of `yyyy-MM-ddTHH:mm:ss`.
 * Example value: `0`
 * Type: `required`
 * Default value: `9999-12-31T23:59:59`
+
+## SINK_MAXCOMPUTE_MAX_PAST_EVENT_TIME_DIFFERENCE_YEAR
+
+Contains the maximum past event time difference in years. Records with event time difference more than this value will be considered as invalid message.
+
+* Example value: `1`
+* Type: `required`
+* Default value: `5`
+
+## SINK_MAXCOMPUTE_MAX_FUTURE_EVENT_TIME_DIFFERENCE_YEAR
+
+Contains the maximum future event time difference in years. Records with event time difference more than this value will be considered as invalid message.
+
+* Example value: `1`
+* Type: `required`
+* Default value: `1`
+
