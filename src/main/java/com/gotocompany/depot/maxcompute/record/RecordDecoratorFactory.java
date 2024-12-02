@@ -15,8 +15,7 @@ public class RecordDecoratorFactory {
             MessageParser messageParser,
             PartitioningStrategy partitioningStrategy,
             MaxComputeSinkConfig maxComputeSinkConfig,
-            SinkConfig sinkConfig
-    ) {
+            SinkConfig sinkConfig) {
         RecordDecorator dataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null, protobufConverterOrchestrator, messageParser, sinkConfig, partitioningStrategy);
         if (!maxComputeSinkConfig.shouldAddMetadata()) {
             return dataColumnRecordDecorator;
