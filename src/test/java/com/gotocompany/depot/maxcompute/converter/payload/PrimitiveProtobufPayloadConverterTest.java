@@ -5,6 +5,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
+import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Test;
@@ -76,6 +77,36 @@ public class PrimitiveProtobufPayloadConverterTest {
         assertEquals(value, result);
     }
 
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenDoublePositiveInfinity() {
+        double value = Double.POSITIVE_INFINITY;
+        Message message = TestMaxComputeTypeInfo.TestFields.newBuilder()
+                .setDoubleField(value)
+                .build();
+
+        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenDoubleNegativeInfinity() {
+        double value = Double.NEGATIVE_INFINITY;
+        Message message = TestMaxComputeTypeInfo.TestFields.newBuilder()
+                .setDoubleField(value)
+                .build();
+
+        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenDoubleNaN() {
+        double value = Double.NaN;
+        Message message = TestMaxComputeTypeInfo.TestFields.newBuilder()
+                .setDoubleField(value)
+                .build();
+
+        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+    }
+
     @Test
     public void shouldReturnObjectAsItIsWhenTypeIsFloat() {
         float value = 1.23f;
@@ -87,6 +118,36 @@ public class PrimitiveProtobufPayloadConverterTest {
 
         assertTrue(result instanceof Float);
         assertEquals(value, result);
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenFloatPositiveInfinity() {
+        float value = Float.POSITIVE_INFINITY;
+        Message message = TestMaxComputeTypeInfo.TestFields.newBuilder()
+                .setFloatField(value)
+                .build();
+
+        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenFloatNegativeInfinity() {
+        float value = Float.NEGATIVE_INFINITY;
+        Message message = TestMaxComputeTypeInfo.TestFields.newBuilder()
+                .setFloatField(value)
+                .build();
+
+        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenFloatNaN() {
+        float value = Float.NaN;
+        Message message = TestMaxComputeTypeInfo.TestFields.newBuilder()
+                .setFloatField(value)
+                .build();
+
+        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
     }
 
     @Test
