@@ -1,4 +1,4 @@
-package com.gotocompany.depot.maxcompute.helper;
+package com.gotocompany.depot.maxcompute;
 
 import com.aliyun.odps.Column;
 import com.aliyun.odps.TableSchema;
@@ -24,14 +24,12 @@ public class MaxComputeSchemaHelper {
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final PartitioningStrategy partitioningStrategy;
 
-    public MaxComputeSchema buildMaxComputeSchema(Descriptors.Descriptor descriptor) {
-
+    public MaxComputeSchema build(Descriptors.Descriptor descriptor) {
         List<Column> metadataColumns = buildMetadataColumns();
-        List<Column> dataColumn = buildDataColumns(descriptor);
+        TableSchema.Builder tableSchemaBuilder = com.aliyun.odps.TableSchema.builder()
+                .withColumns(metadataColumns)
+                .withColumns(buildDataColumns(descriptor));
         Column partitionColumn = maxComputeSinkConfig.isTablePartitioningEnabled() ? buildPartitionColumn() : null;
-        TableSchema.Builder tableSchemaBuilder = com.aliyun.odps.TableSchema.builder();
-        tableSchemaBuilder.withColumns(metadataColumns);
-        tableSchemaBuilder.withColumns(dataColumn);
         if (Objects.nonNull(partitionColumn)) {
             tableSchemaBuilder.withPartitionColumn(partitionColumn);
         }

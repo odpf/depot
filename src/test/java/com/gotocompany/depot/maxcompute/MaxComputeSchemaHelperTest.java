@@ -1,4 +1,4 @@
-package com.gotocompany.depot.maxcompute.helper;
+package com.gotocompany.depot.maxcompute;
 
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
@@ -47,7 +47,7 @@ public class MaxComputeSchemaHelperTest {
         int expectedNonPartitionColumnCount = 7;
         int expectedPartitionColumnCount = 1;
 
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
 
         Assertions.assertThat(maxComputeSchema.getTableSchema().getColumns().size()).isEqualTo(expectedNonPartitionColumnCount);
         Assertions.assertThat(maxComputeSchema.getTableSchema().getPartitionColumns().size()).isEqualTo(expectedPartitionColumnCount);
@@ -102,7 +102,7 @@ public class MaxComputeSchemaHelperTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(
                 new ProtobufConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig, partitioningStrategy);
 
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
 
         Assertions.assertThat(maxComputeSchema.getTableSchema().getColumns().size()).isEqualTo(expectedNonPartitionColumnCount);
         Assertions.assertThat(maxComputeSchema.getTableSchema().getPartitionColumns().size()).isEqualTo(expectedPartitionColumnCount);
@@ -148,7 +148,7 @@ public class MaxComputeSchemaHelperTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig, partitioningStrategy);
 
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
 
         Assertions.assertThat(maxComputeSchema.getTableSchema().getColumns().size()).isEqualTo(expectedNonPartitionColumnCount);
         Assertions.assertThat(maxComputeSchema.getTableSchema().getPartitionColumns().size()).isEqualTo(expectedPartitionColumnCount);
@@ -192,7 +192,7 @@ public class MaxComputeSchemaHelperTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig, partitioningStrategy);
 
-        maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        maxComputeSchemaHelper.build(descriptor);
     }
 
 }

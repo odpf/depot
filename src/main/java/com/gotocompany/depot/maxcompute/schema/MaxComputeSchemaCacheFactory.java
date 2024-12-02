@@ -4,7 +4,7 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
-import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
+import com.gotocompany.depot.maxcompute.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 
 public class MaxComputeSchemaCacheFactory {

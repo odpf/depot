@@ -13,7 +13,7 @@ import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.exception.UnknownFieldsException;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
-import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
+import com.gotocompany.depot.maxcompute.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
@@ -84,7 +84,7 @@ public class ProtoMessageRecordConverterTest {
         );
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 protobufConverterOrchestrator,

@@ -7,7 +7,7 @@ import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.exception.MaxComputeTableOperationException;
-import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
+import com.gotocompany.depot.maxcompute.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
@@ -54,7 +54,7 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
             } else {
                 descriptor = newDescriptor.get(getSchemaClass());
             }
-            MaxComputeSchema localSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
+            MaxComputeSchema localSchema = maxComputeSchemaHelper.build(descriptor);
             protobufConverterOrchestrator.clearCache();
             try {
                 maxComputeClient.upsertTable(localSchema.getTableSchema());
