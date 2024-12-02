@@ -15,10 +15,10 @@ import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategyFactory;
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.MessageParserFactory;
+import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.metrics.StatsDReporter;
-import com.gotocompany.depot.utils.SinkConfigUtils;
 import com.gotocompany.stencil.client.StencilClient;
 import org.aeonbits.owner.ConfigFactory;
 
@@ -51,7 +51,7 @@ public class MaxComputeSinkFactory {
     }
 
     public void init() {
-        Descriptors.Descriptor descriptor = stencilClient.get(SinkConfigUtils.getProtoSchemaClassName(sinkConfig));
+        Descriptors.Descriptor descriptor = stencilClient.get(getProtoSchemaClassName(sinkConfig));
         this.partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(protobufConverterOrchestrator, maxComputeSinkConfig, descriptor);
         this.maxComputeSchemaCache = MaxComputeSchemaCacheFactory.createMaxComputeSchemaCache(protobufConverterOrchestrator,
                 maxComputeSinkConfig, partitioningStrategy, sinkConfig, maxComputeClient);
@@ -72,6 +72,11 @@ public class MaxComputeSinkFactory {
         ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter,
                 new Instrumentation(statsDReporter, MaxComputeSink.class), maxComputeMetrics);
+    }
+
+    private static String getProtoSchemaClassName(SinkConfig sinkConfig) {
+        return SinkConnectorSchemaMessageMode.LOG_MESSAGE == sinkConfig.getSinkConnectorSchemaMessageMode()
+                ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
     }
 
 }
