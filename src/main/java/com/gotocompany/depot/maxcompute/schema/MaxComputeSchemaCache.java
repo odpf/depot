@@ -45,34 +45,32 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
     }
 
     @Override
-    public void onSchemaUpdate(Map<String, Descriptors.Descriptor> newDescriptor) {
-        synchronized (this) {
-            Descriptors.Descriptor descriptor;
-            if (newDescriptor == null) {
-                Map<String, Descriptors.Descriptor> descriptorMap = ((ProtoMessageParser) getMessageParser()).getDescriptorMap();
-                descriptor = descriptorMap.get(getSchemaClass());
-            } else {
-                descriptor = newDescriptor.get(getSchemaClass());
-            }
-            MaxComputeSchema localSchema = maxComputeSchemaHelper.build(descriptor);
-            protobufConverterOrchestrator.clearCache();
-            try {
-                maxComputeClient.upsertTable(localSchema.getTableSchema());
-                log.info("MaxCompute table upserted successfully");
-                TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
-                maxComputeSchema = new MaxComputeSchema(
-                        serverSideTableSchema,
-                        localSchema.getMetadataColumns()
-                );
-            } catch (OdpsException e) {
-                throw new MaxComputeTableOperationException("Error while updating MaxCompute table", e);
-            }
-        }
+    public synchronized void onSchemaUpdate(Map<String, Descriptors.Descriptor> newDescriptor) {
+        Descriptors.Descriptor descriptor = newDescriptor.get(getSchemaClass());
+        updateMaxComputeTableSchema(descriptor);
     }
 
     @Override
-    public void updateSchema() {
-        onSchemaUpdate(null);
+    public synchronized void updateSchema() {
+        Map<String, Descriptors.Descriptor> descriptorMap = ((ProtoMessageParser) getMessageParser()).getDescriptorMap();
+        Descriptors.Descriptor descriptor = descriptorMap.get(getSchemaClass());
+        updateMaxComputeTableSchema(descriptor);
+    }
+
+    private void updateMaxComputeTableSchema(Descriptors.Descriptor descriptor) {
+        MaxComputeSchema localSchema = maxComputeSchemaHelper.build(descriptor);
+        protobufConverterOrchestrator.clearCache();
+        try {
+            maxComputeClient.upsertTable(localSchema.getTableSchema());
+            log.info("MaxCompute table upserted successfully");
+            TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
+            maxComputeSchema = new MaxComputeSchema(
+                    serverSideTableSchema,
+                    localSchema.getMetadataColumns()
+            );
+        } catch (OdpsException e) {
+            throw new MaxComputeTableOperationException("Error while updating MaxCompute table", e);
+        }
     }
 
     private String getSchemaClass() {
