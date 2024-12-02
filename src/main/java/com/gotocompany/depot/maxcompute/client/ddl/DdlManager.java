@@ -13,7 +13,6 @@ import com.gotocompany.depot.maxcompute.schema.validator.TableValidator;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import com.gotocompany.depot.utils.RetryUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
@@ -21,7 +20,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 
-@RequiredArgsConstructor
 @Slf4j
 public class DdlManager {
 
@@ -29,6 +27,15 @@ public class DdlManager {
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final Instrumentation instrumentation;
     private final MaxComputeMetrics maxComputeMetrics;
+    private final TableValidator tableValidator;
+
+    public DdlManager(Odps odps, MaxComputeSinkConfig maxComputeSinkConfig, Instrumentation instrumentation, MaxComputeMetrics maxComputeMetrics) {
+        this.odps = odps;
+        this.maxComputeSinkConfig = maxComputeSinkConfig;
+        this.instrumentation = instrumentation;
+        this.maxComputeMetrics = maxComputeMetrics;
+        this.tableValidator = new TableValidator(maxComputeSinkConfig);
+    }
 
     public void upsertTable(TableSchema tableSchema) throws OdpsException {
         String projectName = maxComputeSinkConfig.getMaxComputeProjectId();
@@ -43,7 +50,7 @@ public class DdlManager {
 
     private void createTable(TableSchema tableSchema, String projectName, String datasetName, String tableName) {
         log.info("Creating table: {} schema:{}", tableName, tableSchema);
-        TableValidator.validate(tableName, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(), tableSchema);
+        tableValidator.validate(tableName, maxComputeSinkConfig.getMaxComputeTableLifecycleDays(), tableSchema);
         RetryUtils.executeWithRetry(() -> {
                     Instant start = Instant.now();
                     this.odps.tables().create(projectName, datasetName, tableName, tableSchema, "",

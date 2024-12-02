@@ -108,4 +108,15 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("odps.schema.evolution.enable=true,odps.namespace.schema=true")
     Map<String, String> getOdpsGlobalSettings();
 
+    @Key("SINK_MAXCOMPUTE_TABLE_VALIDATOR_NAME_REGEX")
+    @DefaultValue("^[A-Za-z][A-Za-z0-9_]{0,127}$")
+    String getTableValidatorNameRegex();
+
+    @Key("SINK_MAXCOMPUTE_TABLE_VALIDATOR_MAX_COLUMNS_PER_TABLE")
+    @DefaultValue("1200")
+    int getTableValidatorMaxColumnsPerTable();
+
+    @Key("SINK_MAXCOMPUTE_TABLE_VALIDATOR_MAX_PARTITION_KEYS_PER_TABLE")
+    @DefaultValue("6")
+    int getTableValidatorMaxPartitionKeysPerTable();
 }

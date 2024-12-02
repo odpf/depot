@@ -180,3 +180,30 @@ Contains the global settings for the MaxCompute sink. This config will be used f
 * Example value: `odps.schema.evolution.enable=true,odps.namespace.schema=true,odps.sql.type.system.odps2=true`
 * Type: `optional`
 * Default value: `odps.schema.evolution.enable=true,odps.namespace.schema=true`
+
+## SINK_MAXCOMPUTE_TABLE_VALIDATOR_NAME_REGEX
+
+Contains the regex pattern for the table name validation. This config will be used for validating the table name. The table name should match the regex pattern.
+Check the official documentation for the [table name](https://www.alibabacloud.com/help/en/maxcompute/product-overview/limits-4#:~:text=A%20table%20can%20contain%20a%20maximum%20of%2060%2C000%20partitions.&text=A%20table%20can%20contain%20a%20maximum%20of%20six%20levels%20of%20partitions.&text=A%20SELECT%20statement%20can%20return%20a%20maximum%20of%2010%2C000%20rows.&text=A%20MULTI%2DINSERT%20statement%20allows,tables%20at%20the%20same%20time.) for more information.
+
+* Example value: `^[a-zA-Z_][a-zA-Z0-9_]*$`
+* Type: `required`
+* Default value: `^[A-Za-z][A-Za-z0-9_]{0,127}$`
+
+## SINK_MAXCOMPUTE_TABLE_VALIDATOR_MAX_COLUMNS_PER_TABLE
+
+Contains the maximum number of columns allowed in the table. This config will be used for setting the maximum number of columns allowed in the table.
+Check the official documentation for the [table name](https://www.alibabacloud.com/help/en/maxcompute/product-overview/limits-4#:~:text=A%20table%20can%20contain%20a%20maximum%20of%2060%2C000%20partitions.&text=A%20table%20can%20contain%20a%20maximum%20of%20six%20levels%20of%20partitions.&text=A%20SELECT%20statement%20can%20return%20a%20maximum%20of%2010%2C000%20rows.&text=A%20MULTI%2DINSERT%20statement%20allows,tables%20at%20the%20same%20time.) for more information.
+
+* Example value: `1000`
+* Type: `required`
+* Default value: `1200`
+
+## SINK_MAXCOMPUTE_TABLE_VALIDATOR_MAX_PARTITION_KEYS_PER_TABLE
+
+Contains the maximum number of partition keys allowed in the table. This config will be used for setting the maximum number of partition keys allowed in the table.
+Check the official documentation for the [table name](https://www.alibabacloud.com/help/en/maxcompute/product-overview/limits-4#:~:text=A%20table%20can%20contain%20a%20maximum%20of%2060%2C000%20partitions.&text=A%20table%20can%20contain%20a%20maximum%20of%20six%20levels%20of%20partitions.&text=A%20SELECT%20statement%20can%20return%20a%20maximum%20of%2010%2C000%20rows.&text=A%20MULTI%2DINSERT%20statement%20allows,tables%20at%20the%20same%20time.) for more information.
+
+* Example value: `6`
+* Type: `required`
+* Default value: `6`

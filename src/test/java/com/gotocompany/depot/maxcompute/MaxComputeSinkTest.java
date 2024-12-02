@@ -42,6 +42,12 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+                .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+                .thenReturn(1200);
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+                .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
@@ -79,6 +85,12 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+                .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+                .thenReturn(1200);
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+                .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
@@ -122,6 +134,12 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+                .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+                .thenReturn(1200);
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+                .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
@@ -165,6 +183,12 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+                .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+                .thenReturn(1200);
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+                .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
                 .when(maxComputeClient)
@@ -208,6 +232,12 @@ public class MaxComputeSinkTest {
                 .thenReturn("schema");
         Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+                .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+                .thenReturn(1200);
+        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+                .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
 
