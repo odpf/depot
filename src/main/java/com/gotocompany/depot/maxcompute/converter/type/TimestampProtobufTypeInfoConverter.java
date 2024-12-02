@@ -4,7 +4,7 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 
-public class TimestampTypeInfoConverter implements TypeInfoConverter {
+public class TimestampProtobufTypeInfoConverter implements ProtobufTypeInfoConverter {
 
     private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
 

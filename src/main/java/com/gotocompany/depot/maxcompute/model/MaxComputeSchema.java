@@ -3,7 +3,6 @@ package com.gotocompany.depot.maxcompute.model;
 import com.aliyun.odps.Column;
 import com.aliyun.odps.TableSchema;
 import com.aliyun.odps.type.TypeInfo;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

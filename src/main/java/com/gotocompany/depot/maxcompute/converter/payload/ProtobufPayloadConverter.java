@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Interface for converting payloads based on field descriptors.
  */
-public interface PayloadConverter {
+public interface ProtobufPayloadConverter {
 
     /**
      * Converts the given object based on the field descriptor.

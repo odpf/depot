@@ -7,7 +7,7 @@ import com.google.protobuf.Descriptors;
 
 import java.util.Map;
 
-public class PrimitiveTypeInfoConverter implements TypeInfoConverter {
+public class PrimitiveProtobufTypeInfoConverter implements ProtobufTypeInfoConverter {
 
     private static final Map<Descriptors.FieldDescriptor.Type, TypeInfo> PROTO_TYPE_MAP;
 

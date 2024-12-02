@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StructTypeInfoConverterTest {
+public class StructProtobufTypeInfoConverterTest {
 
     private static final int STRUCT_INDEX = 4;
     private static final Descriptors.Descriptor DESCRIPTOR = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
-    private final StructTypeInfoConverter structTypeInfoConverter = new StructTypeInfoConverter();
+    private final StructProtobufTypeInfoConverter structTypeInfoConverter = new StructProtobufTypeInfoConverter();
 
     @Test
     public void shouldConvertToStringTypeInfo() {

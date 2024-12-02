@@ -5,7 +5,7 @@ import com.google.protobuf.Message;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
-import com.gotocompany.depot.maxcompute.converter.type.StructTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StructPayloadConverterTest {
+public class StructProtobufPayloadConverterTest {
 
-    private final StructTypeInfoConverter structTypeInfoConverter = new StructTypeInfoConverter();
-    private final StructPayloadConverter structPayloadConverter = new StructPayloadConverter(structTypeInfoConverter);
+    private final StructProtobufTypeInfoConverter structTypeInfoConverter = new StructProtobufTypeInfoConverter();
+    private final StructProtobufPayloadConverter structPayloadConverter = new StructProtobufPayloadConverter(structTypeInfoConverter);
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
     private final Descriptors.Descriptor repeatedDescriptor = TestMaxComputeTypeInfo.TestRootRepeated.getDescriptor();
 

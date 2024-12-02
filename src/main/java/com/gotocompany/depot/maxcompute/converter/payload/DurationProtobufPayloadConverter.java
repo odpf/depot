@@ -4,19 +4,19 @@ import com.aliyun.odps.data.SimpleStruct;
 import com.aliyun.odps.type.StructTypeInfo;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
-import com.gotocompany.depot.maxcompute.converter.type.DurationTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class DurationPayloadConverter implements PayloadConverter {
+public class DurationProtobufPayloadConverter implements ProtobufPayloadConverter {
 
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";
 
-    private final DurationTypeInfoConverter durationTypeInfoConverter;
+    private final DurationProtobufTypeInfoConverter durationTypeInfoConverter;
 
     @Override
     public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {

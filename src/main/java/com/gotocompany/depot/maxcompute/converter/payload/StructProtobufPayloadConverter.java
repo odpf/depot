@@ -4,13 +4,13 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
-import com.gotocompany.depot.maxcompute.converter.type.StructTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class StructPayloadConverter implements PayloadConverter {
+public class StructProtobufPayloadConverter implements ProtobufPayloadConverter {
 
-    private final StructTypeInfoConverter structTypeInfoConverter;
+    private final StructProtobufTypeInfoConverter structTypeInfoConverter;
     private final JsonFormat.Printer printer = JsonFormat.printer()
             .preservingProtoFieldNames()
             .omittingInsignificantWhitespace();

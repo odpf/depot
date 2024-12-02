@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MessageTypeInfoConverterTest {
+public class MessageProtobufTypeInfoConverterTest {
 
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
-    private MessageTypeInfoConverter messageTypeInfoConverter;
+    private MessageProtobufTypeInfoConverter messageTypeInfoConverter;
 
     @Before
     public void initialize() {
@@ -37,7 +37,7 @@ public class MessageTypeInfoConverterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenUnsupportedTypeIsGiven() {
-        messageTypeInfoConverter = new MessageTypeInfoConverter(new ArrayList<>());
+        messageTypeInfoConverter = new MessageProtobufTypeInfoConverter(new ArrayList<>());
         Descriptors.FieldDescriptor unsupportedFieldDescriptor = descriptor.getFields().get(1);
 
         messageTypeInfoConverter.convert(unsupportedFieldDescriptor);
@@ -54,12 +54,12 @@ public class MessageTypeInfoConverterTest {
     }
 
     private void initializeConverters() {
-        List<TypeInfoConverter> converters = new ArrayList<>();
-        converters.add(new PrimitiveTypeInfoConverter());
-        converters.add(new DurationTypeInfoConverter());
-        converters.add(new StructTypeInfoConverter());
-        converters.add(new TimestampTypeInfoConverter());
-        messageTypeInfoConverter = new MessageTypeInfoConverter(converters);
+        List<ProtobufTypeInfoConverter> converters = new ArrayList<>();
+        converters.add(new PrimitiveProtobufTypeInfoConverter());
+        converters.add(new DurationProtobufTypeInfoConverter());
+        converters.add(new StructProtobufTypeInfoConverter());
+        converters.add(new TimestampProtobufTypeInfoConverter());
+        messageTypeInfoConverter = new MessageProtobufTypeInfoConverter(converters);
         converters.add(messageTypeInfoConverter);
     }
 

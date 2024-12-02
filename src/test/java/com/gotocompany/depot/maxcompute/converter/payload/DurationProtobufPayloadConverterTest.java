@@ -5,7 +5,7 @@ import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Duration;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
-import com.gotocompany.depot.maxcompute.converter.type.DurationTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -14,10 +14,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DurationPayloadConverterTest {
+public class DurationProtobufPayloadConverterTest {
 
-    private final DurationTypeInfoConverter durationTypeInfoConverter = new DurationTypeInfoConverter();
-    private final DurationPayloadConverter durationPayloadConverter = new DurationPayloadConverter(durationTypeInfoConverter);
+    private final DurationProtobufTypeInfoConverter durationTypeInfoConverter = new DurationProtobufTypeInfoConverter();
+    private final DurationProtobufPayloadConverter durationPayloadConverter = new DurationProtobufPayloadConverter(durationTypeInfoConverter);
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
     private final Descriptors.Descriptor repeatedDescriptor = TestMaxComputeTypeInfo.TestRootRepeated.getDescriptor();
 

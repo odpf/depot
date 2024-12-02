@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DurationTypeInfoConverterTest {
+public class DurationProtobufTypeInfoConverterTest {
 
     private static final int DURATION_INDEX = 5;
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
-    private final DurationTypeInfoConverter durationTypeInfoConverter = new DurationTypeInfoConverter();
+    private final DurationProtobufTypeInfoConverter durationTypeInfoConverter = new DurationProtobufTypeInfoConverter();
 
     @Test
     public void shouldConvertToStruct() {

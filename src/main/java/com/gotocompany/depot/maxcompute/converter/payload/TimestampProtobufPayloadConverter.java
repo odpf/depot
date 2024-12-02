@@ -3,7 +3,7 @@ package com.gotocompany.depot.maxcompute.converter.payload;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @RequiredArgsConstructor
-public class TimestampPayloadConverter implements PayloadConverter {
+public class TimestampProtobufPayloadConverter implements ProtobufPayloadConverter {
 
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";
 
-    private final TimestampTypeInfoConverter timestampTypeInfoConverter;
+    private final TimestampProtobufTypeInfoConverter timestampTypeInfoConverter;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     @Override

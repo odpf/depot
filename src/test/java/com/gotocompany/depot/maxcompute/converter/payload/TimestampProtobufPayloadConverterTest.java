@@ -4,7 +4,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -16,18 +16,18 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TimestampPayloadConverterTest {
+public class TimestampProtobufPayloadConverterTest {
 
-    private final TimestampTypeInfoConverter timestampTypeInfoConverter = new TimestampTypeInfoConverter();
+    private final TimestampProtobufTypeInfoConverter timestampTypeInfoConverter = new TimestampProtobufTypeInfoConverter();
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
     private final Descriptors.Descriptor repeatedDescriptor = TestMaxComputeTypeInfo.TestRootRepeated.getDescriptor();
-    private TimestampPayloadConverter timestampPayloadConverter = new TimestampPayloadConverter(timestampTypeInfoConverter, Mockito.mock(MaxComputeSinkConfig.class));
+    private TimestampProtobufPayloadConverter timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, Mockito.mock(MaxComputeSinkConfig.class));
 
     @Before
     public void setUp() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        timestampPayloadConverter = new TimestampPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+        timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
     }
     @Test
     public void shouldConvertToTimestampNtz() {

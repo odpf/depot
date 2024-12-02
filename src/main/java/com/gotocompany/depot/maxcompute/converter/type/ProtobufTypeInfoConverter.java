@@ -4,7 +4,7 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 
-public interface TypeInfoConverter {
+public interface ProtobufTypeInfoConverter {
     default TypeInfo convert(Descriptors.FieldDescriptor fieldDescriptor) {
         return wrap(fieldDescriptor, convertSingular(fieldDescriptor));
     }

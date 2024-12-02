@@ -7,7 +7,7 @@ import com.google.protobuf.Descriptors;
 import java.util.Arrays;
 import java.util.List;
 
-public class DurationTypeInfoConverter implements TypeInfoConverter {
+public class DurationProtobufTypeInfoConverter implements ProtobufTypeInfoConverter {
 
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";

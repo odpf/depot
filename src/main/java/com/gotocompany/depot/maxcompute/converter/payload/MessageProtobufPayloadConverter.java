@@ -3,7 +3,7 @@ package com.gotocompany.depot.maxcompute.converter.payload;
 import com.aliyun.odps.data.SimpleStruct;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
-import com.gotocompany.depot.maxcompute.converter.type.MessageTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.MessageProtobufTypeInfoConverter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class MessagePayloadConverter implements PayloadConverter {
+public class MessageProtobufPayloadConverter implements ProtobufPayloadConverter {
 
-    private final MessageTypeInfoConverter messageTypeInfoConverter;
-    private final List<PayloadConverter> payloadConverters;
+    private final MessageProtobufTypeInfoConverter messageTypeInfoConverter;
+    private final List<ProtobufPayloadConverter> protobufPayloadConverters;
 
     @Override
     public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
@@ -26,7 +26,7 @@ public class MessagePayloadConverter implements PayloadConverter {
                 values.add(null);
                 return;
             }
-            Object mappedInnerValue = payloadConverters.stream()
+            Object mappedInnerValue = protobufPayloadConverters.stream()
                     .filter(converter -> converter.canConvert(innerFieldDescriptor))
                     .findFirst()
                     .map(converter -> converter.convert(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor)))

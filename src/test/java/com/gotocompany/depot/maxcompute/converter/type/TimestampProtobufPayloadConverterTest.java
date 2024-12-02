@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TimestampPayloadConverterTest {
+public class TimestampProtobufPayloadConverterTest {
 
     private static final int TIMESTAMP_INDEX = 3;
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
-    private final TimestampTypeInfoConverter timestampTypeInfoConverter = new TimestampTypeInfoConverter();
+    private final TimestampProtobufTypeInfoConverter timestampTypeInfoConverter = new TimestampProtobufTypeInfoConverter();
 
     @Test
     public void shouldConvertToTimestampNtz() {

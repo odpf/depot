@@ -8,12 +8,12 @@ import com.google.protobuf.Duration;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.type.DurationTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.MessageTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.PrimitiveTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.StructTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.TypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.MessageProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.ProtobufTypeInfoConverter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,16 +26,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MessagePayloadConverterTest {
+public class MessageProtobufPayloadConverterTest {
 
-    private MessagePayloadConverter messagePayloadConverter;
+    private MessageProtobufPayloadConverter messagePayloadConverter;
     private Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestBuyerWrapper.getDescriptor();
 
     @Before
     public void init() {
-        MessageTypeInfoConverter messageTypeInfoConverter = initializeTypeInfoConverters();
-        List<PayloadConverter> payloadConverters = initializePayloadConverter(messageTypeInfoConverter);
-        messagePayloadConverter = new MessagePayloadConverter(messageTypeInfoConverter, payloadConverters);
+        MessageProtobufTypeInfoConverter messageTypeInfoConverter = initializeTypeInfoConverters();
+        List<ProtobufPayloadConverter> protobufPayloadConverters = initializePayloadConverter(messageTypeInfoConverter);
+        messagePayloadConverter = new MessageProtobufPayloadConverter(messageTypeInfoConverter, protobufPayloadConverters);
     }
 
     @Test
@@ -97,27 +97,27 @@ public class MessagePayloadConverterTest {
     }
 
 
-    private MessageTypeInfoConverter initializeTypeInfoConverters() {
-        List<TypeInfoConverter> converters = new ArrayList<>();
-        converters.add(new PrimitiveTypeInfoConverter());
-        converters.add(new DurationTypeInfoConverter());
-        converters.add(new StructTypeInfoConverter());
-        converters.add(new TimestampTypeInfoConverter());
-        MessageTypeInfoConverter messageTypeInfoConverter = new MessageTypeInfoConverter(converters);
+    private MessageProtobufTypeInfoConverter initializeTypeInfoConverters() {
+        List<ProtobufTypeInfoConverter> converters = new ArrayList<>();
+        converters.add(new PrimitiveProtobufTypeInfoConverter());
+        converters.add(new DurationProtobufTypeInfoConverter());
+        converters.add(new StructProtobufTypeInfoConverter());
+        converters.add(new TimestampProtobufTypeInfoConverter());
+        MessageProtobufTypeInfoConverter messageTypeInfoConverter = new MessageProtobufTypeInfoConverter(converters);
         converters.add(messageTypeInfoConverter);
         return messageTypeInfoConverter;
     }
 
-    private List<PayloadConverter> initializePayloadConverter(MessageTypeInfoConverter messageTypeInfoConverter) {
+    private List<ProtobufPayloadConverter> initializePayloadConverter(MessageProtobufTypeInfoConverter messageTypeInfoConverter) {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        List<PayloadConverter> payloadConverters = new ArrayList<>();
-        payloadConverters.add(new DurationPayloadConverter(new DurationTypeInfoConverter()));
-        payloadConverters.add(new PrimitivePayloadConverter(new PrimitiveTypeInfoConverter()));
-        payloadConverters.add(new StructPayloadConverter(new StructTypeInfoConverter()));
-        payloadConverters.add(new TimestampPayloadConverter(new TimestampTypeInfoConverter(), maxComputeSinkConfig));
-        payloadConverters.add(new MessagePayloadConverter(messageTypeInfoConverter, payloadConverters));
-        return payloadConverters;
+        List<ProtobufPayloadConverter> protobufPayloadConverters = new ArrayList<>();
+        protobufPayloadConverters.add(new DurationProtobufPayloadConverter(new DurationProtobufTypeInfoConverter()));
+        protobufPayloadConverters.add(new PrimitiveProtobufPayloadConverter(new PrimitiveProtobufTypeInfoConverter()));
+        protobufPayloadConverters.add(new StructProtobufPayloadConverter(new StructProtobufTypeInfoConverter()));
+        protobufPayloadConverters.add(new TimestampProtobufPayloadConverter(new TimestampProtobufTypeInfoConverter(), maxComputeSinkConfig));
+        protobufPayloadConverters.add(new MessageProtobufPayloadConverter(messageTypeInfoConverter, protobufPayloadConverters));
+        return protobufPayloadConverters;
     }
 
 }

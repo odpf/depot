@@ -8,12 +8,12 @@ import com.google.protobuf.Descriptors;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MessageTypeInfoConverter implements TypeInfoConverter {
+public class MessageProtobufTypeInfoConverter implements ProtobufTypeInfoConverter {
 
-    private final List<TypeInfoConverter> protoFieldToTypeInfoConverterList;
+    private final List<ProtobufTypeInfoConverter> protoFieldToProtobufTypeInfoConverterList;
 
-    public MessageTypeInfoConverter(List<TypeInfoConverter> protoFieldToTypeInfoConverterList) {
-        this.protoFieldToTypeInfoConverterList = protoFieldToTypeInfoConverterList;
+    public MessageProtobufTypeInfoConverter(List<ProtobufTypeInfoConverter> protoFieldToProtobufTypeInfoConverterList) {
+        this.protoFieldToProtobufTypeInfoConverterList = protoFieldToProtobufTypeInfoConverterList;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class MessageTypeInfoConverter implements TypeInfoConverter {
                 .map(Descriptors.FieldDescriptor::getName)
                 .collect(Collectors.toList());
         List<TypeInfo> typeInfos = fieldDescriptor.getMessageType().getFields().stream()
-                .map(fd -> protoFieldToTypeInfoConverterList.stream()
+                .map(fd -> protoFieldToProtobufTypeInfoConverterList.stream()
                         .filter(converter -> converter.canConvert(fd))
                         .findFirst()
                         .map(converter -> converter.convert(fd))

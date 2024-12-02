@@ -4,7 +4,7 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 
-public class StructTypeInfoConverter implements TypeInfoConverter {
+public class StructProtobufTypeInfoConverter implements ProtobufTypeInfoConverter {
 
     private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";
 

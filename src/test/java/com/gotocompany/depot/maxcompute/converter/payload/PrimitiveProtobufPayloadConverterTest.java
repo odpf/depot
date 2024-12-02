@@ -5,7 +5,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
-import com.gotocompany.depot.maxcompute.converter.type.PrimitiveTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PrimitivePayloadConverterTest {
+public class PrimitiveProtobufPayloadConverterTest {
 
-    private final PrimitiveTypeInfoConverter primitiveTypeInfoConverter = new PrimitiveTypeInfoConverter();
-    private final PrimitivePayloadConverter primitivePayloadConverter = new PrimitivePayloadConverter(primitiveTypeInfoConverter);
+    private final PrimitiveProtobufTypeInfoConverter primitiveTypeInfoConverter = new PrimitiveProtobufTypeInfoConverter();
+    private final PrimitiveProtobufPayloadConverter primitivePayloadConverter = new PrimitiveProtobufPayloadConverter(primitiveTypeInfoConverter);
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestFields.getDescriptor();
     private final Descriptors.Descriptor descriptorRepeated = TestMaxComputeTypeInfo.TestFieldsRepeated.getDescriptor();
 
