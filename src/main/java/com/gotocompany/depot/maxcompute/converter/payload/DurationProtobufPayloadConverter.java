@@ -5,6 +5,7 @@ import com.aliyun.odps.type.StructTypeInfo;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -19,9 +20,9 @@ public class DurationProtobufPayloadConverter implements ProtobufPayloadConverte
     private final DurationProtobufTypeInfoConverter durationTypeInfoConverter;
 
     @Override
-    public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
-        List<Object> values = getValues((Message) object);
-        return new SimpleStruct((StructTypeInfo) durationTypeInfoConverter.convertSingular(fieldDescriptor), values);
+    public Object convertSingular(ProtoPayload protoPayload) {
+        List<Object> values = getValues((Message) protoPayload.getObject());
+        return new SimpleStruct((StructTypeInfo) durationTypeInfoConverter.convertSingular(protoPayload.getFieldDescriptor()), values);
     }
 
     @Override

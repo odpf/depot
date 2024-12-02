@@ -6,6 +6,7 @@ import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class StructProtobufPayloadConverterTest {
                 .build();
         String expected = "{\"intField\":1.0,\"stringField\":\"String\"}";
 
-        Object result = structPayloadConverter.convert(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)));
+        Object result = structPayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
 
         assertTrue(result instanceof String);
         assertEquals(expected, result);
@@ -50,7 +51,7 @@ public class StructProtobufPayloadConverterTest {
                 .build();
         String expected = "[{\"intField\":1.0,\"stringField\":\"String\"}, {\"intField\":1.0,\"stringField\":\"String\"}]";
 
-        Object result = structPayloadConverter.convert(repeatedDescriptor.getFields().get(4), message.getField(repeatedDescriptor.getFields().get(4)));
+        Object result = structPayloadConverter.convert(new ProtoPayload(repeatedDescriptor.getFields().get(4), message.getField(repeatedDescriptor.getFields().get(4)), true));
 
         assertTrue(result instanceof List);
         assertTrue(((List<?>) result).stream().allMatch(e -> e instanceof String));

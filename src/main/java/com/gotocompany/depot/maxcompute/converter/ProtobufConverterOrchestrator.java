@@ -15,6 +15,7 @@ import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfo
 import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.ProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ProtobufConverterOrchestrator {
         return protobufPayloadConverters.stream()
                 .filter(converter -> converter.canConvert(fieldDescriptor))
                 .findFirst()
-                .map(converter -> converter.convert(fieldDescriptor, object))
+                .map(converter -> converter.convert(new ProtoPayload(fieldDescriptor, object, true)))
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported type: " + fieldDescriptor.getType()));
     }
 

@@ -6,6 +6,7 @@ import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -47,7 +48,7 @@ public class TimestampProtobufPayloadConverterTest {
         LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
                 timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
 
-        Object result = timestampPayloadConverter.convertSingular(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
+        Object result = timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
 
         assertThat(result)
                 .isEqualTo(expectedLocalDateTime);
@@ -71,7 +72,7 @@ public class TimestampProtobufPayloadConverterTest {
         LocalDateTime expectedLocalDateTime2 = LocalDateTime.ofEpochSecond(
                 timestamp2.getSeconds(), timestamp2.getNanos(), java.time.ZoneOffset.UTC);
 
-        Object result = timestampPayloadConverter.convert(repeatedDescriptor.getFields().get(3), message.getField(repeatedDescriptor.getFields().get(3)));
+        Object result = timestampPayloadConverter.convert(new ProtoPayload(repeatedDescriptor.getFields().get(3), message.getField(repeatedDescriptor.getFields().get(3)), true));
 
         assertThat(result)
                 .isInstanceOf(List.class);
@@ -92,7 +93,7 @@ public class TimestampProtobufPayloadConverterTest {
         LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
                 timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
 
-        Object result = timestampPayloadConverter.convertSingular(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
+        Object result = timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
 
         assertThat(result)
                 .isEqualTo(expectedLocalDateTime);
@@ -116,7 +117,7 @@ public class TimestampProtobufPayloadConverterTest {
         LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
                 timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
 
-        Object result = timestampPayloadConverter.convertSingular(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
+        Object result = timestampPayloadConverter.convertSingular(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
 
         assertThat(result).isEqualTo(expectedLocalDateTime);
     }

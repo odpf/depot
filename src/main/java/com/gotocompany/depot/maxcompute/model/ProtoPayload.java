@@ -1,0 +1,13 @@
+package com.gotocompany.depot.maxcompute.model;
+
+import com.google.protobuf.Descriptors;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public class ProtoPayload {
+    private final Descriptors.FieldDescriptor fieldDescriptor;
+    private final Object object;
+    private final boolean isRootLevel;
+}

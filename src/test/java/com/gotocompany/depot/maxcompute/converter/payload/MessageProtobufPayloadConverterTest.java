@@ -14,6 +14,7 @@ import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfo
 import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.ProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -91,7 +92,7 @@ public class MessageProtobufPayloadConverterTest {
                 LocalDateTime.ofEpochSecond(timestamp.getSeconds(), 0, java.time.ZoneOffset.UTC)
         );
 
-        Object object = messagePayloadConverter.convert(descriptor.getFields().get(0), wrapper.getField(descriptor.getFields().get(0)));
+        Object object = messagePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(0), wrapper.getField(descriptor.getFields().get(0)), true));
 
         assertThat(object)
                 .extracting("typeInfo", "values")

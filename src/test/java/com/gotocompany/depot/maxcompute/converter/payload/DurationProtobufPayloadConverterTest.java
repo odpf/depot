@@ -6,6 +6,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Duration;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class DurationProtobufPayloadConverterTest {
         List<String> expectedFieldNames = Arrays.asList("seconds", "nanos");
         List<TypeInfo> expectedTypeInfos = Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT);
         List<Object> values = Arrays.asList(1L, 1);
-        Object result = durationPayloadConverter.convert(descriptor.getFields().get(5), message.getField(descriptor.getFields().get(5)));
+        Object result = durationPayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(5), message.getField(descriptor.getFields().get(5)), true));
 
         assertThat(result)
                 .isInstanceOf(com.aliyun.odps.data.SimpleStruct.class)
@@ -59,7 +60,7 @@ public class DurationProtobufPayloadConverterTest {
         List<Object> values1 = Arrays.asList(1L, 1);
         List<Object> values2 = Arrays.asList(2L, 2);
 
-        Object result = durationPayloadConverter.convert(repeatedDescriptor.getFields().get(5), message.getField(repeatedDescriptor.getFields().get(5)));
+        Object result = durationPayloadConverter.convert(new ProtoPayload(repeatedDescriptor.getFields().get(5), message.getField(repeatedDescriptor.getFields().get(5)), true));
 
         assertThat(result)
                 .isInstanceOf(List.class);

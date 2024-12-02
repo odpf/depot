@@ -1,6 +1,7 @@
 package com.gotocompany.depot.maxcompute.converter.payload;
 
 import com.google.protobuf.Descriptors;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,30 +12,25 @@ import java.util.stream.Collectors;
 public interface ProtobufPayloadConverter {
 
     /**
-     * Converts the given object based on the field descriptor.
-     * If the field is repeated, it converts each element in the list.
-     *
-     * @param fieldDescriptor the field descriptor
-     * @param object the object to convert
-     * @return the converted object
+     * Converts a proto payload to a format that can be used by the MaxCompute SDK.
+     * @param protoPayload the proto payload to convert, containing field descriptor, the actual object and level
+     * @return
      */
-    default Object convert(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
-        if (!fieldDescriptor.isRepeated()) {
-            return convertSingular(fieldDescriptor, object);
+    default Object convert(ProtoPayload protoPayload) {
+        if (!protoPayload.getFieldDescriptor().isRepeated()) {
+            return convertSingular(protoPayload);
         }
-        return ((List<?>) object).stream()
-                .map(o -> convertSingular(fieldDescriptor, o))
+        return ((List<?>) protoPayload.getObject()).stream()
+                .map(o -> convertSingular(new ProtoPayload(protoPayload.getFieldDescriptor(), o, protoPayload.isRootLevel())))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Converts a singular object based on the field descriptor.
-     *
-     * @param fieldDescriptor the field descriptor
-     * @param object the object to convert
-     * @return the converted object
+     * Converts a singular proto payload to a format that can be used by the MaxCompute SDK.
+     * @param protoPayload the proto payload to convert, containing field descriptor, the actual object and level
+     * @return
      */
-    Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object);
+    Object convertSingular(ProtoPayload protoPayload);
 
     /**
      * Checks if the converter can convert the given field descriptor.

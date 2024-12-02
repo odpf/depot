@@ -5,6 +5,7 @@ import com.google.protobuf.Message;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
@@ -21,8 +22,8 @@ public class TimestampProtobufPayloadConverter implements ProtobufPayloadConvert
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     @Override
-    public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
-        Message message = (Message) object;
+    public Object convertSingular(ProtoPayload protoPayload) {
+        Message message = (Message) protoPayload.getObject();
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));
         int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS));
         Instant instant = Instant.now();

@@ -5,6 +5,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,9 +17,9 @@ public class StructProtobufPayloadConverter implements ProtobufPayloadConverter 
             .omittingInsignificantWhitespace();
 
     @Override
-    public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
+    public Object convertSingular(ProtoPayload protoPayload) {
         try {
-            return printer.print((Message) object);
+            return printer.print((Message) protoPayload.getObject());
         } catch (InvalidProtocolBufferException e) {
             return "";
         }

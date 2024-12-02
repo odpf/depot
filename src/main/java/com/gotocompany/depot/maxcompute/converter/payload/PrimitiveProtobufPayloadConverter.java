@@ -4,6 +4,7 @@ import com.aliyun.odps.data.Binary;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
+import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +24,13 @@ public class PrimitiveProtobufPayloadConverter implements ProtobufPayloadConvert
     }
 
     @Override
-    public Object convertSingular(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
-        return mappers.getOrDefault(fieldDescriptor.getType(), Function.identity()).apply(object);
+    public Object convertSingular(ProtoPayload protoPayload) {
+        return mappers.getOrDefault(protoPayload.getFieldDescriptor().getType(), Function.identity()).apply(protoPayload.getObject());
     }
 
     @Override
     public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
         return primitiveTypeInfoConverter.canConvert(fieldDescriptor);
     }
+
 }
