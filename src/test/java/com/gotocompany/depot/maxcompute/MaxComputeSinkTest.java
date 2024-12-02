@@ -70,7 +70,8 @@ public class MaxComputeSinkTest {
 
         Mockito.verify(maxComputeClient, Mockito.times(1)).insert(validRecords);
         Assertions.assertEquals(1, sinkResponse.getErrors().size());
-        Assertions.assertEquals(sinkResponse.getErrors().get(1L), new ErrorInfo(new RuntimeException("Invalid Schema"), ErrorType.DESERIALIZATION_ERROR));
+        Assertions.assertEquals(sinkResponse.getErrors().get(1L).getException().getMessage(), "Invalid Schema");
+        Assertions.assertEquals(sinkResponse.getErrors().get(1L).getErrorType(), ErrorType.DESERIALIZATION_ERROR);
     }
 
     @Test
