@@ -4,6 +4,7 @@ import com.aliyun.odps.data.ArrayRecord;
 import com.aliyun.odps.data.Record;
 import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
+import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.exception.UnknownFieldsException;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
@@ -40,6 +41,10 @@ public class ProtoMessageRecordConverter implements MessageRecordConverter {
                     } catch (UnknownFieldsException e) {
                         recordWrappers.addInvalidRecord(
                                 toErrorRecordWrapper(recordWrapper, new ErrorInfo(e, ErrorType.UNKNOWN_FIELDS_ERROR))
+                        );
+                    } catch (InvalidMessageException e) {
+                        recordWrappers.addInvalidRecord(
+                                toErrorRecordWrapper(recordWrapper, new ErrorInfo(e, ErrorType.INVALID_MESSAGE_ERROR))
                         );
                     }
                 });

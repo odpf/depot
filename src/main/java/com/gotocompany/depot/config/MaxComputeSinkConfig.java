@@ -3,10 +3,12 @@ package com.gotocompany.depot.config;
 import com.aliyun.odps.tunnel.io.CompressOption;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.converter.ConfToListConverter;
+import com.gotocompany.depot.config.converter.LocalDateTimeConverter;
 import com.gotocompany.depot.config.converter.MaxComputeOdpsGlobalSettingsConverter;
 import com.gotocompany.depot.config.converter.ZoneIdConverter;
 import org.aeonbits.owner.Config;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
@@ -119,4 +121,15 @@ public interface MaxComputeSinkConfig extends Config {
     @Key("SINK_MAXCOMPUTE_TABLE_VALIDATOR_MAX_PARTITION_KEYS_PER_TABLE")
     @DefaultValue("6")
     int getTableValidatorMaxPartitionKeysPerTable();
+
+    @Key("SINK_MAXCOMPUTE_VALID_MIN_TIMESTAMP")
+    @ConverterClass(LocalDateTimeConverter.class)
+    @DefaultValue("1970-01-01T00:00:00")
+    LocalDateTime getValidMinTimestamp();
+
+    @Key("SINK_MAXCOMPUTE_VALID_MAX_TIMESTAMP")
+    @ConverterClass(LocalDateTimeConverter.class)
+    @DefaultValue("999999999-12-31T23:59:59")
+    LocalDateTime getValidMaxTimestamp();
+
 }

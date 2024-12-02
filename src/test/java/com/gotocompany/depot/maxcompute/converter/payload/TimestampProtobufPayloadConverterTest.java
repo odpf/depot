@@ -4,6 +4,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,10 +12,12 @@ import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 public class TimestampProtobufPayloadConverterTest {
 
@@ -26,9 +29,12 @@ public class TimestampProtobufPayloadConverterTest {
     @Before
     public void setUp() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:01", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
         timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
     }
+
     @Test
     public void shouldConvertToTimestampNtz() {
         Timestamp timestamp = Timestamp.newBuilder()
@@ -72,6 +78,47 @@ public class TimestampProtobufPayloadConverterTest {
         assertThat(((List<?>) result).stream().map(LocalDateTime.class::cast))
                 .hasSize(2)
                 .containsExactly(expectedLocalDateTime1, expectedLocalDateTime2);
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenDateIsOutOfMinValidRange() {
+        Timestamp timestamp = Timestamp.newBuilder()
+                .setSeconds(0)
+                .setNanos(0)
+                .build();
+        TestMaxComputeTypeInfo.TestRoot message = TestMaxComputeTypeInfo.TestRoot.newBuilder()
+                .setTimestampField(timestamp)
+                .build();
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
+
+        Object result = timestampPayloadConverter.convertSingular(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
+
+        assertThat(result)
+                .isEqualTo(expectedLocalDateTime);
+    }
+
+    @Test(expected = InvalidMessageException.class)
+    public void shouldThrowInvalidMessageExceptionWhenDateIsOutOfMaxValidRange() {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        timestampPayloadConverter = new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig);
+
+        Timestamp timestamp = Timestamp.newBuilder()
+                .setSeconds(3600 * 48)
+                .setNanos(0)
+                .build();
+        TestMaxComputeTypeInfo.TestRoot message = TestMaxComputeTypeInfo.TestRoot.newBuilder()
+                .setTimestampField(timestamp)
+                .build();
+        LocalDateTime expectedLocalDateTime = LocalDateTime.ofEpochSecond(
+                timestamp.getSeconds(), timestamp.getNanos(), java.time.ZoneOffset.UTC);
+
+        Object result = timestampPayloadConverter.convertSingular(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
+
+        assertThat(result).isEqualTo(expectedLocalDateTime);
     }
 
 }

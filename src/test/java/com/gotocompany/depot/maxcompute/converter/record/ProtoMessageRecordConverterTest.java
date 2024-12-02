@@ -11,6 +11,7 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
+import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.exception.UnknownFieldsException;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.MaxComputeSchemaHelper;
@@ -37,11 +38,13 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 public class ProtoMessageRecordConverterTest {
 
@@ -69,6 +72,8 @@ public class ProtoMessageRecordConverterTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_column");
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
         protobufConverterOrchestrator = new ProtobufConverterOrchestrator(maxComputeSinkConfig);
         protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);
@@ -195,6 +200,32 @@ public class ProtoMessageRecordConverterTest {
                 .isNull();
         assertThat(recordWrapper.getErrorInfo())
                 .isEqualTo(new ErrorInfo(new UnknownFieldsException(mockedMessage), ErrorType.UNKNOWN_FIELDS_ERROR));
+    }
+
+    @Test
+    public void shouldReturnRecordWrapperWithInvalidMessageErrorWhenInvalidMessageExceptionIsThrown() throws IOException {
+        RecordDecorator recordDecorator = Mockito.mock(RecordDecorator.class);
+        String invalidMessage = "Invalid message";
+        Mockito.doThrow(new InvalidMessageException(invalidMessage)).when(recordDecorator)
+                .decorate(Mockito.any(), Mockito.any());
+        ProtoMessageRecordConverter recordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
+        Message message = new Message(
+                null,
+                getMockedMessage().toByteArray(),
+                new Tuple<>("__message_timestamp", 123012311L),
+                new Tuple<>("__kafka_topic", "topic"),
+                new Tuple<>("__kafka_offset", 100L)
+        );
+
+        RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
+
+        assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
+        RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);
+        assertThat(recordWrapper.getIndex()).isEqualTo(0);
+        assertThat(recordWrapper.getRecord())
+                .isNull();
+        assertThat(recordWrapper.getErrorInfo())
+                .isEqualTo(new ErrorInfo(new InvalidMessageException(invalidMessage), ErrorType.INVALID_MESSAGE_ERROR));
     }
 
     private static TestMaxComputeRecord.MaxComputeRecord getMockedMessage() {
