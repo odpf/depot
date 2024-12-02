@@ -207,3 +207,21 @@ Check the official documentation for the [table name](https://www.alibabacloud.c
 * Example value: `6`
 * Type: `required`
 * Default value: `6`
+
+## SINK_MAXCOMPUTE_VALID_MIN_TIMESTAMP
+
+Contains the minimum valid timestamp. Records with timestamp field less than this value will be considered as invalid message.
+Timestamp should be in the format of `yyyy-MM-ddTHH:mm:ss`.
+
+* Example value: `0`
+* Type: `required`
+* Default value: `1970-01-01T00:00:00`
+
+## SINK_MAXCOMPUTE_VALID_MAX_TIMESTAMP
+
+Contains the maximum valid timestamp. Records with timestamp field more than this value will be considered as invalid message.
+Timestamp should be in the format of `yyyy-MM-ddTHH:mm:ss`.
+
+* Example value: `0`
+* Type: `required`
+* Default value: `9999-12-31T23:59:59`

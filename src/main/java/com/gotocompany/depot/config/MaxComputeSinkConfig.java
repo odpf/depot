@@ -129,7 +129,7 @@ public interface MaxComputeSinkConfig extends Config {
 
     @Key("SINK_MAXCOMPUTE_VALID_MAX_TIMESTAMP")
     @ConverterClass(LocalDateTimeConverter.class)
-    @DefaultValue("999999999-12-31T23:59:59")
+    @DefaultValue("9999-12-31T23:59:59")
     LocalDateTime getValidMaxTimestamp();
 
 }
