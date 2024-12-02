@@ -5,8 +5,9 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InsertManagerFactoryTest {
 
@@ -18,7 +19,7 @@ public class InsertManagerFactoryTest {
         InsertManager insertManager = InsertManagerFactory.createInsertManager(maxComputeSinkConfig,
                 Mockito.mock(TableTunnel.class), Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
 
-        Assertions.assertTrue(insertManager instanceof PartitionedInsertManager);
+        assertTrue(insertManager instanceof PartitionedInsertManager);
     }
 
     @Test
@@ -29,7 +30,7 @@ public class InsertManagerFactoryTest {
         InsertManager insertManager = InsertManagerFactory.createInsertManager(maxComputeSinkConfig,
                 Mockito.mock(TableTunnel.class), Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
 
-        Assertions.assertTrue(insertManager instanceof NonPartitionedInsertManager);
+        assertTrue(insertManager instanceof NonPartitionedInsertManager);
     }
 
 }

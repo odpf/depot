@@ -4,7 +4,10 @@ import com.aliyun.odps.type.TypeInfo;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DurationTypeInfoConverterTest {
 
@@ -18,7 +21,7 @@ public class DurationTypeInfoConverterTest {
 
         TypeInfo typeInfo = durationTypeInfoConverter.convert(fieldDescriptor);
 
-        Assertions.assertEquals("STRUCT<`seconds`:BIGINT,`nanos`:INT>", typeInfo.getTypeName());
+        assertEquals("STRUCT<`seconds`:BIGINT,`nanos`:INT>", typeInfo.getTypeName());
     }
 
     @Test
@@ -27,7 +30,7 @@ public class DurationTypeInfoConverterTest {
 
         boolean canConvert = durationTypeInfoConverter.canConvert(fieldDescriptor);
 
-        Assertions.assertTrue(canConvert);
+        assertTrue(canConvert);
     }
 
     @Test
@@ -36,7 +39,7 @@ public class DurationTypeInfoConverterTest {
 
         boolean canConvert = durationTypeInfoConverter.canConvert(fieldDescriptor);
 
-        Assertions.assertFalse(canConvert);
+        assertFalse(canConvert);
     }
 
 }

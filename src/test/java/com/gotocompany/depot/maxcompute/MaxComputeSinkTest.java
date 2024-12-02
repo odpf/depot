@@ -25,28 +25,31 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.when;
+
 public class MaxComputeSinkTest {
 
     @Test
     public void shouldInsertMaxComputeSinkTest() throws IOException, TunnelException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+        when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+        when(maxComputeSinkConfig.getMaxComputeAccessKey())
                 .thenReturn("accessKey");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+        when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
                 .thenReturn("odpsUrl");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+        when(maxComputeSinkConfig.getMaxComputeProjectId())
                 .thenReturn("projectId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+        when(maxComputeSinkConfig.getMaxComputeSchema())
                 .thenReturn("schema");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+        when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+        when(maxComputeSinkConfig.getTableValidatorNameRegex())
                 .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
                 .thenReturn(1200);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
@@ -61,7 +64,7 @@ public class MaxComputeSinkTest {
         List<RecordWrapper> validRecords = Collections.singletonList(new RecordWrapper(Mockito.mock(Record.class), 0, null, null));
         List<RecordWrapper> invalidRecords = Collections.singletonList(new RecordWrapper(Mockito.mock(Record.class), 1,
                 new ErrorInfo(new RuntimeException("Invalid Schema"), ErrorType.DESERIALIZATION_ERROR), null));
-        Mockito.when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, invalidRecords));
+        when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, invalidRecords));
 
         SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
 
@@ -73,23 +76,23 @@ public class MaxComputeSinkTest {
     @Test
     public void shouldMarkAllMessageAsFailedWhenInsertThrowTunnelExceptionError() throws IOException, TunnelException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+        when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+        when(maxComputeSinkConfig.getMaxComputeAccessKey())
                 .thenReturn("accessKey");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+        when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
                 .thenReturn("odpsUrl");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+        when(maxComputeSinkConfig.getMaxComputeProjectId())
                 .thenReturn("projectId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+        when(maxComputeSinkConfig.getMaxComputeSchema())
                 .thenReturn("schema");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+        when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+        when(maxComputeSinkConfig.getTableValidatorNameRegex())
                 .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
                 .thenReturn(1200);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
@@ -108,7 +111,7 @@ public class MaxComputeSinkTest {
                 new RecordWrapper(Mockito.mock(Record.class), 0, null, null),
                 new RecordWrapper(Mockito.mock(Record.class), 1, null, null)
         );
-        Mockito.when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
+        when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
 
         SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
 
@@ -122,23 +125,23 @@ public class MaxComputeSinkTest {
     @Test
     public void shouldMarkAllMessageAsFailedWhenInsertThrowIOExceptionError() throws IOException, TunnelException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+        when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+        when(maxComputeSinkConfig.getMaxComputeAccessKey())
                 .thenReturn("accessKey");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+        when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
                 .thenReturn("odpsUrl");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+        when(maxComputeSinkConfig.getMaxComputeProjectId())
                 .thenReturn("projectId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+        when(maxComputeSinkConfig.getMaxComputeSchema())
                 .thenReturn("schema");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+        when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+        when(maxComputeSinkConfig.getTableValidatorNameRegex())
                 .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
                 .thenReturn(1200);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
@@ -157,7 +160,7 @@ public class MaxComputeSinkTest {
                 new RecordWrapper(Mockito.mock(Record.class), 0, null, null),
                 new RecordWrapper(Mockito.mock(Record.class), 1, null, null)
         );
-        Mockito.when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
+        when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
 
         SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
 
@@ -171,23 +174,23 @@ public class MaxComputeSinkTest {
     @Test
     public void shouldMarkAllMessageAsFailedWhenInsertThrowExceptionError() throws IOException, TunnelException {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+        when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+        when(maxComputeSinkConfig.getMaxComputeAccessKey())
                 .thenReturn("accessKey");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+        when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
                 .thenReturn("odpsUrl");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+        when(maxComputeSinkConfig.getMaxComputeProjectId())
                 .thenReturn("projectId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+        when(maxComputeSinkConfig.getMaxComputeSchema())
                 .thenReturn("schema");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+        when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+        when(maxComputeSinkConfig.getTableValidatorNameRegex())
                 .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
                 .thenReturn(1200);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         Mockito.doNothing()
@@ -206,7 +209,7 @@ public class MaxComputeSinkTest {
                 new RecordWrapper(Mockito.mock(Record.class), 0, null, null),
                 new RecordWrapper(Mockito.mock(Record.class), 1, null, null)
         );
-        Mockito.when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
+        when(messageRecordConverter.convert(messages)).thenReturn(new RecordWrappers(validRecords, new ArrayList<>()));
 
         SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
 
@@ -220,30 +223,30 @@ public class MaxComputeSinkTest {
     @Test
     public void shouldDoNothing() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessId())
+        when(maxComputeSinkConfig.getMaxComputeAccessId())
                 .thenReturn("accessId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeAccessKey())
+        when(maxComputeSinkConfig.getMaxComputeAccessKey())
                 .thenReturn("accessKey");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
+        when(maxComputeSinkConfig.getMaxComputeOdpsUrl())
                 .thenReturn("odpsUrl");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeProjectId())
+        when(maxComputeSinkConfig.getMaxComputeProjectId())
                 .thenReturn("projectId");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeSchema())
+        when(maxComputeSinkConfig.getMaxComputeSchema())
                 .thenReturn("schema");
-        Mockito.when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
+        when(maxComputeSinkConfig.getMaxComputeTunnelUrl())
                 .thenReturn("tunnelUrl");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex())
+        when(maxComputeSinkConfig.getTableValidatorNameRegex())
                 .thenReturn("^[A-Za-z][A-Za-z0-9_]{0,127}$");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable())
                 .thenReturn(1200);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
+        when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
         MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
 
         MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
 
-        Assertions.assertDoesNotThrow(maxComputeSink::close);
+        assertDoesNotThrow(maxComputeSink::close);
     }
 
 }

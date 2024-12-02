@@ -27,7 +27,6 @@ import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -41,6 +40,8 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProtoMessageRecordConverterTest {
 
@@ -114,10 +115,10 @@ public class ProtoMessageRecordConverterTest {
 
         RecordWrappers recordWrappers = protoMessageRecordConverter.convert(Collections.singletonList(message));
 
-        Assertions.assertThat(recordWrappers.getValidRecords()).size().isEqualTo(1);
+        assertThat(recordWrappers.getValidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getValidRecords().get(0);
-        Assertions.assertThat(recordWrapper.getIndex()).isEqualTo(0);
-        Assertions.assertThat(recordWrapper.getRecord())
+        assertThat(recordWrapper.getIndex()).isEqualTo(0);
+        assertThat(recordWrapper.getRecord())
                 .extracting("values")
                 .isEqualTo(new Serializable[]{
                         expectedTimestampLocalDateTime,
@@ -142,7 +143,7 @@ public class ProtoMessageRecordConverterTest {
                         )),
                         expectedPayloadLocalDateTime
                 });
-        Assertions.assertThat(recordWrapper.getErrorInfo()).isNull();
+        assertThat(recordWrapper.getErrorInfo()).isNull();
     }
 
     @Test
@@ -161,12 +162,12 @@ public class ProtoMessageRecordConverterTest {
 
         RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
 
-        Assertions.assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
+        assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);
-        Assertions.assertThat(recordWrapper.getIndex()).isEqualTo(0);
-        Assertions.assertThat(recordWrapper.getRecord())
+        assertThat(recordWrapper.getIndex()).isEqualTo(0);
+        assertThat(recordWrapper.getRecord())
                 .isNull();
-        Assertions.assertThat(recordWrapper.getErrorInfo())
+        assertThat(recordWrapper.getErrorInfo())
                 .isEqualTo(new ErrorInfo(new IOException(), ErrorType.DESERIALIZATION_ERROR));
     }
 
@@ -187,12 +188,12 @@ public class ProtoMessageRecordConverterTest {
 
         RecordWrappers recordWrappers = recordConverter.convert(Collections.singletonList(message));
 
-        Assertions.assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
+        assertThat(recordWrappers.getInvalidRecords()).size().isEqualTo(1);
         RecordWrapper recordWrapper = recordWrappers.getInvalidRecords().get(0);
-        Assertions.assertThat(recordWrapper.getIndex()).isEqualTo(0);
-        Assertions.assertThat(recordWrapper.getRecord())
+        assertThat(recordWrapper.getIndex()).isEqualTo(0);
+        assertThat(recordWrapper.getRecord())
                 .isNull();
-        Assertions.assertThat(recordWrapper.getErrorInfo())
+        assertThat(recordWrapper.getErrorInfo())
                 .isEqualTo(new ErrorInfo(new UnknownFieldsException(mockedMessage), ErrorType.UNKNOWN_FIELDS_ERROR));
     }
 

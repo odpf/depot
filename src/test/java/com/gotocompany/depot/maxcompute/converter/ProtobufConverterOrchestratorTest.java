@@ -15,7 +15,6 @@ import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -26,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProtobufConverterOrchestratorTest {
 
@@ -55,12 +56,12 @@ public class ProtobufConverterOrchestratorTest {
         TypeInfo durationTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("duration_field"));
         TypeInfo structTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("struct_field"));
 
-        Assertions.assertEquals(expectedStringTypeInfoRepresentation, stringTypeInfo.toString());
-        Assertions.assertEquals(expectedMessageTypeRepresentation, messageTypeInfo.toString());
-        Assertions.assertEquals(expectedRepeatedMessageTypeRepresentation, repeatedTypeInfo.toString());
-        Assertions.assertEquals(expectedTimestampTypeInfoRepresentation, timestampTypeInfo.toString());
-        Assertions.assertEquals(expectedDurationTypeInfoRepresentation, durationTypeInfo.toString());
-        Assertions.assertEquals(expectedStructTypeInfoRepresentation, structTypeInfo.toString());
+        assertEquals(expectedStringTypeInfoRepresentation, stringTypeInfo.toString());
+        assertEquals(expectedMessageTypeRepresentation, messageTypeInfo.toString());
+        assertEquals(expectedRepeatedMessageTypeRepresentation, repeatedTypeInfo.toString());
+        assertEquals(expectedTimestampTypeInfoRepresentation, timestampTypeInfo.toString());
+        assertEquals(expectedDurationTypeInfoRepresentation, durationTypeInfo.toString());
+        assertEquals(expectedStructTypeInfoRepresentation, structTypeInfo.toString());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -112,12 +113,12 @@ public class ProtobufConverterOrchestratorTest {
         Object durationRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("duration_field"), messagePayload.getField(descriptor.findFieldByName("duration_field")));
         Object structRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("struct_field"), messagePayload.getField(descriptor.findFieldByName("struct_field")));
 
-        Assertions.assertEquals("string_field", stringRecord);
-        Assertions.assertEquals(LocalDateTime.ofEpochSecond(100, 0, ZoneOffset.UTC), timestampRecord);
-        Assertions.assertEquals(new SimpleStruct(TypeInfoFactory.getStructTypeInfo(Arrays.asList("seconds", "nanos"), Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT)), Arrays.asList(100L, 0)), durationRecord);
-        Assertions.assertEquals(expectedMessage, messageRecord);
-        Assertions.assertEquals(Collections.singletonList(expectedMessage), repeatedMessageRecord);
-        Assertions.assertEquals("{\"intField\":1.0,\"stringField\":\"String\"}", structRecord);
+        assertEquals("string_field", stringRecord);
+        assertEquals(LocalDateTime.ofEpochSecond(100, 0, ZoneOffset.UTC), timestampRecord);
+        assertEquals(new SimpleStruct(TypeInfoFactory.getStructTypeInfo(Arrays.asList("seconds", "nanos"), Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT)), Arrays.asList(100L, 0)), durationRecord);
+        assertEquals(expectedMessage, messageRecord);
+        assertEquals(Collections.singletonList(expectedMessage), repeatedMessageRecord);
+        assertEquals("{\"intField\":1.0,\"stringField\":\"String\"}", structRecord);
     }
 
     @Test
@@ -126,10 +127,10 @@ public class ProtobufConverterOrchestratorTest {
         Field field = protobufConverterOrchestrator.getClass()
                 .getDeclaredField("typeInfoCache");
         field.setAccessible(true);
-        Assertions.assertEquals(1, ((Map<String, TypeInfo>) field.get(protobufConverterOrchestrator)).size());
+        assertEquals(1, ((Map<String, TypeInfo>) field.get(protobufConverterOrchestrator)).size());
 
         protobufConverterOrchestrator.clearCache();
 
-        Assertions.assertEquals(0, ((Map<String, TypeInfo>) field.get(protobufConverterOrchestrator)).size());
+        assertEquals(0, ((Map<String, TypeInfo>) field.get(protobufConverterOrchestrator)).size());
     }
 }

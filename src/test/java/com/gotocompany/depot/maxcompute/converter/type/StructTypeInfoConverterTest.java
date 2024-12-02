@@ -5,7 +5,10 @@ import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StructTypeInfoConverterTest {
 
@@ -17,17 +20,17 @@ public class StructTypeInfoConverterTest {
     public void shouldConvertToStringTypeInfo() {
         TypeInfo typeInfo = structTypeInfoConverter.convert(DESCRIPTOR.getFields().get(STRUCT_INDEX));
 
-        Assertions.assertEquals(TypeInfoFactory.STRING, typeInfo);
+        assertEquals(TypeInfoFactory.STRING, typeInfo);
     }
 
     @Test
     public void shouldReturnTrueWhenCanConvertIsCalledWithStructFieldDescriptor() {
-        Assertions.assertTrue(structTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(STRUCT_INDEX)));
+        assertTrue(structTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(STRUCT_INDEX)));
     }
 
     @Test
     public void shouldReturnFalseWhenCanConvertIsCalledWithNonStructFieldDescriptor() {
-        Assertions.assertFalse(structTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(0)));
-        Assertions.assertFalse(structTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(1)));
+        assertFalse(structTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(0)));
+        assertFalse(structTypeInfoConverter.canConvert(DESCRIPTOR.getFields().get(1)));
     }
 }

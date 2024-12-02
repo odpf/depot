@@ -14,7 +14,6 @@ import com.gotocompany.depot.maxcompute.converter.type.PrimitiveTypeInfoConverte
 import com.gotocompany.depot.maxcompute.converter.type.StructTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.converter.type.TypeInfoConverter;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,6 +23,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MessagePayloadConverterTest {
 
@@ -90,7 +91,7 @@ public class MessagePayloadConverterTest {
 
         Object object = messagePayloadConverter.convert(descriptor.getFields().get(0), wrapper.getField(descriptor.getFields().get(0)));
 
-        Assertions.assertThat(object)
+        assertThat(object)
                 .extracting("typeInfo", "values")
                 .containsExactly(expectedStructTypeInfo, expectedStructValues);
     }

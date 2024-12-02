@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.Mockito.when;
+
 public class TableValidatorTest {
 
     private TableValidator tableValidator;
@@ -15,9 +17,9 @@ public class TableValidatorTest {
     @Before
     public void init() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorNameRegex()).thenReturn("^[a-zA-Z_][a-zA-Z0-9_]{0,29}$");
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable()).thenReturn(1200);
-        Mockito.when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable()).thenReturn(6);
+        when(maxComputeSinkConfig.getTableValidatorNameRegex()).thenReturn("^[a-zA-Z_][a-zA-Z0-9_]{0,29}$");
+        when(maxComputeSinkConfig.getTableValidatorMaxColumnsPerTable()).thenReturn(1200);
+        when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable()).thenReturn(6);
         tableValidator = new TableValidator(maxComputeSinkConfig);
     }
 

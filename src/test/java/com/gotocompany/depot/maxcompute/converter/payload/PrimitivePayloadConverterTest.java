@@ -7,11 +7,14 @@ import com.google.protobuf.Message;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.maxcompute.converter.type.PrimitiveTypeInfoConverter;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PrimitivePayloadConverterTest {
 
@@ -29,8 +32,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(0), message.getField(descriptor.getFields().get(0)));
 
-        Assertions.assertTrue(result instanceof Binary);
-        Assertions.assertArrayEquals(bytes, ((Binary) result).data());
+        assertTrue(result instanceof Binary);
+        assertArrayEquals(bytes, ((Binary) result).data());
     }
 
     @Test
@@ -42,8 +45,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(1), message.getField(descriptor.getFields().get(1)));
 
-        Assertions.assertTrue(result instanceof String);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof String);
+        assertEquals(value, result);
     }
 
     @Test
@@ -55,8 +58,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(2), message.getField(descriptor.getFields().get(2)));
 
-        Assertions.assertTrue(result instanceof String);
-        Assertions.assertEquals(value.name(), result);
+        assertTrue(result instanceof String);
+        assertEquals(value.name(), result);
     }
 
     @Test
@@ -68,8 +71,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
 
-        Assertions.assertTrue(result instanceof Double);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Double);
+        assertEquals(value, result);
     }
 
     @Test
@@ -81,8 +84,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)));
 
-        Assertions.assertTrue(result instanceof Float);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Float);
+        assertEquals(value, result);
     }
 
     @Test
@@ -94,8 +97,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(5), message.getField(descriptor.getFields().get(5)));
 
-        Assertions.assertTrue(result instanceof Boolean);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Boolean);
+        assertEquals(value, result);
     }
 
     @Test
@@ -107,8 +110,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(6), message.getField(descriptor.getFields().get(6)));
 
-        Assertions.assertTrue(result instanceof Long);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Long);
+        assertEquals(value, result);
     }
 
     @Test
@@ -120,8 +123,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(7), message.getField(descriptor.getFields().get(7)));
 
-        Assertions.assertTrue(result instanceof Long);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Long);
+        assertEquals(value, result);
     }
 
     @Test
@@ -133,8 +136,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(8), message.getField(descriptor.getFields().get(8)));
 
-        Assertions.assertTrue(result instanceof Integer);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Integer);
+        assertEquals(value, result);
     }
 
     @Test
@@ -146,8 +149,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(9), message.getField(descriptor.getFields().get(9)));
 
-        Assertions.assertTrue(result instanceof Integer);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Integer);
+        assertEquals(value, result);
     }
 
     @Test
@@ -159,8 +162,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(10), message.getField(descriptor.getFields().get(10)));
 
-        Assertions.assertTrue(result instanceof Long);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Long);
+        assertEquals(value, result);
     }
 
     @Test
@@ -172,8 +175,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(11), message.getField(descriptor.getFields().get(11)));
 
-        Assertions.assertTrue(result instanceof Integer);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Integer);
+        assertEquals(value, result);
     }
 
     @Test
@@ -185,8 +188,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(12), message.getField(descriptor.getFields().get(12)));
 
-        Assertions.assertTrue(result instanceof Integer);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Integer);
+        assertEquals(value, result);
     }
 
     @Test
@@ -198,8 +201,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(13), message.getField(descriptor.getFields().get(13)));
 
-        Assertions.assertTrue(result instanceof Long);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Long);
+        assertEquals(value, result);
     }
 
     @Test
@@ -211,8 +214,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(14), message.getField(descriptor.getFields().get(14)));
 
-        Assertions.assertTrue(result instanceof Integer);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Integer);
+        assertEquals(value, result);
     }
 
     @Test
@@ -224,8 +227,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptor.getFields().get(15), message.getField(descriptor.getFields().get(15)));
 
-        Assertions.assertTrue(result instanceof Long);
-        Assertions.assertEquals(value, result);
+        assertTrue(result instanceof Long);
+        assertEquals(value, result);
     }
 
     @Test
@@ -237,8 +240,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(0), message.getField(descriptorRepeated.getFields().get(0)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Binary));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Binary));
     }
 
     @Test
@@ -250,8 +253,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(1), message.getField(descriptorRepeated.getFields().get(1)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof String));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof String));
     }
 
     @Test
@@ -263,8 +266,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(2), message.getField(descriptorRepeated.getFields().get(2)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof String));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof String));
     }
 
     @Test
@@ -276,8 +279,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(3), message.getField(descriptorRepeated.getFields().get(3)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Double));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Double));
     }
 
     @Test
@@ -289,8 +292,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(4), message.getField(descriptorRepeated.getFields().get(4)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Float));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Float));
     }
 
     @Test
@@ -302,8 +305,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(5), message.getField(descriptorRepeated.getFields().get(5)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Boolean));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Boolean));
     }
 
     @Test
@@ -315,8 +318,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(6), message.getField(descriptorRepeated.getFields().get(6)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
     }
 
     @Test
@@ -328,8 +331,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(7), message.getField(descriptorRepeated.getFields().get(7)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
     }
 
     @Test
@@ -341,8 +344,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(8), message.getField(descriptorRepeated.getFields().get(8)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
     }
 
     @Test
@@ -354,8 +357,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(9), message.getField(descriptorRepeated.getFields().get(9)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
     }
 
     @Test
@@ -367,8 +370,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(10), message.getField(descriptorRepeated.getFields().get(10)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
     }
 
     @Test
@@ -380,8 +383,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(11), message.getField(descriptorRepeated.getFields().get(11)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
     }
 
     @Test
@@ -393,8 +396,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(12), message.getField(descriptorRepeated.getFields().get(12)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
     }
 
     @Test
@@ -406,8 +409,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(13), message.getField(descriptorRepeated.getFields().get(13)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
     }
 
     @Test
@@ -419,8 +422,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(14), message.getField(descriptorRepeated.getFields().get(14)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
     }
 
     @Test
@@ -432,8 +435,8 @@ public class PrimitivePayloadConverterTest {
 
         Object result = primitivePayloadConverter.convert(descriptorRepeated.getFields().get(15), message.getField(descriptorRepeated.getFields().get(15)));
 
-        Assertions.assertTrue(result instanceof List<?>);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
+        assertTrue(result instanceof List<?>);
+        assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
     }
 
 }

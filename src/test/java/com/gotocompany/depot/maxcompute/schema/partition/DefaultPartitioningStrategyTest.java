@@ -4,8 +4,11 @@ import com.aliyun.odps.Column;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 public class DefaultPartitioningStrategyTest {
     @Test
@@ -13,7 +16,7 @@ public class DefaultPartitioningStrategyTest {
         DefaultPartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
                 getMaxComputeSinkConfig());
 
-        Assertions.assertEquals("tablePartitionKey", defaultPartitioningStrategy.getOriginalPartitionColumnName());
+        assertEquals("tablePartitionKey", defaultPartitioningStrategy.getOriginalPartitionColumnName());
     }
 
     @Test
@@ -24,7 +27,7 @@ public class DefaultPartitioningStrategyTest {
         Column expectedColumn = Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), TypeInfoFactory.STRING)
                 .build();
 
-        Assertions.assertEquals(expectedColumn, defaultPartitioningStrategy.getPartitionColumn());
+        assertEquals(expectedColumn, defaultPartitioningStrategy.getPartitionColumn());
     }
 
     @Test
@@ -32,7 +35,7 @@ public class DefaultPartitioningStrategyTest {
         DefaultPartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
                 getMaxComputeSinkConfig());
 
-        Assertions.assertTrue(defaultPartitioningStrategy.shouldReplaceOriginalColumn());
+        assertTrue(defaultPartitioningStrategy.shouldReplaceOriginalColumn());
     }
 
     @Test
@@ -42,7 +45,7 @@ public class DefaultPartitioningStrategyTest {
         String partitionKey = "object";
         String expectedPartitionSpecStringRepresentation = "tablePartitionColumnName='object'";
 
-        Assertions.assertEquals(expectedPartitionSpecStringRepresentation,
+        assertEquals(expectedPartitionSpecStringRepresentation,
                 defaultPartitioningStrategy.getPartitionSpec(partitionKey)
                 .toString());
     }
@@ -53,16 +56,16 @@ public class DefaultPartitioningStrategyTest {
         DefaultPartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING,
                 getMaxComputeSinkConfig());
 
-        Assertions.assertEquals(expectedPartitionSpecStringRepresentation,
+        assertEquals(expectedPartitionSpecStringRepresentation,
                 defaultPartitioningStrategy.getPartitionSpec(null)
                 .toString());
     }
 
     private MaxComputeSinkConfig getMaxComputeSinkConfig() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName())
+        when(maxComputeSinkConfig.getTablePartitionColumnName())
                 .thenReturn("tablePartitionColumnName");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionKey())
+        when(maxComputeSinkConfig.getTablePartitionKey())
                 .thenReturn("tablePartitionKey");
         return maxComputeSinkConfig;
     }

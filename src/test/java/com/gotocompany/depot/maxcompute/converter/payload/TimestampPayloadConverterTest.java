@@ -5,7 +5,6 @@ import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.type.TimestampTypeInfoConverter;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -14,6 +13,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TimestampPayloadConverterTest {
 
@@ -42,7 +43,7 @@ public class TimestampPayloadConverterTest {
 
         Object result = timestampPayloadConverter.convertSingular(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)));
 
-        Assertions.assertThat(result)
+        assertThat(result)
                 .isEqualTo(expectedLocalDateTime);
     }
 
@@ -66,9 +67,9 @@ public class TimestampPayloadConverterTest {
 
         Object result = timestampPayloadConverter.convert(repeatedDescriptor.getFields().get(3), message.getField(repeatedDescriptor.getFields().get(3)));
 
-        Assertions.assertThat(result)
+        assertThat(result)
                 .isInstanceOf(List.class);
-        Assertions.assertThat(((List<?>) result).stream().map(LocalDateTime.class::cast))
+        assertThat(((List<?>) result).stream().map(LocalDateTime.class::cast))
                 .hasSize(2)
                 .containsExactly(expectedLocalDateTime1, expectedLocalDateTime2);
     }

@@ -10,11 +10,14 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.when;
 
 public class TimestampPartitioningStrategyTest {
 
@@ -23,7 +26,7 @@ public class TimestampPartitioningStrategyTest {
         TimestampPartitioningStrategy defaultPartitioningStrategy =
                 new TimestampPartitioningStrategy(getMaxComputeSinkConfig());
 
-        Assertions.assertEquals("event_timestamp",
+        assertEquals("event_timestamp",
                 defaultPartitioningStrategy.getOriginalPartitionColumnName());
     }
 
@@ -32,7 +35,7 @@ public class TimestampPartitioningStrategyTest {
         TimestampPartitioningStrategy defaultPartitioningStrategy =
                 new TimestampPartitioningStrategy(getMaxComputeSinkConfig());
 
-        Assertions.assertFalse(defaultPartitioningStrategy.shouldReplaceOriginalColumn());
+        assertFalse(defaultPartitioningStrategy.shouldReplaceOriginalColumn());
     }
 
     @Test
@@ -44,7 +47,7 @@ public class TimestampPartitioningStrategyTest {
         Column column = Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), TypeInfoFactory.STRING)
                 .build();
 
-        Assertions.assertEquals(column, timestampPartitioningStrategy.getPartitionColumn());
+        assertEquals(column, timestampPartitioningStrategy.getPartitionColumn());
     }
 
     @Test
@@ -65,15 +68,15 @@ public class TimestampPartitioningStrategyTest {
                 .build();
         MaxComputeSchemaCache maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         MaxComputeSchema maxComputeSchema = Mockito.mock(MaxComputeSchema.class);
-        Mockito.when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
-        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema())
+        when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
+        when(maxComputeSchemaCache.getMaxComputeSchema())
                 .thenReturn(maxComputeSchema);
         String expectedStartOfDayEpoch = "2024-10-28";
         Record record = new ArrayRecord(tableSchema);
         record.set("str", "strVal");
         record.set("event_timestamp", LocalDateTime.ofEpochSecond(epoch, 0, ZoneOffset.UTC));
 
-        Assertions.assertEquals(String.format("tablePartitionColumnName='%s'", expectedStartOfDayEpoch),
+        assertEquals(String.format("tablePartitionColumnName='%s'", expectedStartOfDayEpoch),
                 timestampPartitioningStrategy.getPartitionSpec(record).toString());
     }
 
@@ -83,7 +86,7 @@ public class TimestampPartitioningStrategyTest {
         TimestampPartitioningStrategy timestampPartitioningStrategy =
                 new TimestampPartitioningStrategy(maxComputeSinkConfig);
 
-        Assertions.assertEquals("",
+        assertEquals("",
                 timestampPartitioningStrategy.getPartitionSpec("").toString());
     }
 
@@ -101,27 +104,27 @@ public class TimestampPartitioningStrategyTest {
                 .withDatetimeColumn("event_timestamp")
                 .withPartitionColumn(partitionColumn)
                 .build();
-        Mockito.when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
-        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema())
+        when(maxComputeSchema.getTableSchema()).thenReturn(tableSchema);
+        when(maxComputeSchemaCache.getMaxComputeSchema())
                 .thenReturn(maxComputeSchema);
         Record record = new ArrayRecord(tableSchema);
         record.set("str", "strVal");
         record.set("event_timestamp", null);
 
-        Assertions.assertEquals(expectedPartitionSpecStringRepresentation,
+        assertEquals(expectedPartitionSpecStringRepresentation,
                 timestampPartitioningStrategy.getPartitionSpec(record)
                         .toString());
     }
 
     private MaxComputeSinkConfig getMaxComputeSinkConfig() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled())
+        when(maxComputeSinkConfig.isTablePartitioningEnabled())
                 .thenReturn(Boolean.TRUE);
-        Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName())
+        when(maxComputeSinkConfig.getTablePartitionColumnName())
                 .thenReturn("tablePartitionColumnName");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionKey())
+        when(maxComputeSinkConfig.getTablePartitionKey())
                 .thenReturn("event_timestamp");
-        Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit())
+        when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit())
                 .thenReturn("DAY");
         return maxComputeSinkConfig;
     }

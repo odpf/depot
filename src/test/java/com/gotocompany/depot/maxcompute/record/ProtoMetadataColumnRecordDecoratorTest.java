@@ -17,7 +17,6 @@ import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.proto.ProtoParsedMessage;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,6 +26,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 public class ProtoMetadataColumnRecordDecoratorTest {
 
@@ -39,15 +41,15 @@ public class ProtoMetadataColumnRecordDecoratorTest {
     @Before
     public void setup() {
         MaxComputeSinkConfig config = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(config.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
-        Mockito.when(config.shouldAddMetadata()).thenReturn(Boolean.TRUE);
-        Mockito.when(config.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
-        Mockito.when(config.getMetadataColumnsTypes()).thenReturn(Arrays.asList(
+        when(config.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
+        when(config.shouldAddMetadata()).thenReturn(Boolean.TRUE);
+        when(config.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        when(config.getMetadataColumnsTypes()).thenReturn(Arrays.asList(
                 new TupleString("__message_timestamp", "timestamp"),
                 new TupleString("__kafka_topic", "string"),
                 new TupleString("__kafka_offset", "long")
         ));
-        Mockito.when(config.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(config.getZoneId()).thenReturn(ZoneId.of("UTC"));
         initializeDecorator(config);
     }
 
@@ -68,7 +70,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
 
         protoMetadataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record.get(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()))
+        assertThat(record.get(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()))
                 .isEqualTo(new SimpleStruct(
                         TypeInfoFactory.getStructTypeInfo(Arrays.asList("__message_timestamp", "__kafka_topic", "__kafka_offset"),
                                 Arrays.asList(TypeInfoFactory.TIMESTAMP, TypeInfoFactory.STRING, TypeInfoFactory.BIGINT)),
@@ -79,14 +81,14 @@ public class ProtoMetadataColumnRecordDecoratorTest {
     @Test
     public void shouldPopulateRecordWithNonNamespacedMetadata() throws IOException {
         MaxComputeSinkConfig mcSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(mcSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
-        Mockito.when(mcSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
-        Mockito.when(mcSinkConfig.getMetadataColumnsTypes()).thenReturn(Arrays.asList(
+        when(mcSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.FALSE);
+        when(mcSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
+        when(mcSinkConfig.getMetadataColumnsTypes()).thenReturn(Arrays.asList(
                 new TupleString("__message_timestamp", "timestamp"),
                 new TupleString("__kafka_topic", "string"),
                 new TupleString("__kafka_offset", "long")
         ));
-        Mockito.when(mcSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(mcSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         initializeDecorator(mcSinkConfig);
         Message message = new Message(
                 null,
@@ -103,13 +105,13 @@ public class ProtoMetadataColumnRecordDecoratorTest {
 
         protoMetadataColumnRecordDecorator.decorate(recordWrapper, message);
 
-        Assertions.assertThat(record)
+        assertThat(record)
                 .satisfies(r -> {
-                    Assertions.assertThat(r.get("__message_timestamp"))
+                    assertThat(r.get("__message_timestamp"))
                             .isEqualTo(expectedLocalDateTime);
-                    Assertions.assertThat(r.get("__kafka_topic"))
+                    assertThat(r.get("__kafka_topic"))
                             .isEqualTo("topic");
-                    Assertions.assertThat(r.get("__kafka_offset"))
+                    assertThat(r.get("__kafka_offset"))
                             .isEqualTo(100L);
                 });
     }
@@ -141,7 +143,7 @@ public class ProtoMetadataColumnRecordDecoratorTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, sinkConfig, null);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
-        Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
+        when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
         protoMetadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(null, sinkConfig, maxComputeSchemaCache);
     }
 }

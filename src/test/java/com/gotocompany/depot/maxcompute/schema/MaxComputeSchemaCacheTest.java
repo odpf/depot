@@ -13,13 +13,16 @@ import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MaxComputeSchemaCacheTest {
 
@@ -29,20 +32,20 @@ public class MaxComputeSchemaCacheTest {
         newDescriptor.put("class", Mockito.mock(Descriptors.Descriptor.class));
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
-        Mockito.when(protoMessageParser.getDescriptorMap()).thenReturn(newDescriptor);
+        when(protoMessageParser.getDescriptorMap()).thenReturn(newDescriptor);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
-        Mockito.when(maxComputeSchemaHelper.build(Mockito.any()))
+        when(maxComputeSchemaHelper.build(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+        when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
+        when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
-        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
+        when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
@@ -60,9 +63,9 @@ public class MaxComputeSchemaCacheTest {
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
 
-        Mockito.verify(maxComputeClient, Mockito.times(1))
+        verify(maxComputeClient, Mockito.times(1))
                 .upsertTable(Mockito.any());
-        Assertions.assertEquals(finalMockedTableSchema, maxComputeSchema.getTableSchema());
+        assertEquals(finalMockedTableSchema, maxComputeSchema.getTableSchema());
     }
 
     @Test
@@ -71,18 +74,18 @@ public class MaxComputeSchemaCacheTest {
         newDescriptor.put("class", Mockito.mock(Descriptors.Descriptor.class));
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
-        Mockito.when(protoMessageParser.getDescriptorMap()).thenReturn(newDescriptor);
+        when(protoMessageParser.getDescriptorMap()).thenReturn(newDescriptor);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
-        Mockito.when(maxComputeSchemaHelper.build(Mockito.any()))
+        when(maxComputeSchemaHelper.build(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+        when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
+        when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
@@ -95,9 +98,9 @@ public class MaxComputeSchemaCacheTest {
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
 
-        Mockito.verify(maxComputeClient, Mockito.times(0))
+        verify(maxComputeClient, Mockito.times(0))
                 .upsertTable(Mockito.any());
-        Assertions.assertEquals(mockedMaxComputeSchema, maxComputeSchema);
+        assertEquals(mockedMaxComputeSchema, maxComputeSchema);
     }
 
     @Test
@@ -107,16 +110,16 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
-        Mockito.when(maxComputeSchemaHelper.build(Mockito.any()))
+        when(maxComputeSchemaHelper.build(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+        when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
+        when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
@@ -134,7 +137,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.getMaxComputeSchema();
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
 
-        Mockito.verify(maxComputeClient, Mockito.times(2))
+        verify(maxComputeClient, Mockito.times(2))
                 .upsertTable(Mockito.any());
     }
 
@@ -145,16 +148,16 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
-        Mockito.when(maxComputeSchemaHelper.build(Mockito.any()))
+        when(maxComputeSchemaHelper.build(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+        when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_KEY);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
+        when(sinkConfig.getSinkConnectorSchemaProtoKeyClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
@@ -172,7 +175,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.getMaxComputeSchema();
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
 
-        Mockito.verify(maxComputeClient, Mockito.times(2))
+        verify(maxComputeClient, Mockito.times(2))
                 .upsertTable(Mockito.any());
     }
 
@@ -183,16 +186,16 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaHelper maxComputeSchemaHelper = Mockito.mock(MaxComputeSchemaHelper.class);
         ProtoMessageParser protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         MaxComputeSchema mockedMaxComputeSchema = new MaxComputeSchema(null, null);
-        Mockito.when(maxComputeSchemaHelper.build(Mockito.any()))
+        when(maxComputeSchemaHelper.build(Mockito.any()))
                 .thenReturn(mockedMaxComputeSchema);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
+        when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
-        Mockito.when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
+        when(sinkConfig.getSinkConnectorSchemaProtoMessageClass())
                 .thenReturn("class");
         MaxComputeClient maxComputeClient = Mockito.spy(MaxComputeClient.class);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,

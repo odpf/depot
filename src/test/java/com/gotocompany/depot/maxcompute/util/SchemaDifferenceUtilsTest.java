@@ -5,11 +5,13 @@ import com.aliyun.odps.TableSchema;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.gotocompany.depot.maxcompute.schema.SchemaDifferenceUtils;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SchemaDifferenceUtilsTest {
 
@@ -46,8 +48,8 @@ public class SchemaDifferenceUtilsTest {
 
         Set<String> actualMetadataColumns = new HashSet<>(SchemaDifferenceUtils.getSchemaDifferenceSql(oldTableSchema, newTableSchema, "test_schema", "test_table"));
 
-        Assertions.assertTrue(actualMetadataColumns.size() == expectedMetadataColumns.size());
-        Assertions.assertTrue(actualMetadataColumns.containsAll(expectedMetadataColumns));
+        assertEquals(actualMetadataColumns.size(), expectedMetadataColumns.size());
+        assertTrue(actualMetadataColumns.containsAll(expectedMetadataColumns));
     }
 
 }

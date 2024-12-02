@@ -7,10 +7,12 @@ import com.google.protobuf.Value;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.maxcompute.converter.type.StructTypeInfoConverter;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StructPayloadConverterTest {
 
@@ -31,8 +33,8 @@ public class StructPayloadConverterTest {
 
         Object result = structPayloadConverter.convert(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)));
 
-        Assertions.assertTrue(result instanceof String);
-        Assertions.assertEquals(expected, result);
+        assertTrue(result instanceof String);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -50,9 +52,9 @@ public class StructPayloadConverterTest {
 
         Object result = structPayloadConverter.convert(repeatedDescriptor.getFields().get(4), message.getField(repeatedDescriptor.getFields().get(4)));
 
-        Assertions.assertTrue(result instanceof List);
-        Assertions.assertTrue(((List<?>) result).stream().allMatch(e -> e instanceof String));
-        Assertions.assertEquals(expected, result.toString());
+        assertTrue(result instanceof List);
+        assertTrue(((List<?>) result).stream().allMatch(e -> e instanceof String));
+        assertEquals(expected, result.toString());
     }
 
 }

@@ -12,6 +12,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class DurationPayloadConverterTest {
 
     private final DurationTypeInfoConverter durationTypeInfoConverter = new DurationTypeInfoConverter();
@@ -33,7 +35,7 @@ public class DurationPayloadConverterTest {
         List<Object> values = Arrays.asList(1L, 1);
         Object result = durationPayloadConverter.convert(descriptor.getFields().get(5), message.getField(descriptor.getFields().get(5)));
 
-        Assertions.assertThat(result)
+        assertThat(result)
                 .isInstanceOf(com.aliyun.odps.data.SimpleStruct.class)
                 .extracting("typeInfo", "values")
                 .containsExactly(TypeInfoFactory.getStructTypeInfo(expectedFieldNames, expectedTypeInfos), values);
@@ -59,9 +61,9 @@ public class DurationPayloadConverterTest {
 
         Object result = durationPayloadConverter.convert(repeatedDescriptor.getFields().get(5), message.getField(repeatedDescriptor.getFields().get(5)));
 
-        Assertions.assertThat(result)
+        assertThat(result)
                 .isInstanceOf(List.class);
-        Assertions.assertThat((List<?>) result)
+        assertThat((List<?>) result)
                 .hasSize(2)
                 .allMatch(element -> element instanceof com.aliyun.odps.data.SimpleStruct)
                 .extracting("typeInfo", "values")
