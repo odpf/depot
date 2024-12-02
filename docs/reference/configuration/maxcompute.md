@@ -147,7 +147,7 @@ Least recently used session will be removed if the cache is full.
 
 * Example value: `7`
 * Type: `required`
-* Default value: `1`
+* Default value: `2`
 
 ## SINK_MAXCOMPUTE_ZONE_ID
 

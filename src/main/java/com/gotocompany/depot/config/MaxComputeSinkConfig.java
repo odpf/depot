@@ -89,7 +89,7 @@ public interface MaxComputeSinkConfig extends Config {
     int getMaxComputeCompressionStrategy();
 
     @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_MAXIMUM_SESSION_COUNT")
-    @DefaultValue("1")
+    @DefaultValue("2")
     int getStreamingInsertMaximumSessionCount();
 
     @Key("SINK_MAXCOMPUTE_ZONE_ID")
