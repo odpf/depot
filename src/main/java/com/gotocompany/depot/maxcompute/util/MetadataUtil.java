@@ -3,11 +3,11 @@ package com.gotocompany.depot.maxcompute.util;
 import com.aliyun.odps.type.StructTypeInfo;
 import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
+import com.google.common.collect.ImmutableMap;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,22 +27,24 @@ public class MetadataUtil {
     private static final String BOOLEAN = "boolean";
 
     static {
-        METADATA_TYPE_MAP = new HashMap<>();
-        METADATA_TYPE_MAP.put(INTEGER, TypeInfoFactory.INT);
-        METADATA_TYPE_MAP.put(LONG, TypeInfoFactory.BIGINT);
-        METADATA_TYPE_MAP.put(FLOAT, TypeInfoFactory.FLOAT);
-        METADATA_TYPE_MAP.put(DOUBLE, TypeInfoFactory.DOUBLE);
-        METADATA_TYPE_MAP.put(STRING, TypeInfoFactory.STRING);
-        METADATA_TYPE_MAP.put(BOOLEAN, TypeInfoFactory.BOOLEAN);
-        METADATA_TYPE_MAP.put(TIMESTAMP, TypeInfoFactory.TIMESTAMP_NTZ);
+        METADATA_TYPE_MAP = ImmutableMap.<String, TypeInfo>builder()
+                .put(INTEGER, TypeInfoFactory.INT)
+                .put(LONG, TypeInfoFactory.BIGINT)
+                .put(FLOAT, TypeInfoFactory.FLOAT)
+                .put(DOUBLE, TypeInfoFactory.DOUBLE)
+                .put(STRING, TypeInfoFactory.STRING)
+                .put(BOOLEAN, TypeInfoFactory.BOOLEAN)
+                .put(TIMESTAMP, TypeInfoFactory.TIMESTAMP_NTZ)
+                .build();
 
-        METADATA_MAPPER_MAP = new HashMap<>();
-        METADATA_MAPPER_MAP.put(INTEGER, obj -> ((Number) obj).intValue());
-        METADATA_MAPPER_MAP.put(LONG, obj -> ((Number) obj).longValue());
-        METADATA_MAPPER_MAP.put(FLOAT, obj -> ((Number) obj).floatValue());
-        METADATA_MAPPER_MAP.put(DOUBLE, obj -> ((Number) obj).doubleValue());
-        METADATA_MAPPER_MAP.put(STRING, Function.identity());
-        METADATA_MAPPER_MAP.put(BOOLEAN, Function.identity());
+        METADATA_MAPPER_MAP = ImmutableMap.<String, Function<Object, Object>>builder()
+                .put(INTEGER, obj -> ((Number) obj).intValue())
+                .put(LONG, obj -> ((Number) obj).longValue())
+                .put(FLOAT, obj -> ((Number) obj).floatValue())
+                .put(DOUBLE, obj -> ((Number) obj).doubleValue())
+                .put(STRING, Function.identity())
+                .put(BOOLEAN, Function.identity())
+                .build();
     }
 
     public static TypeInfo getMetadataTypeInfo(String type) {
