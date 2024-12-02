@@ -12,12 +12,12 @@ public class DurationTypeInfoConverter implements TypeInfoConverter {
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";
     private static final String GOOGLE_PROTOBUF_DURATION = "google.protobuf.Duration";
+    private static final List<String> FIELD_NAMES = Arrays.asList(SECONDS, NANOS);
+    private static final List<TypeInfo> TYPE_INFOS = Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT);
 
     @Override
     public TypeInfo convertSingular(Descriptors.FieldDescriptor fieldDescriptor) {
-        List<String> fieldNames = Arrays.asList(SECONDS, NANOS);
-        List<TypeInfo> typeInfos = Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT);
-        return TypeInfoFactory.getStructTypeInfo(fieldNames, typeInfos);
+        return TypeInfoFactory.getStructTypeInfo(FIELD_NAMES, TYPE_INFOS);
     }
 
     @Override
