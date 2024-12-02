@@ -28,7 +28,7 @@ public class SchemaDifferenceUtils {
         List<MaxComputeColumnDetail> maxComputeColumnDetailDifference = getMaxComputeColumnDetailDifference(oldSchema, newSchema, tableName);
 
         return maxComputeColumnDetailDifference.stream()
-                .map(MaxComputeColumnDetail -> String.format(ALTER_TABLE_QUERY_TEMPLATE, schemaName, tableName, MaxComputeColumnDetail.getDdlDeclaration()))
+                .map(MaxComputeColumnDetail -> String.format(ALTER_TABLE_QUERY_TEMPLATE, schemaName, tableName, MaxComputeColumnDetail.getDDL()))
                 .collect(Collectors.toList());
     }
 

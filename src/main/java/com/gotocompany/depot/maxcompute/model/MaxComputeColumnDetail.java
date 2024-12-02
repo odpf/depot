@@ -13,7 +13,7 @@ public class MaxComputeColumnDetail {
     private TypeInfo typeInfo;
     private boolean isArrayElement;
 
-    public String getDdlDeclaration() {
+    public String getDDL() {
         return String.format("%s %s", getFullName(), typeInfo.toString());
     }
 
