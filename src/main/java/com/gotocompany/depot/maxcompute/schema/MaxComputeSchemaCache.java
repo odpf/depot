@@ -5,7 +5,7 @@ import com.aliyun.odps.TableSchema;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.exception.MaxComputeTableOperationException;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
@@ -21,17 +21,17 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
 
     private final MaxComputeSchemaHelper maxComputeSchemaHelper;
     private final SinkConfig sinkConfig;
-    private final ConverterOrchestrator converterOrchestrator;
+    private final ProtobufConverterOrchestrator protobufConverterOrchestrator;
     private final MaxComputeClient maxComputeClient;
     private MaxComputeSchema maxComputeSchema;
 
     public MaxComputeSchemaCache(MaxComputeSchemaHelper maxComputeSchemaHelper,
                                  SinkConfig sinkConfig,
-                                 ConverterOrchestrator converterOrchestrator,
+                                 ProtobufConverterOrchestrator protobufConverterOrchestrator,
                                  MaxComputeClient maxComputeClient) {
         this.maxComputeSchemaHelper = maxComputeSchemaHelper;
         this.sinkConfig = sinkConfig;
-        this.converterOrchestrator = converterOrchestrator;
+        this.protobufConverterOrchestrator = protobufConverterOrchestrator;
         this.maxComputeClient = maxComputeClient;
     }
 
@@ -55,7 +55,7 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
                 descriptor = newDescriptor.get(getSchemaClass());
             }
             MaxComputeSchema localSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
-            converterOrchestrator.clearCache();
+            protobufConverterOrchestrator.clearCache();
             try {
                 maxComputeClient.upsertTable(localSchema.getTableSchema());
                 log.info("MaxCompute table upserted successfully");

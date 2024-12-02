@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ConverterOrchestrator {
+public class ProtobufConverterOrchestrator {
 
     private final List<TypeInfoConverter> typeInfoConverters;
     private final List<PayloadConverter> payloadConverters;
     private final Map<String, TypeInfo> typeInfoCache;
 
-    public ConverterOrchestrator(MaxComputeSinkConfig maxComputeSinkConfig) {
+    public ProtobufConverterOrchestrator(MaxComputeSinkConfig maxComputeSinkConfig) {
         typeInfoConverters = new ArrayList<>();
         payloadConverters = new ArrayList<>();
         typeInfoCache = new ConcurrentHashMap<>();

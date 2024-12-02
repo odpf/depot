@@ -5,7 +5,7 @@ import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.TextMaxComputeTable;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategyFactory;
@@ -38,11 +38,11 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ConverterOrchestrator(maxComputeSinkConfig),
+        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig, partitioningStrategy);
         int expectedNonPartitionColumnCount = 7;
         int expectedPartitionColumnCount = 1;
@@ -95,12 +95,12 @@ public class MaxComputeSchemaHelperTest {
         int expectedNonPartitionColumnCount = 5;
         int expectedPartitionColumnCount = 1;
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
         MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(
-                new ConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig, partitioningStrategy);
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig), maxComputeSinkConfig, partitioningStrategy);
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
 
@@ -141,11 +141,11 @@ public class MaxComputeSchemaHelperTest {
         int expectedNonPartitionColumnCount = 4;
         int expectedPartitionColumnCount = 0;
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ConverterOrchestrator(maxComputeSinkConfig),
+        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig, partitioningStrategy);
 
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
@@ -185,11 +185,11 @@ public class MaxComputeSchemaHelperTest {
         Mockito.when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
         Mockito.when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("non_existent_partition_key");
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ConverterOrchestrator(maxComputeSinkConfig),
+        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig, partitioningStrategy);
 
         maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);

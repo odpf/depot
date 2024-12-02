@@ -4,7 +4,7 @@ import com.aliyun.odps.Column;
 import com.aliyun.odps.TableSchema;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 import com.gotocompany.depot.maxcompute.util.MetadataUtil;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MaxComputeSchemaHelper {
 
-    private final ConverterOrchestrator converterOrchestrator;
+    private final ProtobufConverterOrchestrator protobufConverterOrchestrator;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final PartitioningStrategy partitioningStrategy;
 
@@ -52,7 +52,7 @@ public class MaxComputeSchemaHelper {
                     return !partitioningStrategy.shouldReplaceOriginalColumn();
                 })
                 .map(fieldDescriptor -> Column.newBuilder(fieldDescriptor.getName(),
-                        converterOrchestrator.convert(fieldDescriptor)).build())
+                        protobufConverterOrchestrator.convert(fieldDescriptor)).build())
                 .collect(Collectors.toList());
     }
 

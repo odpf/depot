@@ -6,7 +6,7 @@ import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.exception.MaxComputeTableOperationException;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
@@ -46,7 +46,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
@@ -86,7 +86,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         Field field = MaxComputeSchemaCache.class.getDeclaredField("maxComputeSchema");
@@ -120,7 +120,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
@@ -158,7 +158,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
@@ -196,7 +196,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchemaCache maxComputeSchemaCache = new MaxComputeSchemaCache(
                 maxComputeSchemaHelper,
                 sinkConfig,
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);

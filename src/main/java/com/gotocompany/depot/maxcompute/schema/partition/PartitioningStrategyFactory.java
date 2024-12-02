@@ -4,7 +4,7 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
@@ -26,7 +26,7 @@ public class PartitioningStrategyFactory {
     }
 
     public static PartitioningStrategy createPartitioningStrategy(
-            ConverterOrchestrator converterOrchestrator,
+            ProtobufConverterOrchestrator protobufConverterOrchestrator,
             MaxComputeSinkConfig maxComputeSinkConfig,
             Descriptors.Descriptor descriptor) {
         if (!maxComputeSinkConfig.isTablePartitioningEnabled()) {
@@ -38,7 +38,7 @@ public class PartitioningStrategyFactory {
         if (fieldDescriptor == null) {
             throw new IllegalArgumentException("Partition key not found in the descriptor: " + partitionKey);
         }
-        TypeInfo partitionKeyTypeInfo = converterOrchestrator.convert(fieldDescriptor);
+        TypeInfo partitionKeyTypeInfo = protobufConverterOrchestrator.convert(fieldDescriptor);
         checkPartitionTypePrecondition(partitionKeyTypeInfo);
         if (TypeInfoFactory.TIMESTAMP_NTZ.equals(partitionKeyTypeInfo)) {
             return new TimestampPartitioningStrategy(maxComputeSinkConfig);

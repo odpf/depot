@@ -10,7 +10,7 @@ import com.gotocompany.depot.TestMaxComputeRecord;
 import com.gotocompany.depot.common.Tuple;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
@@ -137,8 +137,8 @@ public class ProtoMetadataColumnRecordDecoratorTest {
 
     private void initializeDecorator(MaxComputeSinkConfig sinkConfig) {
         this.maxComputeSinkConfig = sinkConfig;
-        ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator(sinkConfig);
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, sinkConfig, null);
+        ProtobufConverterOrchestrator protobufConverterOrchestrator = new ProtobufConverterOrchestrator(sinkConfig);
+        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, sinkConfig, null);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);

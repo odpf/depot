@@ -27,16 +27,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ConverterOrchestratorTest {
+public class ProtobufConverterOrchestratorTest {
 
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
-    private ConverterOrchestrator converterOrchestrator;
+    private ProtobufConverterOrchestrator protobufConverterOrchestrator;
 
     @Before
     public void init() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
+        protobufConverterOrchestrator = new ProtobufConverterOrchestrator(maxComputeSinkConfig);
     }
 
     @Test
@@ -48,12 +48,12 @@ public class ConverterOrchestratorTest {
         String expectedDurationTypeInfoRepresentation = "STRUCT<`seconds`:BIGINT,`nanos`:INT>";
         String expectedStructTypeInfoRepresentation = "STRING";
 
-        TypeInfo stringTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("string_field"));
-        TypeInfo messageTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("inner_field"));
-        TypeInfo repeatedTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"));
-        TypeInfo timestampTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("timestamp_field"));
-        TypeInfo durationTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("duration_field"));
-        TypeInfo structTypeInfo = converterOrchestrator.convert(descriptor.findFieldByName("struct_field"));
+        TypeInfo stringTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("string_field"));
+        TypeInfo messageTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("inner_field"));
+        TypeInfo repeatedTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"));
+        TypeInfo timestampTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("timestamp_field"));
+        TypeInfo durationTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("duration_field"));
+        TypeInfo structTypeInfo = protobufConverterOrchestrator.convert(descriptor.findFieldByName("struct_field"));
 
         Assertions.assertEquals(expectedStringTypeInfoRepresentation, stringTypeInfo.toString());
         Assertions.assertEquals(expectedMessageTypeRepresentation, messageTypeInfo.toString());
@@ -66,7 +66,7 @@ public class ConverterOrchestratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForUnsupportedType() {
         Descriptors.FieldDescriptor unsupportedFieldDescriptor = descriptor.findFieldByName("empty_field");
-        converterOrchestrator.convert(unsupportedFieldDescriptor);
+        protobufConverterOrchestrator.convert(unsupportedFieldDescriptor);
     }
 
     @Test
@@ -105,12 +105,12 @@ public class ConverterOrchestratorTest {
                 Collections.singletonList(new SimpleStruct(TypeInfoFactory.getStructTypeInfo(Collections.singletonList("string_field"), Collections.singletonList(TypeInfoFactory.STRING)), Collections.singletonList("inner_string_field"))));
         SimpleStruct expectedMessage = new SimpleStruct(messageTypeInfo, messageValues);
 
-        Object stringRecord = converterOrchestrator.convert(descriptor.findFieldByName("string_field"), messagePayload.getField(descriptor.findFieldByName("string_field")));
-        Object messageRecord = converterOrchestrator.convert(descriptor.findFieldByName("inner_field"), messagePayload.getField(descriptor.findFieldByName("inner_field")));
-        Object repeatedMessageRecord = converterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"), messagePayload.getField(descriptor.findFieldByName("inner_list_field")));
-        Object timestampRecord = converterOrchestrator.convert(descriptor.findFieldByName("timestamp_field"), messagePayload.getField(descriptor.findFieldByName("timestamp_field")));
-        Object durationRecord = converterOrchestrator.convert(descriptor.findFieldByName("duration_field"), messagePayload.getField(descriptor.findFieldByName("duration_field")));
-        Object structRecord = converterOrchestrator.convert(descriptor.findFieldByName("struct_field"), messagePayload.getField(descriptor.findFieldByName("struct_field")));
+        Object stringRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("string_field"), messagePayload.getField(descriptor.findFieldByName("string_field")));
+        Object messageRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("inner_field"), messagePayload.getField(descriptor.findFieldByName("inner_field")));
+        Object repeatedMessageRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"), messagePayload.getField(descriptor.findFieldByName("inner_list_field")));
+        Object timestampRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("timestamp_field"), messagePayload.getField(descriptor.findFieldByName("timestamp_field")));
+        Object durationRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("duration_field"), messagePayload.getField(descriptor.findFieldByName("duration_field")));
+        Object structRecord = protobufConverterOrchestrator.convert(descriptor.findFieldByName("struct_field"), messagePayload.getField(descriptor.findFieldByName("struct_field")));
 
         Assertions.assertEquals("string_field", stringRecord);
         Assertions.assertEquals(LocalDateTime.ofEpochSecond(100, 0, ZoneOffset.UTC), timestampRecord);
@@ -122,14 +122,14 @@ public class ConverterOrchestratorTest {
 
     @Test
     public void shouldClearTheTypeInfoCache() throws NoSuchFieldException, IllegalAccessException {
-        converterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"));
-        Field field = converterOrchestrator.getClass()
+        protobufConverterOrchestrator.convert(descriptor.findFieldByName("inner_list_field"));
+        Field field = protobufConverterOrchestrator.getClass()
                 .getDeclaredField("typeInfoCache");
         field.setAccessible(true);
-        Assertions.assertEquals(1, ((Map<String, TypeInfo>) field.get(converterOrchestrator)).size());
+        Assertions.assertEquals(1, ((Map<String, TypeInfo>) field.get(protobufConverterOrchestrator)).size());
 
-        converterOrchestrator.clearCache();
+        protobufConverterOrchestrator.clearCache();
 
-        Assertions.assertEquals(0, ((Map<String, TypeInfo>) field.get(converterOrchestrator)).size());
+        Assertions.assertEquals(0, ((Map<String, TypeInfo>) field.get(protobufConverterOrchestrator)).size());
     }
 }

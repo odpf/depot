@@ -13,7 +13,7 @@ import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeRecord;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
@@ -275,9 +275,9 @@ public class ProtoDataColumnRecordDecoratorTest {
                                                            RecordDecorator recordDecorator,
                                                            PartitioningStrategy partitioningStrategy,
                                                            com.google.protobuf.Message mockedMessage) throws IOException {
-        ConverterOrchestrator converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
+        ProtobufConverterOrchestrator protobufConverterOrchestrator = new ProtobufConverterOrchestrator(maxComputeSinkConfig);
         maxComputeSchemaHelper = new MaxComputeSchemaHelper(
-                converterOrchestrator,
+                protobufConverterOrchestrator,
                 maxComputeSinkConfig,
                 partitioningStrategy
         );
@@ -291,7 +291,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 .thenReturn(parsedMessage);
         protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(
                 recordDecorator,
-                converterOrchestrator,
+                protobufConverterOrchestrator,
                 protoMessageParser,
                 sinkConfig,
                 partitioningStrategy

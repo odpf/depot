@@ -12,7 +12,7 @@ import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.exception.UnknownFieldsException;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.helper.MaxComputeSchemaHelper;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
@@ -46,7 +46,7 @@ public class ProtoMessageRecordConverterTest {
 
     private final Descriptors.Descriptor descriptor = TestMaxComputeRecord.MaxComputeRecord.getDescriptor();
     private MaxComputeSinkConfig maxComputeSinkConfig;
-    private ConverterOrchestrator converterOrchestrator;
+    private ProtobufConverterOrchestrator protobufConverterOrchestrator;
     private ProtoMessageParser protoMessageParser;
     private MaxComputeSchemaHelper maxComputeSchemaHelper;
     private SinkConfig sinkConfig;
@@ -68,7 +68,7 @@ public class ProtoMessageRecordConverterTest {
         Mockito.when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_column");
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         Mockito.when(maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()).thenReturn("DAY");
-        converterOrchestrator = new ConverterOrchestrator(maxComputeSinkConfig);
+        protobufConverterOrchestrator = new ProtobufConverterOrchestrator(maxComputeSinkConfig);
         protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);
         Mockito.when(parsedMessage.getRaw()).thenReturn(getMockedMessage());
@@ -78,16 +78,16 @@ public class ProtoMessageRecordConverterTest {
         Mockito.when(sinkConfig.getSinkConnectorSchemaMessageMode())
                 .thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                converterOrchestrator,
+                protobufConverterOrchestrator,
                 maxComputeSinkConfig,
                 descriptor
         );
-        maxComputeSchemaHelper = new MaxComputeSchemaHelper(converterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
+        maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.buildMaxComputeSchema(descriptor);
         Mockito.when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
-                converterOrchestrator,
+                protobufConverterOrchestrator,
                 protoMessageParser, sinkConfig, partitioningStrategy);
         RecordDecorator metadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(
                 protoDataColumnRecordDecorator, maxComputeSinkConfig, maxComputeSchemaCache);

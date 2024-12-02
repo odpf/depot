@@ -3,7 +3,7 @@ package com.gotocompany.depot.maxcompute.record;
 import com.aliyun.odps.PartitionSpec;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.SinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.schema.partition.DefaultPartitioningStrategy;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
@@ -19,18 +19,18 @@ import java.util.Optional;
 
 public class ProtoDataColumnRecordDecorator extends RecordDecorator {
 
-    private final ConverterOrchestrator converterOrchestrator;
+    private final ProtobufConverterOrchestrator protobufConverterOrchestrator;
     private final MessageParser protoMessageParser;
     private final PartitioningStrategy partitioningStrategy;
     private final SinkConfig sinkConfig;
 
     public ProtoDataColumnRecordDecorator(RecordDecorator decorator,
-                                          ConverterOrchestrator converterOrchestrator,
+                                          ProtobufConverterOrchestrator protobufConverterOrchestrator,
                                           MessageParser messageParser,
                                           SinkConfig sinkConfig,
                                           PartitioningStrategy partitioningStrategy) {
         super(decorator);
-        this.converterOrchestrator = converterOrchestrator;
+        this.protobufConverterOrchestrator = protobufConverterOrchestrator;
         this.protoMessageParser = messageParser;
         this.partitioningStrategy = partitioningStrategy;
         this.sinkConfig = sinkConfig;
@@ -48,7 +48,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
                 continue;
             }
             recordWrapper.getRecord()
-                    .set(entry.getKey().getName(), converterOrchestrator.convert(entry.getKey(), entry.getValue()));
+                    .set(entry.getKey().getName(), protobufConverterOrchestrator.convert(entry.getKey(), entry.getValue()));
         }
         PartitionSpec partitionSpec = null;
         if (partitioningStrategy != null && partitioningStrategy instanceof DefaultPartitioningStrategy) {

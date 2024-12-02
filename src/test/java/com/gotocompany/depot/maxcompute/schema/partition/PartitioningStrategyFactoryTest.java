@@ -3,7 +3,7 @@ package com.gotocompany.depot.maxcompute.schema.partition;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.TestMaxComputePartition;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.ConverterOrchestrator;
+import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,7 +24,7 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
 
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
@@ -43,7 +43,7 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
 
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
@@ -58,7 +58,7 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
 
         PartitioningStrategy partitioningStrategy = PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
@@ -76,7 +76,7 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
 
         PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
@@ -92,7 +92,7 @@ public class PartitioningStrategyFactoryTest {
         Mockito.when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
 
         PartitioningStrategyFactory.createPartitioningStrategy(
-                new ConverterOrchestrator(maxComputeSinkConfig),
+                new ProtobufConverterOrchestrator(maxComputeSinkConfig),
                 maxComputeSinkConfig,
                 descriptor
         );
