@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Builder
 @Getter
 public class MaxComputeSchema {
 

@@ -33,10 +33,10 @@ public class MaxComputeSchemaHelper {
         if (Objects.nonNull(partitionColumn)) {
             tableSchemaBuilder.withPartitionColumn(partitionColumn);
         }
-        return MaxComputeSchema.builder()
-                .tableSchema(tableSchemaBuilder.build())
-                .metadataColumns(metadataColumns.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo)))
-                .build();
+        return new MaxComputeSchema(
+                tableSchemaBuilder.build(),
+                metadataColumns.stream().collect(Collectors.toMap(Column::getName, Column::getTypeInfo))
+        );
 
     }
 
