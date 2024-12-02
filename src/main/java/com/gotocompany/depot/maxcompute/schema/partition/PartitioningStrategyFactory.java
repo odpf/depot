@@ -2,28 +2,25 @@ package com.gotocompany.depot.maxcompute.schema.partition;
 
 import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
+import com.google.common.collect.Sets;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @RequiredArgsConstructor
 public class PartitioningStrategyFactory {
 
-    private static final Set<TypeInfo> ALLOWED_PARTITION_KEY_TYPE_INFO;
-
-    static {
-        ALLOWED_PARTITION_KEY_TYPE_INFO = new HashSet<>();
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TIMESTAMP_NTZ);
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.STRING);
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.TINYINT);
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.SMALLINT);
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.INT);
-        ALLOWED_PARTITION_KEY_TYPE_INFO.add(TypeInfoFactory.BIGINT);
-    }
+    private static final Set<TypeInfo> ALLOWED_PARTITION_KEY_TYPE_INFO = Sets.newHashSet(
+            TypeInfoFactory.TIMESTAMP_NTZ,
+            TypeInfoFactory.STRING,
+            TypeInfoFactory.TINYINT,
+            TypeInfoFactory.SMALLINT,
+            TypeInfoFactory.INT,
+            TypeInfoFactory.BIGINT
+    );
 
     public static PartitioningStrategy createPartitioningStrategy(
             ProtobufConverterOrchestrator protobufConverterOrchestrator,
@@ -35,6 +32,7 @@ public class PartitioningStrategyFactory {
         String partitionKey = maxComputeSinkConfig.getTablePartitionKey();
         Descriptors.FieldDescriptor fieldDescriptor = descriptor
                 .findFieldByName(partitionKey);
+
         if (fieldDescriptor == null) {
             throw new IllegalArgumentException("Partition key not found in the descriptor: " + partitionKey);
         }
