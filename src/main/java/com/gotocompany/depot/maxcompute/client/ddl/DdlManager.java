@@ -37,7 +37,7 @@ public class DdlManager {
         this.tableValidator = new TableValidator(maxComputeSinkConfig);
     }
 
-    public void upsertTable(TableSchema tableSchema) throws OdpsException {
+    public void createOrUpdateTable(TableSchema tableSchema) throws OdpsException {
         String projectName = maxComputeSinkConfig.getMaxComputeProjectId();
         String datasetName = maxComputeSinkConfig.getMaxComputeSchema();
         String tableName = maxComputeSinkConfig.getMaxComputeTableName();

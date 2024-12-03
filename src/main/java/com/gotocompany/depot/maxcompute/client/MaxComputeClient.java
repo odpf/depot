@@ -54,8 +54,8 @@ public class MaxComputeClient {
                 .getSchema();
     }
 
-    public void upsertTable(TableSchema tableSchema) throws OdpsException {
-        ddlManager.upsertTable(tableSchema);
+    public void createOrUpdateTable(TableSchema tableSchema) throws OdpsException {
+        ddlManager.createOrUpdateTable(tableSchema);
     }
 
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {

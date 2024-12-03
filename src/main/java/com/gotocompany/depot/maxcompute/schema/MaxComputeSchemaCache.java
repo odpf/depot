@@ -61,7 +61,7 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
         MaxComputeSchema localSchema = maxComputeSchemaHelper.build(descriptor);
         protobufConverterOrchestrator.clearCache();
         try {
-            maxComputeClient.upsertTable(localSchema.getTableSchema());
+            maxComputeClient.createOrUpdateTable(localSchema.getTableSchema());
             log.info("MaxCompute table upserted successfully");
             TableSchema serverSideTableSchema = maxComputeClient.getLatestTableSchema();
             maxComputeSchema = new MaxComputeSchema(

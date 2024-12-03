@@ -55,7 +55,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
         Mockito.doNothing()
                 .when(maxComputeClient)
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
         TableSchema finalMockedTableSchema = Mockito.mock(TableSchema.class);
         Mockito.doReturn(finalMockedTableSchema)
                 .when(maxComputeClient)
@@ -64,7 +64,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
 
         verify(maxComputeClient, Mockito.times(1))
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
         assertEquals(finalMockedTableSchema, maxComputeSchema.getTableSchema());
     }
 
@@ -99,7 +99,7 @@ public class MaxComputeSchemaCacheTest {
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
 
         verify(maxComputeClient, Mockito.times(0))
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
         assertEquals(mockedMaxComputeSchema, maxComputeSchema);
     }
 
@@ -129,7 +129,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
         Mockito.doNothing()
                 .when(maxComputeClient)
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
         Mockito.doReturn(Mockito.mock(TableSchema.class))
                 .when(maxComputeClient)
                 .getLatestTableSchema();
@@ -138,7 +138,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
 
         verify(maxComputeClient, Mockito.times(2))
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
         Mockito.doNothing()
                 .when(maxComputeClient)
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
         Mockito.doReturn(Mockito.mock(TableSchema.class))
                 .when(maxComputeClient)
                 .getLatestTableSchema();
@@ -176,7 +176,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
 
         verify(maxComputeClient, Mockito.times(2))
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
     }
 
     @Test(expected = MaxComputeTableOperationException.class)
@@ -205,7 +205,7 @@ public class MaxComputeSchemaCacheTest {
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
         Mockito.doThrow(new OdpsException("Invalid schema"))
                 .when(maxComputeClient)
-                .upsertTable(Mockito.any());
+                .createOrUpdateTable(Mockito.any());
 
         maxComputeSchemaCache.getMaxComputeSchema();
         maxComputeSchemaCache.onSchemaUpdate(newDescriptor);
