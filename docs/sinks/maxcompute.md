@@ -22,20 +22,20 @@ uploaded.
 
 #### Supported Protobuf - MaxCompute Table Type Mapping
 
-| Protobuf Type                                                                      | MaxCompute Type             |
-|------------------------------------------------------------------------------------|-----------------------------|
-| bytes                                                                              | BINARY                      |
-| string                                                                             | STRING                      |
-| enum                                                                               | STRING                      |
-| float                                                                              | FLOAT                       |
-| double                                                                             | DOUBLE                      |
-| bool                                                                               | BOOLEAN                     |
-| int64, uint64, int32, uint32, fixed64, fixed32, sfixed64, sfixed32, sint64, sint32 | BIGINT                      |
-| message                                                                            | STRUCT                      |
-| .google.protobuf.Timestamp                                                         | TIMESTAMP_NTZ               |
-| .google.protobuf.Struct                                                            | STRING (Json Serialised)    |
-| .google.protobuf.Duration                                                          | STRUCT                      |
-| map<k,v>                                                                           | ARRAY<STRUCT<key:k, value:v |
+| Protobuf Type                                                                      | MaxCompute Type               |
+|------------------------------------------------------------------------------------|-------------------------------|
+| bytes                                                                              | BINARY                        |
+| string                                                                             | STRING                        |
+| enum                                                                               | STRING                        |
+| float                                                                              | FLOAT                         |
+| double                                                                             | DOUBLE                        |
+| bool                                                                               | BOOLEAN                       |
+| int64, uint64, int32, uint32, fixed64, fixed32, sfixed64, sfixed32, sint64, sint32 | BIGINT                        |
+| message                                                                            | STRUCT                        |
+| .google.protobuf.Timestamp                                                         | TIMESTAMP_NTZ                 |
+| .google.protobuf.Struct                                                            | STRING (Json Serialised)      |
+| .google.protobuf.Duration                                                          | STRUCT                        |
+| map<k,v>                                                                           | ARRAY<STRUCT<key:k, value:v>> |
 
 ## Partitioning
 
