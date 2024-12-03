@@ -20,22 +20,10 @@ public class PrimitiveProtobufPayloadConverter implements ProtobufPayloadConvert
     public PrimitiveProtobufPayloadConverter(PrimitiveProtobufTypeInfoConverter primitiveTypeInfoConverter) {
         this.primitiveTypeInfoConverter = primitiveTypeInfoConverter;
         this.mappers = new HashMap<>();
-        this.mappers.put(Descriptors.FieldDescriptor.Type.BYTES, object -> new Binary(((ByteString) object).toByteArray()));
+        this.mappers.put(Descriptors.FieldDescriptor.Type.BYTES, object -> handleBytes((ByteString) object));
         this.mappers.put(Descriptors.FieldDescriptor.Type.ENUM, Object::toString);
-        this.mappers.put(Descriptors.FieldDescriptor.Type.FLOAT, object -> {
-            float value = (float) object;
-            if (!Float.isFinite(value)) {
-                throw new InvalidMessageException("Invalid float value: " + value);
-            }
-            return value;
-        });
-        this.mappers.put(Descriptors.FieldDescriptor.Type.DOUBLE, object -> {
-            double value = (double) object;
-            if (!Double.isFinite(value)) {
-                throw new InvalidMessageException("Invalid float value: " + value);
-            }
-            return value;
-        });
+        this.mappers.put(Descriptors.FieldDescriptor.Type.FLOAT, object -> handleFloat((float) object));
+        this.mappers.put(Descriptors.FieldDescriptor.Type.DOUBLE, object -> handleDouble((double) object));
     }
 
     @Override
@@ -46,6 +34,24 @@ public class PrimitiveProtobufPayloadConverter implements ProtobufPayloadConvert
     @Override
     public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
         return primitiveTypeInfoConverter.canConvert(fieldDescriptor);
+    }
+
+    private static double handleDouble(double value) {
+        if (!Double.isFinite(value)) {
+            throw new InvalidMessageException("Invalid float value: " + value);
+        }
+        return value;
+    }
+
+    private static float handleFloat(float value) {
+        if (!Float.isFinite(value)) {
+            throw new InvalidMessageException("Invalid float value: " + value);
+        }
+        return value;
+    }
+
+    private static Binary handleBytes(ByteString object) {
+        return new Binary(object.toByteArray());
     }
 
 }
