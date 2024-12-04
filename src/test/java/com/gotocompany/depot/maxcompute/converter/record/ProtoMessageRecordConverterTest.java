@@ -14,7 +14,7 @@ import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.exception.InvalidMessageException;
 import com.gotocompany.depot.exception.UnknownFieldsException;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
-import com.gotocompany.depot.maxcompute.MaxComputeSchemaHelper;
+import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaBuilder;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
@@ -52,7 +52,7 @@ public class ProtoMessageRecordConverterTest {
     private MaxComputeSinkConfig maxComputeSinkConfig;
     private ProtobufConverterOrchestrator protobufConverterOrchestrator;
     private ProtoMessageParser protoMessageParser;
-    private MaxComputeSchemaHelper maxComputeSchemaHelper;
+    private MaxComputeSchemaBuilder maxComputeSchemaBuilder;
     private SinkConfig sinkConfig;
     private MaxComputeSchemaCache maxComputeSchemaCache;
     private ProtoMessageRecordConverter protoMessageRecordConverter;
@@ -90,9 +90,9 @@ public class ProtoMessageRecordConverterTest {
                 maxComputeSinkConfig,
                 descriptor
         );
-        maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
+        maxComputeSchemaBuilder = new MaxComputeSchemaBuilder(protobufConverterOrchestrator, maxComputeSinkConfig, partitioningStrategy);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaBuilder.build(descriptor);
         when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 protobufConverterOrchestrator,

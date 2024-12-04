@@ -11,7 +11,7 @@ import com.gotocompany.depot.common.Tuple;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
-import com.gotocompany.depot.maxcompute.MaxComputeSchemaHelper;
+import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaBuilder;
 import com.gotocompany.depot.maxcompute.model.MaxComputeSchema;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
@@ -140,8 +140,8 @@ public class ProtoMetadataColumnRecordDecoratorTest {
     private void initializeDecorator(MaxComputeSinkConfig sinkConfig) {
         this.maxComputeSinkConfig = sinkConfig;
         ProtobufConverterOrchestrator protobufConverterOrchestrator = new ProtobufConverterOrchestrator(sinkConfig);
-        MaxComputeSchemaHelper maxComputeSchemaHelper = new MaxComputeSchemaHelper(protobufConverterOrchestrator, sinkConfig, null);
-        MaxComputeSchema maxComputeSchema = maxComputeSchemaHelper.build(descriptor);
+        MaxComputeSchemaBuilder maxComputeSchemaBuilder = new MaxComputeSchemaBuilder(protobufConverterOrchestrator, sinkConfig, null);
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaBuilder.build(descriptor);
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
         protoMetadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(null, sinkConfig, maxComputeSchemaCache);

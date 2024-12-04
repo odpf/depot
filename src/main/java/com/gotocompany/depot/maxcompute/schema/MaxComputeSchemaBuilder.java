@@ -1,4 +1,4 @@
-package com.gotocompany.depot.maxcompute;
+package com.gotocompany.depot.maxcompute.schema;
 
 import com.aliyun.odps.Column;
 import com.aliyun.odps.TableSchema;
@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class MaxComputeSchemaHelper {
+public class MaxComputeSchemaBuilder {
 
     private final ProtobufConverterOrchestrator protobufConverterOrchestrator;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
