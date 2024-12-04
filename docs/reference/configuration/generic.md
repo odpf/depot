@@ -47,6 +47,57 @@ Allow unknown fields in proto schema
 * Type: `required`
 * Default: `false`
 
+## `SINK_CONNECTOR_SCHEMA_PROTO_UNKNOWN_FIELDS_VALIDATION`
+
+This configuration is used in conjunction with `SINK_CONNECTOR_SCHEMA_PROTO_ALLOW_UNKNOWN_FIELDS_ENABLE`. If `SINK_CONNECTOR_SCHEMA_PROTO_ALLOW_UNKNOWN_FIELDS_ENABLE` is set to `true`, then this configuration is used to validate the unknown fields in the proto message.
+Supported values are `MESSAGE`, `MESSAGE_ARRAY_FIRST_INDEX`, `MESSAGE_ARRAY_FULL`. This configuration is used to validate the unknown fields in the proto message. Check will be done recursively for the nested messages.
+The choice of the value depends on the use case and trade off between performance and strong consistency.
+
+Use cases: 
+    * `MESSAGE` - Only check non repeated-message fields.
+    * `MESSAGE_ARRAY_FIRST_INDEX` - Check any message type and first index of repeated message fields.
+    * `MESSAGE_ARRAY_FULL` - Check any message type and all elements of repeated message field.
+
+Scenario: 
+    * schema : 
+        ```
+        message Test {
+            string name = 1;
+            int32 age = 2;
+            repeated Test1 test1 = 3;
+        }
+        message Test1 {
+            string name = 1;
+            int32 age = 2;
+        }
+        ```
+    * payload : 
+        ```
+        {
+            "name": "test",
+            "age": 10,
+            "test1": [
+                {
+                    "name": "test1-1",
+                    "age": 20,
+                },
+                {
+                    "name": "test1-2",
+                    "age": 20,
+                    "unknown_field": "test"
+                }
+            ]
+        }
+        ```
+    * `MESSAGE` - It will not validate the unknown field `unknown_field` in the repeated message field `test1`.
+    * `MESSAGE_ARRAY_FIRST_INDEX` - Message will be validated for the unknown field `unknown_field` in the first element of repeated message field `test1`. Validation returns true since the unknown field is not present in the first element of repeated message field `test1`.
+    * `MESSAGE_ARRAY_FULL` - Message will be validated for the unknown field `unknown_field` in all elements of repeated message field `test1`. Validation returns false since the unknown field is present in the second element of repeated message field `test1`.
+
+* Example value: `MESSAGE`
+* Type: `required`
+* Default: `MESSAGE`
+
+
 ## `SINK_ADD_METADATA_ENABLED`
 
 Defines whether to add Kafka metadata fields like topic, partition, offset, timestamp in the input proto messge.
