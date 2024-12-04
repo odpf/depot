@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -38,12 +39,12 @@ public class MaxComputeSink implements Sink {
             maxComputeClient.insert(recordWrappers.getValidRecords());
         } catch (IOException | TunnelException e) {
             log.error("Error while inserting records to MaxCompute: ", e);
-            mapInsertionError(recordWrappers.getValidRecords(), sinkResponse, new ErrorInfo(e, ErrorType.SINK_RETRYABLE_ERROR));
+            sinkResponse.addErrors(recordWrappers.getValidRecords().stream().map(RecordWrapper::getIndex).collect(Collectors.toList()), new ErrorInfo(e, ErrorType.SINK_RETRYABLE_ERROR));
             instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeOperationTotalMetric(),
                     String.format(MaxComputeMetrics.MAXCOMPUTE_ERROR_TAG, e.getClass().getSimpleName()));
         } catch (Exception e) {
             log.error("Error while inserting records to MaxCompute: ", e);
-            mapInsertionError(recordWrappers.getValidRecords(), sinkResponse, new ErrorInfo(e, ErrorType.DEFAULT_ERROR));
+            sinkResponse.addErrors(recordWrappers.getValidRecords().stream().map(RecordWrapper::getIndex).collect(Collectors.toList()), new ErrorInfo(e, ErrorType.DEFAULT_ERROR));
             instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeOperationTotalMetric(),
                     String.format(MaxComputeMetrics.MAXCOMPUTE_ERROR_TAG, e.getClass().getSimpleName()));
         }
@@ -52,12 +53,6 @@ public class MaxComputeSink implements Sink {
 
     @Override
     public void close() throws IOException {
-    }
-
-    private void mapInsertionError(List<RecordWrapper> recordWrapperList,
-                                   SinkResponse sinkResponse,
-                                   ErrorInfo errorInfo) {
-        recordWrapperList.forEach(recordWrapper -> sinkResponse.getErrors().put(recordWrapper.getIndex(), errorInfo));
     }
 
 }

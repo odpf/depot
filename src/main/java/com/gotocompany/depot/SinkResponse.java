@@ -3,6 +3,7 @@ package com.gotocompany.depot;
 import com.gotocompany.depot.error.ErrorInfo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SinkResponse {
@@ -28,6 +29,13 @@ public class SinkResponse {
      */
     public void addErrors(long index, ErrorInfo errorInfo) {
         errors.put(index, errorInfo);
+    }
+
+    /**
+     * Adds uniform error for the indexes.
+     */
+    public void addErrors(List<Long> indexes, ErrorInfo errorInfo) {
+        indexes.forEach(index -> addErrors(index, errorInfo));
     }
 
     /**
