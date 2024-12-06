@@ -24,6 +24,7 @@ public final class StreamingSessionManager {
                                 maxComputeSinkConfig.getMaxComputeProjectId(),
                                 maxComputeSinkConfig.getMaxComputeTableName())
                         .allowSchemaMismatch(false)
+                        .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
             }
         };
@@ -42,6 +43,7 @@ public final class StreamingSessionManager {
                         .setCreatePartition(true)
                         .setPartitionSpec(partitionSpecKey)
                         .allowSchemaMismatch(false)
+                        .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
             }
         };

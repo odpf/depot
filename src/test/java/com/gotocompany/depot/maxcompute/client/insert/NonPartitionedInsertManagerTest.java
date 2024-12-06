@@ -42,6 +42,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(builder);
         when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
         when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -53,6 +55,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1000L);
         when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
+        when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
+                .thenReturn(1L);
         Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
@@ -96,6 +100,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(builder);
         when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
         when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -115,6 +121,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
+        when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
+                .thenReturn(1L);
         Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
@@ -162,6 +170,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(builder);
         when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
         when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -181,6 +191,8 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
+        when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
+                .thenReturn(1L);
         Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)

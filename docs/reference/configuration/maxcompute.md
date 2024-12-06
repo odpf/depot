@@ -149,6 +149,15 @@ Least recently used session will be removed if the cache is full.
 * Type: `required`
 * Default value: `2`
 
+# SINK_MAXCOMPUTE_STREAMING_INSERT_TUNNEL_SLOT_COUNT_PER_SESSION
+
+Contains the slot count per session for the streaming insert operation. This config will be used for setting the slot count per session for the streaming insert operation.
+Check the official documentation https://www.alibabacloud.com/help/en/maxcompute/user-guide/overview-of-dts 
+
+* Example value: `2`
+* Type: `required`
+* Default value: `1`
+
 ## SINK_MAXCOMPUTE_ZONE_ID
 
 Contains ZoneID used for parsing the timestamp in the record. This config will be used for parsing the timestamp in the record.

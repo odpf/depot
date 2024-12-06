@@ -46,6 +46,10 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(builder);
         when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
         when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -57,6 +61,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(1000L);
         when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
+        when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
+                .thenReturn(1L);
         RecordWrapper firstPartitionRecordWrapper = Mockito.mock(RecordWrapper.class);
         when(firstPartitionRecordWrapper.getPartitionSpec())
                 .thenReturn(new PartitionSpec("ds=1"));
@@ -107,6 +113,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(builder);
         when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
         when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -126,6 +134,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
+        when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
+                .thenReturn(1L);
         RecordWrapper firstPartitionRecordWrapper = Mockito.mock(RecordWrapper.class);
         when(firstPartitionRecordWrapper.getPartitionSpec())
                 .thenReturn(new PartitionSpec("ds=1"));
@@ -183,6 +193,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(builder);
         when(builder.allowSchemaMismatch(Mockito.anyBoolean()))
                 .thenReturn(builder);
+        when(builder.setSlotNum(Mockito.anyLong()))
+                .thenReturn(builder);
         when(builder.build())
                 .thenReturn(streamUploadSession);
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
@@ -202,6 +214,8 @@ public class PartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
                 .thenReturn(1);
+        when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
+                .thenReturn(1L);
         RecordWrapper firstPartitionRecordWrapper = Mockito.mock(RecordWrapper.class);
         when(firstPartitionRecordWrapper.getPartitionSpec())
                 .thenReturn(new PartitionSpec("ds=1"));

@@ -92,6 +92,10 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("2")
     int getStreamingInsertMaximumSessionCount();
 
+    @Key("SINK_MAXCOMPUTE_STREAMING_INSERT_TUNNEL_SLOT_COUNT_PER_SESSION")
+    @DefaultValue("1")
+    long getStreamingInsertTunnelSlotCountPerSession();
+
     @Key("SINK_MAXCOMPUTE_ZONE_ID")
     @ConverterClass(ZoneIdConverter.class)
     @DefaultValue("Asia/Bangkok")
