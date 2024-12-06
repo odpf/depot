@@ -7,28 +7,30 @@ import com.google.protobuf.Descriptors;
 
 import java.util.Map;
 
+import static com.google.protobuf.Descriptors.FieldDescriptor.Type.*;
+
 public class PrimitiveProtobufTypeInfoConverter implements ProtobufTypeInfoConverter {
 
     private static final Map<Descriptors.FieldDescriptor.Type, TypeInfo> PROTO_TYPE_MAP;
 
     static {
         PROTO_TYPE_MAP = ImmutableMap.<Descriptors.FieldDescriptor.Type, TypeInfo>builder()
-                .put(Descriptors.FieldDescriptor.Type.BYTES, TypeInfoFactory.BINARY)
-                .put(Descriptors.FieldDescriptor.Type.STRING, TypeInfoFactory.STRING)
-                .put(Descriptors.FieldDescriptor.Type.ENUM, TypeInfoFactory.STRING)
-                .put(Descriptors.FieldDescriptor.Type.DOUBLE, TypeInfoFactory.DOUBLE)
-                .put(Descriptors.FieldDescriptor.Type.FLOAT, TypeInfoFactory.FLOAT)
-                .put(Descriptors.FieldDescriptor.Type.BOOL, TypeInfoFactory.BOOLEAN)
-                .put(Descriptors.FieldDescriptor.Type.INT64, TypeInfoFactory.BIGINT)
-                .put(Descriptors.FieldDescriptor.Type.UINT64, TypeInfoFactory.BIGINT)
-                .put(Descriptors.FieldDescriptor.Type.INT32, TypeInfoFactory.INT)
-                .put(Descriptors.FieldDescriptor.Type.UINT32, TypeInfoFactory.INT)
-                .put(Descriptors.FieldDescriptor.Type.FIXED64, TypeInfoFactory.BIGINT)
-                .put(Descriptors.FieldDescriptor.Type.FIXED32, TypeInfoFactory.INT)
-                .put(Descriptors.FieldDescriptor.Type.SFIXED32, TypeInfoFactory.INT)
-                .put(Descriptors.FieldDescriptor.Type.SFIXED64, TypeInfoFactory.BIGINT)
-                .put(Descriptors.FieldDescriptor.Type.SINT32, TypeInfoFactory.INT)
-                .put(Descriptors.FieldDescriptor.Type.SINT64, TypeInfoFactory.BIGINT)
+                .put(BYTES, TypeInfoFactory.BINARY)
+                .put(STRING, TypeInfoFactory.STRING)
+                .put(ENUM, TypeInfoFactory.STRING)
+                .put(DOUBLE, TypeInfoFactory.DOUBLE)
+                .put(FLOAT, TypeInfoFactory.FLOAT)
+                .put(BOOL, TypeInfoFactory.BOOLEAN)
+                .put(INT64, TypeInfoFactory.BIGINT)
+                .put(UINT64, TypeInfoFactory.BIGINT)
+                .put(INT32, TypeInfoFactory.INT)
+                .put(UINT32, TypeInfoFactory.INT)
+                .put(FIXED64, TypeInfoFactory.BIGINT)
+                .put(FIXED32, TypeInfoFactory.INT)
+                .put(SFIXED32, TypeInfoFactory.INT)
+                .put(SFIXED64, TypeInfoFactory.BIGINT)
+                .put(SINT32, TypeInfoFactory.INT)
+                .put(SINT64, TypeInfoFactory.BIGINT)
                 .build();
     }
 
