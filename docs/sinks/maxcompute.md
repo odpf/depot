@@ -22,25 +22,28 @@ uploaded.
 
 #### Supported Protobuf - MaxCompute Table Type Mapping
 
-| Protobuf Type                                                                      | MaxCompute Type               |
-|------------------------------------------------------------------------------------|-------------------------------|
-| bytes                                                                              | BINARY                        |
-| string                                                                             | STRING                        |
-| enum                                                                               | STRING                        |
-| float                                                                              | FLOAT                         |
-| double                                                                             | DOUBLE                        |
-| bool                                                                               | BOOLEAN                       |
-| int64, uint64, int32, uint32, fixed64, fixed32, sfixed64, sfixed32, sint64, sint32 | BIGINT                        |
-| message                                                                            | STRUCT                        |
-| .google.protobuf.Timestamp                                                         | TIMESTAMP_NTZ                 |
-| .google.protobuf.Struct                                                            | STRING (Json Serialised)      |
-| .google.protobuf.Duration                                                          | STRUCT                        |
-| map<k,v>                                                                           | ARRAY<STRUCT<key:k, value:v>> |
+| Protobuf Type                            | MaxCompute Type               |
+|------------------------------------------|-------------------------------|
+| bytes                                    | BINARY                        |
+| string                                   | STRING                        |
+| enum                                     | STRING                        |
+| float                                    | FLOAT                         |
+| double                                   | DOUBLE                        |
+| bool                                     | BOOLEAN                       |
+| int64, uint64, fixed64, sfixed64, sint64 | BIGINT                        |
+| int32, uint32, fixed32, sfixed32, sint32 | INT                           |
+| message                                  | STRUCT                        |
+| .google.protobuf.Timestamp               | TIMESTAMP_NTZ                 |
+| .google.protobuf.Struct                  | STRING (Json Serialised)      |
+| .google.protobuf.Duration                | STRUCT                        |
+| map<k,v>                                 | ARRAY<STRUCT<key:k, value:v>> |
 
 ## Partitioning
 
-MaxCompute Sink supports creation of table with partition configuration. Currently, MaxCompute Sink supports primitive field(STRING, TINYINT, SMALLINT, BIGINT) 
-and timestamp field based partitioning. Timestamp based partitioning strategy introduces a pseudo-partition column with the value of the timestamp field truncated to the nearest start of day.
+MaxCompute Sink supports creation of table with partition configuration. Currently, MaxCompute Sink supports primitive
+field(STRING, TINYINT, SMALLINT, BIGINT)
+and timestamp field based partitioning. Timestamp based partitioning strategy introduces a pseudo-partition column with
+the value of the timestamp field truncated to the nearest start of day.
 
 ## Clustering
 
