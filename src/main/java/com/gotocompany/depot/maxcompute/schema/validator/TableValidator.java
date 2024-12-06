@@ -16,7 +16,6 @@ public class TableValidator {
     public TableValidator(MaxComputeSinkConfig maxComputeSinkConfig) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
         this.validTableNamePattern = Pattern.compile(maxComputeSinkConfig.getTableValidatorNameRegex());
-
     }
 
     public void validate(String tableName, Long lifecycleDays, TableSchema tableSchema) {
