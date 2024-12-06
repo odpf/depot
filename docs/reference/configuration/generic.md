@@ -61,12 +61,12 @@ Use cases:
 Scenario: 
     * schema : 
         ```
-        message Test {
+        message Person {
             string name = 1;
             int32 age = 2;
-            repeated Test1 test1 = 3;
+            repeated Pet pets = 3;
         }
-        message Test1 {
+        message Pet {
             string name = 1;
             int32 age = 2;
         }
@@ -74,24 +74,24 @@ Scenario:
     * payload : 
         ```
         {
-            "name": "test",
+            "name": "person1",
             "age": 10,
-            "test1": [
+            "pets": [
                 {
-                    "name": "test1-1",
-                    "age": 20,
+                    "name": "dog1",
+                    "age": 2,
                 },
                 {
-                    "name": "test1-2",
-                    "age": 20,
-                    "unknown_field": "test"
+                    "name": "dog2",
+                    "age": 3,
+                    "color": "brown"
                 }
             ]
         }
         ```
-    * `MESSAGE` - It will not validate the unknown field `unknown_field` in the repeated message field `test1`.
-    * `MESSAGE_ARRAY_FIRST_INDEX` - Message will be validated for the unknown field `unknown_field` in the first element of repeated message field `test1`. Validation returns true since the unknown field is not present in the first element of repeated message field `test1`.
-    * `MESSAGE_ARRAY_FULL` - Message will be validated for the unknown field `unknown_field` in all elements of repeated message field `test1`. Validation returns false since the unknown field is present in the second element of repeated message field `test1`.
+    * `MESSAGE` - It will not validate the unknown field `color` in the repeated message field `pets`.
+    * `MESSAGE_ARRAY_FIRST_INDEX` - Validation returns true since the `color` (unknown field) field is not present in the first element of repeated message field `pets`.
+    * `MESSAGE_ARRAY_FULL` - Message will be validated for the unknown field `color` in all elements of repeated message field `pets`. Validation returns false since the unknown field is present in the second element of repeated message field `pets`.
 
 * Example value: `MESSAGE`
 * Type: `required`
