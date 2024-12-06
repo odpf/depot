@@ -114,4 +114,8 @@ public class ProtoMessageParser implements MessageParser {
                 getTypeNameToPackageNameMap(getDescriptorMap()));
         return protoField;
     }
+
+    public Descriptors.Descriptor getDescriptor(String schemaClass) {
+        return stencilClient.get(schemaClass);
+    }
 }

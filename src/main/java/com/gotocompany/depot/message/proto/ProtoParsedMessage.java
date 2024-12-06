@@ -64,7 +64,8 @@ public class ProtoParsedMessage implements ParsedMessage {
 
     @Override
     public void validate(SinkConfig config) {
-        if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable() && ProtoUtils.hasUnknownField(dynamicMessage)) {
+        if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable() && ProtoUtils.hasUnknownField(dynamicMessage,
+                config.getSinkConnectorSchemaProtoUnknownFieldsValidation())) {
             log.error("Unknown fields {}", UnknownProtoFields.toString(dynamicMessage.toByteArray()));
             throw new UnknownFieldsException(dynamicMessage);
         }

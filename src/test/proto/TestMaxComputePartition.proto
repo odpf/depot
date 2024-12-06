@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package com.gotocompany.depot;
+
+message MaxComputePartition {
+  string string_field = 1;
+  int32 int32_field = 2;
+  int64 int64_field = 3;
+  google.protobuf.Timestamp timestamp_field = 4;
+  float float_field = 5;
+}

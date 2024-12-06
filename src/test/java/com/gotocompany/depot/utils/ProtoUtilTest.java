@@ -5,6 +5,7 @@ import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.UnknownFieldSet;
 import com.gotocompany.depot.TestBookingLogMessage;
 import com.gotocompany.depot.TestLocation;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -26,7 +27,7 @@ public class ProtoUtilTest {
                         .build())
                 .build();
 
-        boolean unknownFieldExist = ProtoUtils.hasUnknownField(dynamicMessage);
+        boolean unknownFieldExist = ProtoUtils.hasUnknownField(dynamicMessage, ProtoUnknownFieldValidationType.MESSAGE);
         assertTrue(unknownFieldExist);
     }
 
@@ -45,7 +46,7 @@ public class ProtoUtilTest {
                         .build())
                 .build();
 
-        boolean unknownFieldExist = ProtoUtils.hasUnknownField(dynamicMessage);
+        boolean unknownFieldExist = ProtoUtils.hasUnknownField(dynamicMessage, ProtoUnknownFieldValidationType.MESSAGE);
         assertTrue(unknownFieldExist);
     }
 
@@ -59,13 +60,13 @@ public class ProtoUtilTest {
                 .setField(fieldDescriptor, DynamicMessage.newBuilder(location).build())
                 .build();
 
-        boolean unknownFieldExist = ProtoUtils.hasUnknownField(dynamicMessage);
+        boolean unknownFieldExist = ProtoUtils.hasUnknownField(dynamicMessage, ProtoUnknownFieldValidationType.MESSAGE);
         assertFalse(unknownFieldExist);
     }
 
     @Test
     public void shouldReturnFalseWhenRootIsNull() {
-        boolean unknownFieldExist = ProtoUtils.hasUnknownField(null);
+        boolean unknownFieldExist = ProtoUtils.hasUnknownField(null, ProtoUnknownFieldValidationType.MESSAGE);
         assertFalse(unknownFieldExist);
     }
 }

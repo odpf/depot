@@ -6,6 +6,7 @@ import com.gotocompany.depot.config.converter.SchemaRegistryRefreshConverter;
 import com.gotocompany.depot.config.converter.SinkConnectorSchemaDataTypeConverter;
 import com.gotocompany.depot.config.converter.SinkConnectorSchemaMessageModeConverter;
 import com.gotocompany.depot.config.enums.SinkConnectorSchemaDataType;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.common.TupleString;
 import com.gotocompany.stencil.cache.SchemaRefreshStrategy;
@@ -98,5 +99,9 @@ public interface SinkConfig extends Config {
     @Key("SINK_DEFAULT_FIELD_VALUE_ENABLE")
     @DefaultValue("true")
     boolean getSinkDefaultFieldValueEnable();
+
+    @Key("SINK_CONNECTOR_SCHEMA_PROTO_UNKNOWN_FIELDS_VALIDATION")
+    @DefaultValue("MESSAGE")
+    ProtoUnknownFieldValidationType getSinkConnectorSchemaProtoUnknownFieldsValidation();
 
 }

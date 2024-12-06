@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package com.gotocompany.depot;
+
+message MaxComputeRecord {
+  string id = 1;
+  repeated InnerRecord inner_record = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message InnerRecord {
+  string name = 1;
+  float balance = 2;
+}
