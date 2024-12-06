@@ -50,7 +50,7 @@ public class MaxComputeSchemaBuilder {
                     return !partitioningStrategy.shouldReplaceOriginalColumn();
                 })
                 .map(fieldDescriptor -> Column.newBuilder(fieldDescriptor.getName(),
-                        protobufConverterOrchestrator.convert(fieldDescriptor)).build())
+                        protobufConverterOrchestrator.toMaxComputeTypeInfo(fieldDescriptor)).build())
                 .collect(Collectors.toList());
     }
 

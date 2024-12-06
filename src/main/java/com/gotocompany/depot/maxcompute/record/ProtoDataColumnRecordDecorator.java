@@ -48,7 +48,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
                 continue;
             }
             recordWrapper.getRecord()
-                    .set(entry.getKey().getName(), protobufConverterOrchestrator.convert(entry.getKey(), entry.getValue()));
+                    .set(entry.getKey().getName(), protobufConverterOrchestrator.toMaxComputeValue(entry.getKey(), entry.getValue()));
         }
         PartitionSpec partitionSpec = null;
         if (partitioningStrategy != null && partitioningStrategy instanceof DefaultPartitioningStrategy) {

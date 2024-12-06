@@ -36,7 +36,7 @@ public class PartitioningStrategyFactory {
         if (fieldDescriptor == null) {
             throw new IllegalArgumentException("Partition key not found in the descriptor: " + partitionKey);
         }
-        TypeInfo partitionKeyTypeInfo = protobufConverterOrchestrator.convert(fieldDescriptor);
+        TypeInfo partitionKeyTypeInfo = protobufConverterOrchestrator.toMaxComputeTypeInfo(fieldDescriptor);
         checkPartitionTypePrecondition(partitionKeyTypeInfo);
         if (TypeInfoFactory.TIMESTAMP_NTZ.equals(partitionKeyTypeInfo)) {
             return new TimestampPartitioningStrategy(maxComputeSinkConfig);

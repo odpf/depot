@@ -35,7 +35,7 @@ public class ProtobufConverterOrchestrator {
         initializeConverters(maxComputeSinkConfig);
     }
 
-    public TypeInfo convert(Descriptors.FieldDescriptor fieldDescriptor) {
+    public TypeInfo toMaxComputeTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
         return typeInfoCache.computeIfAbsent(fieldDescriptor.getFullName(), key -> protobufTypeInfoConverters.stream()
                 .filter(converter -> converter.canConvert(fieldDescriptor))
                 .findFirst()
@@ -43,7 +43,7 @@ public class ProtobufConverterOrchestrator {
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported type: " + fieldDescriptor.getType())));
     }
 
-    public Object convert(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
+    public Object toMaxComputeValue(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
         return protobufPayloadConverters.stream()
                 .filter(converter -> converter.canConvert(fieldDescriptor))
                 .findFirst()
