@@ -20,7 +20,7 @@ public interface ProtobufPayloadConverter {
         if (!protoPayload.getFieldDescriptor().isRepeated()) {
             return convertSingular(protoPayload);
         }
-        return ((List<?>) protoPayload.getObject()).stream()
+        return ((List<?>) protoPayload.getParsedObject()).stream()
                 .map(o -> convertSingular(new ProtoPayload(protoPayload.getFieldDescriptor(), o, protoPayload.isRootLevel())))
                 .collect(Collectors.toList());
     }

@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ProtoPayload {
     private final Descriptors.FieldDescriptor fieldDescriptor;
-    private final Object object;
+    private final Object parsedObject;
     private final boolean isRootLevel;
 }

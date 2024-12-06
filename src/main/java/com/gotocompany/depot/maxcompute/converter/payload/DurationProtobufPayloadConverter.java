@@ -21,7 +21,7 @@ public class DurationProtobufPayloadConverter implements ProtobufPayloadConverte
 
     @Override
     public Object convertSingular(ProtoPayload protoPayload) {
-        List<Object> values = getValues((Message) protoPayload.getObject());
+        List<Object> values = getValues((Message) protoPayload.getParsedObject());
         return new SimpleStruct((StructTypeInfo) durationTypeInfoConverter.convertSingular(protoPayload.getFieldDescriptor()), values);
     }
 

@@ -28,7 +28,7 @@ public class PrimitiveProtobufPayloadConverter implements ProtobufPayloadConvert
 
     @Override
     public Object convertSingular(ProtoPayload protoPayload) {
-        return mappers.getOrDefault(protoPayload.getFieldDescriptor().getType(), Function.identity()).apply(protoPayload.getObject());
+        return mappers.getOrDefault(protoPayload.getFieldDescriptor().getType(), Function.identity()).apply(protoPayload.getParsedObject());
     }
 
     @Override

@@ -19,7 +19,7 @@ public class MessageProtobufPayloadConverter implements ProtobufPayloadConverter
 
     @Override
     public Object convertSingular(ProtoPayload protoPayload) {
-        Message dynamicMessage = (Message) protoPayload.getObject();
+        Message dynamicMessage = (Message) protoPayload.getParsedObject();
         List<Object> values = new ArrayList<>();
         Map<Descriptors.FieldDescriptor, Object> payloadFields = dynamicMessage.getAllFields();
         protoPayload.getFieldDescriptor().getMessageType().getFields().forEach(innerFieldDescriptor -> {

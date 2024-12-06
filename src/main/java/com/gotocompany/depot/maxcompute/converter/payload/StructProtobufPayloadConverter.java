@@ -19,7 +19,7 @@ public class StructProtobufPayloadConverter implements ProtobufPayloadConverter 
     @Override
     public Object convertSingular(ProtoPayload protoPayload) {
         try {
-            return printer.print((Message) protoPayload.getObject());
+            return printer.print((Message) protoPayload.getParsedObject());
         } catch (InvalidProtocolBufferException e) {
             return "";
         }

@@ -33,7 +33,7 @@ public class TimestampProtobufPayloadConverter implements ProtobufPayloadConvert
 
     @Override
     public Object convertSingular(ProtoPayload protoPayload) {
-        Message message = (Message) protoPayload.getObject();
+        Message message = (Message) protoPayload.getParsedObject();
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));
         int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS));
         Instant instant = Instant.now();
