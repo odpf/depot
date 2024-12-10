@@ -186,7 +186,9 @@ publishing {
 }
 
 signing {
-   sign publishing.publications.maven
+    if (!project.hasProperty('local')) {
+        sign publishing.publications.maven
+    }
 }
 
 nexusPublishing {
