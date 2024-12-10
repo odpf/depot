@@ -1,19 +1,14 @@
-package com.gotocompany.depot.maxcompute.converter.payload;
+package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.data.SimpleStruct;
 import com.aliyun.odps.type.StructTypeInfo;
+import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.MessageProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.ProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,18 +22,62 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-public class MessageProtobufPayloadConverterTest {
+public class MessageProtobufMaxComputeConverterTest {
 
-    private MessageProtobufPayloadConverter messagePayloadConverter;
-    private Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestBuyerWrapper.getDescriptor();
+    private MessageProtobufMaxComputeConverter messageProtobufMaxComputeConverter;
+    private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestRoot.getDescriptor();
+    private final Descriptors.Descriptor payloadDescriptor = TestMaxComputeTypeInfo.TestBuyerWrapper.getDescriptor();
 
     @Before
     public void init() {
-        MessageProtobufTypeInfoConverter messageTypeInfoConverter = initializeTypeInfoConverters();
-        List<ProtobufPayloadConverter> protobufPayloadConverters = initializePayloadConverter(messageTypeInfoConverter);
-        messagePayloadConverter = new MessageProtobufPayloadConverter(messageTypeInfoConverter, protobufPayloadConverters);
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        
+        List<ProtobufMaxComputeConverter> protobufMaxComputeConverters = new ArrayList<>(Arrays.asList(
+                new DurationProtobufMaxComputeConverter(),
+                new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig),
+                new StructProtobufMaxComputeConverter(),
+                new PrimitiveProtobufMaxComputeConverter()
+        ));
+        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(protobufMaxComputeConverters);
+        protobufMaxComputeConverters.add(messageProtobufMaxComputeConverter);
+    }
+
+    @Test
+    public void shouldConvertMessageToProperTypeInfo() {
+        TypeInfo firstMessageFieldTypeInfo = messageProtobufMaxComputeConverter.convertTypeInfo(descriptor.getFields().get(1));
+        TypeInfo secondMessageFieldTypeInfo = messageProtobufMaxComputeConverter.convertTypeInfo(descriptor.getFields().get(2));
+
+        String expectedFirstMessageTypeRepresentation = "STRUCT<`string_field`:STRING,`another_inner_field`:STRUCT<`string_field`:STRING>,`another_inner_list_field`:ARRAY<STRUCT<`string_field`:STRING>>>";
+        String expectedSecondMessageTypeRepresentation = String.format("ARRAY<%s>", expectedFirstMessageTypeRepresentation);
+
+        assertEquals(expectedFirstMessageTypeRepresentation, firstMessageFieldTypeInfo.toString());
+        assertEquals(expectedSecondMessageTypeRepresentation, secondMessageFieldTypeInfo.toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionWhenUnsupportedTypeIsGiven() {
+        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(new ArrayList<>());
+        Descriptors.FieldDescriptor unsupportedFieldDescriptor = descriptor.getFields().get(1);
+
+        messageProtobufMaxComputeConverter.convertTypeInfo(unsupportedFieldDescriptor);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenCanConvertIsCalledWithMessageFieldDescriptor() {
+        assertTrue(messageProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(1)));
+    }
+
+    @Test
+    public void shouldReturnFalseWhenCanConvertIsCalledWithNonMessageFieldDescriptor() {
+        assertFalse(messageProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(0)));
     }
 
     @Test
@@ -92,37 +131,11 @@ public class MessageProtobufPayloadConverterTest {
                 LocalDateTime.ofEpochSecond(timestamp.getSeconds(), 0, java.time.ZoneOffset.UTC)
         );
 
-        Object object = messagePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(0), wrapper.getField(descriptor.getFields().get(0)), true));
+        Object object = messageProtobufMaxComputeConverter.convertPayload(new ProtoPayload(payloadDescriptor.getFields().get(0), wrapper.getField(payloadDescriptor.getFields().get(0)), true));
 
         assertThat(object)
                 .extracting("typeInfo", "values")
                 .containsExactly(expectedStructTypeInfo, expectedStructValues);
-    }
-
-
-    private MessageProtobufTypeInfoConverter initializeTypeInfoConverters() {
-        List<ProtobufTypeInfoConverter> converters = new ArrayList<>();
-        converters.add(new PrimitiveProtobufTypeInfoConverter());
-        converters.add(new DurationProtobufTypeInfoConverter());
-        converters.add(new StructProtobufTypeInfoConverter());
-        converters.add(new TimestampProtobufTypeInfoConverter());
-        MessageProtobufTypeInfoConverter messageTypeInfoConverter = new MessageProtobufTypeInfoConverter(converters);
-        converters.add(messageTypeInfoConverter);
-        return messageTypeInfoConverter;
-    }
-
-    private List<ProtobufPayloadConverter> initializePayloadConverter(MessageProtobufTypeInfoConverter messageTypeInfoConverter) {
-        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
-        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
-        List<ProtobufPayloadConverter> protobufPayloadConverters = new ArrayList<>();
-        protobufPayloadConverters.add(new DurationProtobufPayloadConverter(new DurationProtobufTypeInfoConverter()));
-        protobufPayloadConverters.add(new PrimitiveProtobufPayloadConverter(new PrimitiveProtobufTypeInfoConverter()));
-        protobufPayloadConverters.add(new StructProtobufPayloadConverter(new StructProtobufTypeInfoConverter()));
-        protobufPayloadConverters.add(new TimestampProtobufPayloadConverter(new TimestampProtobufTypeInfoConverter(), maxComputeSinkConfig));
-        protobufPayloadConverters.add(new MessageProtobufPayloadConverter(messageTypeInfoConverter, protobufPayloadConverters));
-        return protobufPayloadConverters;
     }
 
 }

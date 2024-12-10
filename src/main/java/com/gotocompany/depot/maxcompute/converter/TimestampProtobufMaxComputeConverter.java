@@ -1,10 +1,11 @@
-package com.gotocompany.depot.maxcompute.converter.payload;
+package com.gotocompany.depot.maxcompute.converter;
 
+import com.aliyun.odps.type.TypeInfo;
+import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.exception.InvalidMessageException;
-import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
 import java.time.Duration;
@@ -13,26 +14,37 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAmount;
 
-public class TimestampProtobufPayloadConverter implements ProtobufPayloadConverter {
 
+public class TimestampProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
+
+    private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";
     private static final long DAYS_IN_YEAR = 365;
 
-    private final TimestampProtobufTypeInfoConverter timestampTypeInfoConverter;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final TemporalAmount maxPastEventTimeDifference;
     private final TemporalAmount maxFutureEventTimeDifference;
 
-    public TimestampProtobufPayloadConverter(TimestampProtobufTypeInfoConverter timestampTypeInfoConverter, MaxComputeSinkConfig maxComputeSinkConfig) {
-        this.timestampTypeInfoConverter = timestampTypeInfoConverter;
+    public TimestampProtobufMaxComputeConverter(MaxComputeSinkConfig maxComputeSinkConfig) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
         this.maxPastEventTimeDifference = Duration.ofDays(maxComputeSinkConfig.getMaxPastYearEventTimeDifference() * DAYS_IN_YEAR);
         this.maxFutureEventTimeDifference = Duration.ofDays(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference() * DAYS_IN_YEAR);
     }
 
     @Override
-    public Object convertSingular(ProtoPayload protoPayload) {
+    public TypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
+        return TypeInfoFactory.TIMESTAMP_NTZ;
+    }
+
+    @Override
+    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
+        return Descriptors.FieldDescriptor.Type.MESSAGE.equals(fieldDescriptor.getType())
+                && fieldDescriptor.getMessageType().getFullName().equals(GOOGLE_PROTOBUF_TIMESTAMP);
+    }
+
+    @Override
+    public Object convertSingularPayload(ProtoPayload protoPayload) {
         Message message = (Message) protoPayload.getParsedObject();
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));
         int nanos = (int) message.getField(message.getDescriptorForType().findFieldByName(NANOS));
@@ -42,11 +54,6 @@ public class TimestampProtobufPayloadConverter implements ProtobufPayloadConvert
         validateTimestampRange(localDateTime);
         validateTimestampPartitionKey(protoPayload.getFieldDescriptor().getName(), localDateTime, protoPayload.isRootLevel());
         return localDateTime;
-    }
-
-    @Override
-    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
-        return timestampTypeInfoConverter.canConvert(fieldDescriptor);
     }
 
     private void validateTimestampRange(LocalDateTime localDateTime) {

@@ -1,12 +1,13 @@
-package com.gotocompany.depot.maxcompute.converter.payload;
+package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.data.Binary;
+import com.aliyun.odps.type.TypeInfo;
+import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.exception.InvalidMessageException;
-import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Test;
 
@@ -18,12 +19,123 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PrimitiveProtobufPayloadConverterTest {
-
-    private final PrimitiveProtobufTypeInfoConverter primitiveTypeInfoConverter = new PrimitiveProtobufTypeInfoConverter();
-    private final PrimitiveProtobufPayloadConverter primitivePayloadConverter = new PrimitiveProtobufPayloadConverter(primitiveTypeInfoConverter);
+public class PrimitiveProtobufMaxComputeConverterTest {
+    
+    private final PrimitiveProtobufMaxComputeConverter primitiveProtobufMaxComputeConverter = new PrimitiveProtobufMaxComputeConverter();
     private final Descriptors.Descriptor descriptor = TestMaxComputeTypeInfo.TestFields.getDescriptor();
     private final Descriptors.Descriptor descriptorRepeated = TestMaxComputeTypeInfo.TestFieldsRepeated.getDescriptor();
+
+    @Test
+    public void shouldConvertToBinary() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("bytes_field"));
+
+        assertEquals(TypeInfoFactory.BINARY, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertToString() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("string_field"));
+
+        assertEquals(TypeInfoFactory.STRING, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertEnumToString() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("enum_field"));
+
+        assertEquals(TypeInfoFactory.STRING, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertToDouble() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("double_field"));
+
+        assertEquals(TypeInfoFactory.DOUBLE, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertToFloat() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("float_field"));
+
+        assertEquals(TypeInfoFactory.FLOAT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertToBoolean() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("bool_field"));
+
+        assertEquals(TypeInfoFactory.BOOLEAN, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertToBigInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("int64_field"));
+
+        assertEquals(TypeInfoFactory.BIGINT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertUInt64ToBigInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("uint64_field"));
+
+        assertEquals(TypeInfoFactory.BIGINT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertToInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("int32_field"));
+
+        assertEquals(TypeInfoFactory.INT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertUInt32ToInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("uint32_field"));
+
+        assertEquals(TypeInfoFactory.INT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertFixed64ToBigInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("fixed64_field"));
+
+        assertEquals(TypeInfoFactory.BIGINT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertFixed32ToInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("fixed32_field"));
+
+        assertEquals(TypeInfoFactory.INT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertSFixed32ToInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("sfixed32_field"));
+
+        assertEquals(TypeInfoFactory.INT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertSFixed64ToBigInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("sfixed64_field"));
+
+        assertEquals(TypeInfoFactory.BIGINT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertSInt32ToInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("sint32_field"));
+
+        assertEquals(TypeInfoFactory.INT, typeInfo);
+    }
+
+    @Test
+    public void shouldConvertSInt64ToBigInt() {
+        TypeInfo typeInfo = primitiveProtobufMaxComputeConverter.convertTypeInfo(descriptor.findFieldByName("sint64_field"));
+
+        assertEquals(TypeInfoFactory.BIGINT, typeInfo);
+    }
 
     @Test
     public void shouldReturnObjectAsItIsWhenTypeIsByteArray() {
@@ -32,7 +144,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setBytesField(ByteString.copyFrom(bytes))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(0), message.getField(descriptor.getFields().get(0)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(0), message.getField(descriptor.getFields().get(0)), true));
 
         assertTrue(result instanceof Binary);
         assertArrayEquals(bytes, ((Binary) result).data());
@@ -45,7 +157,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setStringField(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(1), message.getField(descriptor.getFields().get(1)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(1), message.getField(descriptor.getFields().get(1)), true));
 
         assertTrue(result instanceof String);
         assertEquals(value, result);
@@ -58,7 +170,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setEnumField(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(2), message.getField(descriptor.getFields().get(2)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(2), message.getField(descriptor.getFields().get(2)), true));
 
         assertTrue(result instanceof String);
         assertEquals(value.name(), result);
@@ -71,7 +183,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setDoubleField(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
 
         assertTrue(result instanceof Double);
         assertEquals(value, result);
@@ -84,7 +196,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setDoubleField(value)
                 .build();
 
-        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+        primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
     }
 
     @Test(expected = InvalidMessageException.class)
@@ -94,7 +206,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setDoubleField(value)
                 .build();
 
-        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+        primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
     }
 
     @Test(expected = InvalidMessageException.class)
@@ -104,7 +216,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setDoubleField(value)
                 .build();
 
-        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
+        primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(3), message.getField(descriptor.getFields().get(3)), true));
     }
 
     @Test
@@ -114,7 +226,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setFloatField(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
 
         assertTrue(result instanceof Float);
         assertEquals(value, result);
@@ -127,7 +239,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setFloatField(value)
                 .build();
 
-        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
+        primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
     }
 
     @Test(expected = InvalidMessageException.class)
@@ -137,7 +249,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setFloatField(value)
                 .build();
 
-        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
+        primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
     }
 
     @Test(expected = InvalidMessageException.class)
@@ -147,7 +259,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setFloatField(value)
                 .build();
 
-        primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
+        primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(4), message.getField(descriptor.getFields().get(4)), true));
     }
 
     @Test
@@ -157,7 +269,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setBoolField(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(5), message.getField(descriptor.getFields().get(5)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(5), message.getField(descriptor.getFields().get(5)), true));
 
         assertTrue(result instanceof Boolean);
         assertEquals(value, result);
@@ -170,7 +282,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setInt64Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(6), message.getField(descriptor.getFields().get(6)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(6), message.getField(descriptor.getFields().get(6)), true));
 
         assertTrue(result instanceof Long);
         assertEquals(value, result);
@@ -183,7 +295,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setUint64Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(7), message.getField(descriptor.getFields().get(7)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(7), message.getField(descriptor.getFields().get(7)), true));
 
         assertTrue(result instanceof Long);
         assertEquals(value, result);
@@ -196,7 +308,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setInt32Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(8), message.getField(descriptor.getFields().get(8)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(8), message.getField(descriptor.getFields().get(8)), true));
 
         assertTrue(result instanceof Integer);
         assertEquals(value, result);
@@ -209,7 +321,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setUint32Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(9), message.getField(descriptor.getFields().get(9)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(9), message.getField(descriptor.getFields().get(9)), true));
 
         assertTrue(result instanceof Integer);
         assertEquals(value, result);
@@ -222,7 +334,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setFixed64Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(10), message.getField(descriptor.getFields().get(10)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(10), message.getField(descriptor.getFields().get(10)), true));
 
         assertTrue(result instanceof Long);
         assertEquals(value, result);
@@ -235,7 +347,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setFixed32Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(11), message.getField(descriptor.getFields().get(11)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(11), message.getField(descriptor.getFields().get(11)), true));
 
         assertTrue(result instanceof Integer);
         assertEquals(value, result);
@@ -248,7 +360,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setSfixed32Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(12), message.getField(descriptor.getFields().get(12)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(12), message.getField(descriptor.getFields().get(12)), true));
 
         assertTrue(result instanceof Integer);
         assertEquals(value, result);
@@ -261,7 +373,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setSfixed64Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(13), message.getField(descriptor.getFields().get(13)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(13), message.getField(descriptor.getFields().get(13)), true));
 
         assertTrue(result instanceof Long);
         assertEquals(value, result);
@@ -274,7 +386,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setSint32Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(14), message.getField(descriptor.getFields().get(14)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(14), message.getField(descriptor.getFields().get(14)), true));
 
         assertTrue(result instanceof Integer);
         assertEquals(value, result);
@@ -287,7 +399,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .setSint64Field(value)
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptor.getFields().get(15), message.getField(descriptor.getFields().get(15)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptor.getFields().get(15), message.getField(descriptor.getFields().get(15)), true));
 
         assertTrue(result instanceof Long);
         assertEquals(value, result);
@@ -300,7 +412,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllBytesFields(Collections.singletonList(ByteString.copyFrom(bytes)))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(0), message.getField(descriptorRepeated.getFields().get(0)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(0), message.getField(descriptorRepeated.getFields().get(0)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Binary));
@@ -313,7 +425,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllStringFields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(1), message.getField(descriptorRepeated.getFields().get(1)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(1), message.getField(descriptorRepeated.getFields().get(1)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof String));
@@ -326,7 +438,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllEnumFields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(2), message.getField(descriptorRepeated.getFields().get(2)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(2), message.getField(descriptorRepeated.getFields().get(2)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof String));
@@ -339,7 +451,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllDoubleFields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(3), message.getField(descriptorRepeated.getFields().get(3)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(3), message.getField(descriptorRepeated.getFields().get(3)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Double));
@@ -352,7 +464,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllFloatFields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(4), message.getField(descriptorRepeated.getFields().get(4)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(4), message.getField(descriptorRepeated.getFields().get(4)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Float));
@@ -365,7 +477,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllBoolFields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(5), message.getField(descriptorRepeated.getFields().get(5)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(5), message.getField(descriptorRepeated.getFields().get(5)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Boolean));
@@ -378,7 +490,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllInt64Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(6), message.getField(descriptorRepeated.getFields().get(6)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(6), message.getField(descriptorRepeated.getFields().get(6)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
@@ -391,7 +503,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllUint64Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(7), message.getField(descriptorRepeated.getFields().get(7)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(7), message.getField(descriptorRepeated.getFields().get(7)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
@@ -404,7 +516,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllInt32Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(8), message.getField(descriptorRepeated.getFields().get(8)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(8), message.getField(descriptorRepeated.getFields().get(8)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
@@ -417,7 +529,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllUint32Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(9), message.getField(descriptorRepeated.getFields().get(9)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(9), message.getField(descriptorRepeated.getFields().get(9)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
@@ -430,7 +542,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllFixed64Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(10), message.getField(descriptorRepeated.getFields().get(10)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(10), message.getField(descriptorRepeated.getFields().get(10)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
@@ -443,7 +555,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllFixed32Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(11), message.getField(descriptorRepeated.getFields().get(11)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(11), message.getField(descriptorRepeated.getFields().get(11)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
@@ -456,7 +568,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllSfixed32Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(12), message.getField(descriptorRepeated.getFields().get(12)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(12), message.getField(descriptorRepeated.getFields().get(12)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
@@ -469,7 +581,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllSfixed64Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(13), message.getField(descriptorRepeated.getFields().get(13)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(13), message.getField(descriptorRepeated.getFields().get(13)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
@@ -482,7 +594,7 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllSint32Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(14), message.getField(descriptorRepeated.getFields().get(14)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(14), message.getField(descriptorRepeated.getFields().get(14)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Integer));
@@ -495,10 +607,10 @@ public class PrimitiveProtobufPayloadConverterTest {
                 .addAllSint64Fields(Collections.singletonList(value))
                 .build();
 
-        Object result = primitivePayloadConverter.convert(new ProtoPayload(descriptorRepeated.getFields().get(15), message.getField(descriptorRepeated.getFields().get(15)), true));
+        Object result = primitiveProtobufMaxComputeConverter.convertPayload(new ProtoPayload(descriptorRepeated.getFields().get(15), message.getField(descriptorRepeated.getFields().get(15)), true));
 
         assertTrue(result instanceof List<?>);
         assertTrue(((List<?>) result).stream().allMatch(element -> element instanceof Long));
     }
-
+    
 }

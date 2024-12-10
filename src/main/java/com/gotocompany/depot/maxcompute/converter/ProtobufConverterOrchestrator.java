@@ -3,18 +3,6 @@ package com.gotocompany.depot.maxcompute.converter;
 import com.aliyun.odps.type.TypeInfo;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.payload.DurationProtobufPayloadConverter;
-import com.gotocompany.depot.maxcompute.converter.payload.MessageProtobufPayloadConverter;
-import com.gotocompany.depot.maxcompute.converter.payload.ProtobufPayloadConverter;
-import com.gotocompany.depot.maxcompute.converter.payload.PrimitiveProtobufPayloadConverter;
-import com.gotocompany.depot.maxcompute.converter.payload.StructProtobufPayloadConverter;
-import com.gotocompany.depot.maxcompute.converter.payload.TimestampProtobufPayloadConverter;
-import com.gotocompany.depot.maxcompute.converter.type.DurationProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.MessageProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.PrimitiveProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.StructProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.TimestampProtobufTypeInfoConverter;
-import com.gotocompany.depot.maxcompute.converter.type.ProtobufTypeInfoConverter;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
 import java.util.ArrayList;
@@ -24,30 +12,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtobufConverterOrchestrator {
 
-    private final List<ProtobufTypeInfoConverter> protobufTypeInfoConverters;
-    private final List<ProtobufPayloadConverter> protobufPayloadConverters;
+    private final List<ProtobufMaxComputeConverter> protobufMaxComputeConverters;
     private final Map<String, TypeInfo> typeInfoCache;
 
     public ProtobufConverterOrchestrator(MaxComputeSinkConfig maxComputeSinkConfig) {
-        protobufTypeInfoConverters = new ArrayList<>();
-        protobufPayloadConverters = new ArrayList<>();
+        protobufMaxComputeConverters = new ArrayList<>();
         typeInfoCache = new ConcurrentHashMap<>();
         initializeConverters(maxComputeSinkConfig);
     }
 
     public TypeInfo toMaxComputeTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
-        return typeInfoCache.computeIfAbsent(fieldDescriptor.getFullName(), key -> protobufTypeInfoConverters.stream()
+        return typeInfoCache.computeIfAbsent(fieldDescriptor.getFullName(), key -> protobufMaxComputeConverters.stream()
                 .filter(converter -> converter.canConvert(fieldDescriptor))
                 .findFirst()
-                .map(converter -> converter.convert(fieldDescriptor))
+                .map(converter -> converter.convertTypeInfo(fieldDescriptor))
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported type: " + fieldDescriptor.getType())));
     }
 
     public Object toMaxComputeValue(Descriptors.FieldDescriptor fieldDescriptor, Object object) {
-        return protobufPayloadConverters.stream()
+        return protobufMaxComputeConverters.stream()
                 .filter(converter -> converter.canConvert(fieldDescriptor))
                 .findFirst()
-                .map(converter -> converter.convert(new ProtoPayload(fieldDescriptor, object, true)))
+                .map(converter -> converter.convertPayload(new ProtoPayload(fieldDescriptor, object, true)))
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported type: " + fieldDescriptor.getType()));
     }
 
@@ -56,23 +42,17 @@ public class ProtobufConverterOrchestrator {
     }
 
     private void initializeConverters(MaxComputeSinkConfig maxComputeSinkConfig) {
-        PrimitiveProtobufTypeInfoConverter primitiveTypeInfoConverter = new PrimitiveProtobufTypeInfoConverter();
-        DurationProtobufTypeInfoConverter durationTypeInfoConverter = new DurationProtobufTypeInfoConverter();
-        StructProtobufTypeInfoConverter structTypeInfoConverter = new StructProtobufTypeInfoConverter();
-        TimestampProtobufTypeInfoConverter timestampTypeInfoConverter = new TimestampProtobufTypeInfoConverter();
-        MessageProtobufTypeInfoConverter messageTypeInfoConverter = new MessageProtobufTypeInfoConverter(protobufTypeInfoConverters);
+        PrimitiveProtobufMaxComputeConverter primitiveMaxComputeConverter = new PrimitiveProtobufMaxComputeConverter();
+        DurationProtobufMaxComputeConverter durationMaxComputeConverter = new DurationProtobufMaxComputeConverter();
+        StructProtobufMaxComputeConverter structMaxComputeConverter = new StructProtobufMaxComputeConverter();
+        TimestampProtobufMaxComputeConverter timestampMaxComputeConverter = new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig);
+        MessageProtobufMaxComputeConverter messageMaxComputeConverter = new MessageProtobufMaxComputeConverter(protobufMaxComputeConverters);
 
-        protobufTypeInfoConverters.add(primitiveTypeInfoConverter);
-        protobufTypeInfoConverters.add(durationTypeInfoConverter);
-        protobufTypeInfoConverters.add(structTypeInfoConverter);
-        protobufTypeInfoConverters.add(timestampTypeInfoConverter);
-        protobufTypeInfoConverters.add(messageTypeInfoConverter);
-
-        protobufPayloadConverters.add(new PrimitiveProtobufPayloadConverter(primitiveTypeInfoConverter));
-        protobufPayloadConverters.add(new DurationProtobufPayloadConverter(durationTypeInfoConverter));
-        protobufPayloadConverters.add(new StructProtobufPayloadConverter(structTypeInfoConverter));
-        protobufPayloadConverters.add(new TimestampProtobufPayloadConverter(timestampTypeInfoConverter, maxComputeSinkConfig));
-        protobufPayloadConverters.add(new MessageProtobufPayloadConverter(messageTypeInfoConverter, protobufPayloadConverters));
+        protobufMaxComputeConverters.add(primitiveMaxComputeConverter);
+        protobufMaxComputeConverters.add(durationMaxComputeConverter);
+        protobufMaxComputeConverters.add(structMaxComputeConverter);
+        protobufMaxComputeConverters.add(timestampMaxComputeConverter);
+        protobufMaxComputeConverters.add(messageMaxComputeConverter);
     }
 
 }
