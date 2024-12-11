@@ -16,6 +16,7 @@ import com.gotocompany.depot.exception.UnknownFieldsException;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.ParsedMessage;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.converter.fields.DurationProtoField;
 import com.gotocompany.depot.message.proto.converter.fields.MessageProtoField;
@@ -41,6 +42,7 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
     private final String schemaClass;
     private final SinkConnectorSchemaMessageMode mode;
     private final ScheduledExecutorService messageParserChecker = Executors.newScheduledThreadPool(1);
+    private final ProtoUnknownFieldValidationType protoUnknownFieldValidationType;
 
     public BigQueryProtoStorageClient(BigQueryWriter writer, BigQuerySinkConfig config, MessageParser parser) {
         this.writer = (BigQueryProtoWriter) writer;
@@ -54,6 +56,7 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
                 MESSAGE_PARSER_CHECKER_DELAY_SECONDS,
                 MESSAGE_PARSER_CHECKER_FREQUENCY_SECONDS,
                 TimeUnit.SECONDS);
+        this.protoUnknownFieldValidationType = config.getSinkConnectorSchemaProtoUnknownFieldsValidation();
     }
 
 
@@ -101,7 +104,9 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
 
     private DynamicMessage convert(Message message, Descriptors.Descriptor descriptor) throws IOException {
         ParsedMessage parsedMessage = parser.parse(message, mode, schemaClass);
-        parsedMessage.validate(config);
+        if (config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+            parsedMessage.validate(protoUnknownFieldValidationType);
+        }
         DynamicMessage.Builder messageBuilder = convert((DynamicMessage) parsedMessage.getRaw(), descriptor, true);
         BigQueryProtoUtils.addMetadata(message.getMetadata(), messageBuilder, descriptor, config);
         return messageBuilder.build();

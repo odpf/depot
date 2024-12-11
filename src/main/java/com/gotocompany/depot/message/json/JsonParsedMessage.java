@@ -1,9 +1,9 @@
 package com.gotocompany.depot.message.json;
 
-import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.message.LogicalValue;
 import com.gotocompany.depot.message.MessageUtils;
 import com.gotocompany.depot.message.ParsedMessage;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.schema.Schema;
 import com.gotocompany.depot.schema.SchemaField;
 import com.gotocompany.depot.schema.json.GenericJsonSchema;
@@ -39,7 +39,7 @@ public class JsonParsedMessage implements ParsedMessage {
         return jsonObject;
     }
 
-    public void validate(SinkConfig config) { }
+    public void validate(ProtoUnknownFieldValidationType protoUnknownFieldValidationType) { }
 
     @Override
     public Map<SchemaField, Object> getFields() {

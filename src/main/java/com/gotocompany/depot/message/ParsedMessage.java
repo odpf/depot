@@ -12,7 +12,7 @@ public interface ParsedMessage {
 
     JSONObject toJson();
 
-    void validate(SinkConfig config);
+    void validate(ProtoUnknownFieldValidationType validationType);
 
     Map<SchemaField, Object> getFields();
 

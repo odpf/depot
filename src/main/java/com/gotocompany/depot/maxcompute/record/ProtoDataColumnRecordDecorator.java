@@ -11,6 +11,7 @@ import com.gotocompany.depot.maxcompute.schema.partition.TimestampPartitioningSt
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.ParsedMessage;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     private final String partitionFieldName;
     private final boolean shouldReplaceOriginalColumn;
     private final String schemaClass;
+    private final ProtoUnknownFieldValidationType protoUnknownFieldValidationType;
 
     public ProtoDataColumnRecordDecorator(RecordDecorator decorator,
                                           ProtobufConverterOrchestrator protobufConverterOrchestrator,
@@ -45,12 +47,15 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
                 .orElse(false);
         this.schemaClass = sinkConfig.getSinkConnectorSchemaMessageMode() == SinkConnectorSchemaMessageMode.LOG_MESSAGE
                 ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
+        this.protoUnknownFieldValidationType = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidation();
     }
 
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
-        parsedMessage.validate(sinkConfig);
+        if (sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+            parsedMessage.validate(protoUnknownFieldValidationType);
+        }
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();
         Map<Descriptors.FieldDescriptor, Object> fields = protoMessage.getAllFields();
         for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : fields.entrySet()) {

@@ -5,9 +5,9 @@ import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.gotocompany.depot.exception.DeserializerException;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.jayway.jsonpath.Configuration;
 import com.google.protobuf.Message;
-import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.exception.UnknownFieldsException;
 import com.gotocompany.depot.message.LogicalValue;
 import com.gotocompany.depot.message.MessageUtils;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class ProtoParsedMessage implements ParsedMessage {
-
 
     private final Message dynamicMessage;
     private final Configuration jsonPathConfig;
@@ -63,9 +62,8 @@ public class ProtoParsedMessage implements ParsedMessage {
     }
 
     @Override
-    public void validate(SinkConfig config) {
-        if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable() && ProtoUtils.hasUnknownField(dynamicMessage,
-                config.getSinkConnectorSchemaProtoUnknownFieldsValidation())) {
+    public void validate(ProtoUnknownFieldValidationType protoUnknownFieldValidationType) {
+        if (ProtoUtils.hasUnknownField(dynamicMessage, protoUnknownFieldValidationType)) {
             log.error("Unknown fields {}", UnknownProtoFields.toString(dynamicMessage.toByteArray()));
             throw new UnknownFieldsException(dynamicMessage);
         }
