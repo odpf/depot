@@ -52,8 +52,8 @@ public class MaxComputeProtobufConverterCache {
         if (fieldDescriptor.getType().equals(MESSAGE)) {
             protobufMaxComputeConverter = protobufMaxComputeConverterMap.get(fieldDescriptor.getMessageType().getFullName());
         }
-        protobufMaxComputeConverter = protobufMaxComputeConverter != null ? protobufMaxComputeConverter :
-                protobufMaxComputeConverterMap.get(fieldDescriptor.getType().toString());
+        protobufMaxComputeConverter = protobufMaxComputeConverter != null ? protobufMaxComputeConverter
+                : protobufMaxComputeConverterMap.get(fieldDescriptor.getType().toString());
         if (protobufMaxComputeConverter == null) {
             throw new IllegalArgumentException("Unsupported type: " + fieldDescriptor.getType());
         }
