@@ -1,7 +1,6 @@
 package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.data.SimpleStruct;
-import com.aliyun.odps.type.ArrayTypeInfo;
 import com.aliyun.odps.type.StructTypeInfo;
 import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
@@ -26,11 +25,13 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
     }
 
     @Override
-    public TypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
-        return maxComputeProtobufConverterCache.getOrCreateTypeInfo(fieldDescriptor, () -> calculateTypeInfo(fieldDescriptor));
+    public TypeInfo convertTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
+        return maxComputeProtobufConverterCache.getOrCreateTypeInfo(fieldDescriptor,
+                () -> wrapTypeInfo(fieldDescriptor, convertSingularTypeInfo(fieldDescriptor)));
     }
 
-    private StructTypeInfo calculateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
+    @Override
+    public StructTypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
         List<String> fieldNames = fieldDescriptor.getMessageType().getFields().stream()
                 .map(Descriptors.FieldDescriptor::getName)
                 .collect(Collectors.toList());
@@ -62,8 +63,7 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
                     .convertPayload(new ProtoPayload(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor), false));
             values.add(mappedInnerValue);
         });
-        TypeInfo typeInfo = convertSingularTypeInfo(protoPayload.getFieldDescriptor());
-        return new SimpleStruct((StructTypeInfo) (typeInfo instanceof ArrayTypeInfo ? ((ArrayTypeInfo) typeInfo).getElementTypeInfo() : typeInfo), values);
+        return new SimpleStruct(convertSingularTypeInfo(protoPayload.getFieldDescriptor()), values);
     }
 
 }
