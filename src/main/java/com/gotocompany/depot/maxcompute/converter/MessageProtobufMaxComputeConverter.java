@@ -1,6 +1,7 @@
 package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.data.SimpleStruct;
+import com.aliyun.odps.type.ArrayTypeInfo;
 import com.aliyun.odps.type.StructTypeInfo;
 import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
@@ -63,7 +64,9 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
                     .convertPayload(new ProtoPayload(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor), false));
             values.add(mappedInnerValue);
         });
-        return new SimpleStruct(convertSingularTypeInfo(protoPayload.getFieldDescriptor()), values);
+        TypeInfo typeInfo = convertTypeInfo(protoPayload.getFieldDescriptor());
+        StructTypeInfo structTypeInfo = (StructTypeInfo) (typeInfo instanceof ArrayTypeInfo ? ((ArrayTypeInfo) typeInfo).getElementTypeInfo() : typeInfo);
+        return new SimpleStruct(structTypeInfo, values);
     }
 
 }
