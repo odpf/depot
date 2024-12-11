@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,9 @@ public class MaxComputeSink implements Sink {
     @Override
     public SinkResponse pushToSink(List<Message> messages) throws SinkException {
         SinkResponse sinkResponse = new SinkResponse();
+        Instant conversionStartTime = Instant.now();
         RecordWrappers recordWrappers = messageRecordConverter.convert(messages);
+        instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeConversionLatencyMetric(), conversionStartTime);
         recordWrappers.getInvalidRecords()
                 .forEach(invalidRecord -> sinkResponse.getErrors().put(invalidRecord.getIndex(), invalidRecord.getErrorInfo()));
         try {

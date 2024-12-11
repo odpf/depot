@@ -55,4 +55,5 @@ public class BigQueryMetrics extends SinkMetrics {
     public String getBigqueryPayloadSizeMetrics() {
         return getApplicationPrefix() + SINK_PREFIX + BIGQUERY_SINK_PREFIX + "payload_size_bytes";
     }
+
 }

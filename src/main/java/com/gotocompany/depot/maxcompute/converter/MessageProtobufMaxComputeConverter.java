@@ -1,35 +1,44 @@
 package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.data.SimpleStruct;
+import com.aliyun.odps.type.ArrayTypeInfo;
 import com.aliyun.odps.type.StructTypeInfo;
 import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
+import com.gotocompany.depot.maxcompute.model.MaxComputeProtobufConverterCache;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+@Setter
 public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
-    private final List<ProtobufMaxComputeConverter> protobufMaxComputeConverters;
+    private final MaxComputeProtobufConverterCache maxComputeProtobufConverterCache;
+
+    public MessageProtobufMaxComputeConverter(MaxComputeProtobufConverterCache maxComputeProtobufConverterCache) {
+        this.maxComputeProtobufConverterCache = maxComputeProtobufConverterCache;
+    }
 
     @Override
-    public StructTypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
+    public TypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
+        return maxComputeProtobufConverterCache.getOrCreateTypeInfo(fieldDescriptor, () -> calculateTypeInfo(fieldDescriptor));
+    }
+
+    private StructTypeInfo calculateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
         List<String> fieldNames = fieldDescriptor.getMessageType().getFields().stream()
                 .map(Descriptors.FieldDescriptor::getName)
                 .collect(Collectors.toList());
         List<TypeInfo> typeInfos = fieldDescriptor.getMessageType().getFields().stream()
-                .map(fd -> protobufMaxComputeConverters.stream()
-                        .filter(converter -> converter.canConvert(fd))
-                        .findFirst()
-                        .map(converter -> converter.convertTypeInfo(fd))
-                        .orElseThrow(() -> new IllegalArgumentException("Unsupported type: " + fd.getJavaType())))
+                .map(fd -> {
+                    ProtobufMaxComputeConverter converter = maxComputeProtobufConverterCache.getConverter(fd);
+                    return converter.convertTypeInfo(fd);
+                })
                 .collect(Collectors.toList());
         return TypeInfoFactory.getStructTypeInfo(fieldNames, typeInfos);
     }
@@ -49,14 +58,12 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
                 values.add(null);
                 return;
             }
-            Object mappedInnerValue = protobufMaxComputeConverters.stream()
-                    .filter(converter -> converter.canConvert(innerFieldDescriptor))
-                    .findFirst()
-                    .map(converter -> converter.convertPayload(new ProtoPayload(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor), false)))
-                    .orElse(null);
+            Object mappedInnerValue = maxComputeProtobufConverterCache.getConverter(innerFieldDescriptor)
+                    .convertPayload(new ProtoPayload(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor), false));
             values.add(mappedInnerValue);
         });
-        return new SimpleStruct(convertSingularTypeInfo(protoPayload.getFieldDescriptor()), values);
+        TypeInfo typeInfo = convertSingularTypeInfo(protoPayload.getFieldDescriptor());
+        return new SimpleStruct((StructTypeInfo) (typeInfo instanceof ArrayTypeInfo ? ((ArrayTypeInfo) typeInfo).getElementTypeInfo() : typeInfo), values);
     }
 
 }

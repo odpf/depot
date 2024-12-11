@@ -37,4 +37,7 @@ public class MaxComputeMetrics extends SinkMetrics {
         return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "flush_record_count");
     }
 
+    public String getMaxComputeConversionLatencyMetric() {
+        return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "payload_conversion_latency_milliseconds");
+    }
 }

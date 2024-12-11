@@ -9,6 +9,7 @@ import com.google.protobuf.Duration;
 import com.google.protobuf.Timestamp;
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.maxcompute.model.MaxComputeProtobufConverterCache;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,6 @@ import org.mockito.Mockito;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,14 +39,7 @@ public class MessageProtobufMaxComputeConverterTest {
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
         when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
         when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
-        List<ProtobufMaxComputeConverter> protobufMaxComputeConverters = new ArrayList<>(Arrays.asList(
-                new DurationProtobufMaxComputeConverter(),
-                new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig),
-                new StructProtobufMaxComputeConverter(),
-                new PrimitiveProtobufMaxComputeConverter()
-        ));
-        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(protobufMaxComputeConverters);
-        protobufMaxComputeConverters.add(messageProtobufMaxComputeConverter);
+        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(new MaxComputeProtobufConverterCache(maxComputeSinkConfig));
     }
 
     @Test
@@ -59,14 +52,6 @@ public class MessageProtobufMaxComputeConverterTest {
 
         assertEquals(expectedFirstMessageTypeRepresentation, firstMessageFieldTypeInfo.toString());
         assertEquals(expectedSecondMessageTypeRepresentation, secondMessageFieldTypeInfo.toString());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionWhenUnsupportedTypeIsGiven() {
-        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(new ArrayList<>());
-        Descriptors.FieldDescriptor unsupportedFieldDescriptor = descriptor.getFields().get(1);
-
-        messageProtobufMaxComputeConverter.convertTypeInfo(unsupportedFieldDescriptor);
     }
 
     @Test
