@@ -53,7 +53,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
-        if (sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+        if (!sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
             parsedMessage.validate(protoUnknownFieldValidationType);
         }
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();

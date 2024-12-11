@@ -71,7 +71,7 @@ public class MessageRecordConverter {
             String schemaClass = mode == SinkConnectorSchemaMessageMode.LOG_MESSAGE
                     ? config.getSinkConnectorSchemaProtoMessageClass() : config.getSinkConnectorSchemaProtoKeyClass();
             ParsedMessage parsedMessage = parser.parse(message, mode, schemaClass);
-            if (config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+            if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
                 parsedMessage.validate(unknownFieldValidationType);
             }
             Map<String, Object> columns = getMapping(parsedMessage);

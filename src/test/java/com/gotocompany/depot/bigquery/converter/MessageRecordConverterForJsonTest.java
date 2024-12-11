@@ -9,11 +9,13 @@ import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.MessageParser;
+import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.message.json.JsonMessageParser;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.JsonParserMetrics;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -54,7 +56,10 @@ public class MessageRecordConverterForJsonTest {
     @Test
     public void shouldReturnEmptyRecordsForEmptyList() {
         MessageParser parser = new JsonMessageParser(defaultConfig, instrumentation, jsonParserMetrics);
-        MessageRecordConverter converter = new MessageRecordConverter(parser, null);
+        BigQuerySinkConfig bigQuerySinkConfig = Mockito.mock(BigQuerySinkConfig.class);
+        Mockito.when(bigQuerySinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidation())
+                .thenReturn(ProtoUnknownFieldValidationType.MESSAGE);
+        MessageRecordConverter converter = new MessageRecordConverter(parser, bigQuerySinkConfig);
         List<Message> emptyMessageList = Collections.emptyList();
 
         Records records = converter.convert(emptyMessageList);

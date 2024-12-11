@@ -104,7 +104,7 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
 
     private DynamicMessage convert(Message message, Descriptors.Descriptor descriptor) throws IOException {
         ParsedMessage parsedMessage = parser.parse(message, mode, schemaClass);
-        if (config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+        if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
             parsedMessage.validate(protoUnknownFieldValidationType);
         }
         DynamicMessage.Builder messageBuilder = convert((DynamicMessage) parsedMessage.getRaw(), descriptor, true);
