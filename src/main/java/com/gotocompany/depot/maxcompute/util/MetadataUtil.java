@@ -5,9 +5,9 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.common.collect.ImmutableMap;
 import com.gotocompany.depot.common.TupleString;
-import com.gotocompany.depot.config.MaxComputeSinkConfig;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -51,10 +51,10 @@ public class MetadataUtil {
         return METADATA_TYPE_MAP.get(type.toLowerCase());
     }
 
-    public static Object getValidMetadataValue(String type, Object value, MaxComputeSinkConfig maxComputeSinkConfig) {
+    public static Object getValidMetadataValue(String type, Object value, ZoneId zoneId) {
         if (TIMESTAMP.equalsIgnoreCase(type) && value instanceof Long) {
             return Instant.ofEpochMilli((Long) value)
-                    .atZone(maxComputeSinkConfig.getZoneId())
+                    .atZone(zoneId)
                     .toLocalDateTime();
         }
         return METADATA_MAPPER_MAP.get(type.toLowerCase()).apply(value);

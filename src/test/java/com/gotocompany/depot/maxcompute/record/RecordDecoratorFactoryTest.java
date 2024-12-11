@@ -1,6 +1,8 @@
 package com.gotocompany.depot.maxcompute.record;
 
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.config.SinkConfig;
+import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -13,9 +15,11 @@ public class RecordDecoratorFactoryTest {
     public void shouldCreateDataRecordDecorator() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
-
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        when(sinkConfig.getSinkConnectorSchemaProtoMessageClass()).thenReturn("com.gotocompany.depot.message.Message");
         RecordDecorator recordDecorator = RecordDecoratorFactory.createRecordDecorator(
-                null, null, null, null, maxComputeSinkConfig, null
+                null, null, null, null, maxComputeSinkConfig, sinkConfig
         );
 
         assertThat(recordDecorator)
@@ -28,9 +32,11 @@ public class RecordDecoratorFactoryTest {
     public void shouldCreateDataRecordDecoratorWithNamespaceDecorator() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.TRUE);
-
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        when(sinkConfig.getSinkConnectorSchemaProtoMessageClass()).thenReturn("com.gotocompany.depot.message.Message");
         RecordDecorator recordDecorator = RecordDecoratorFactory.createRecordDecorator(
-                null, null, null, null, maxComputeSinkConfig, null
+                null, null, null, null, maxComputeSinkConfig, sinkConfig
         );
         assertThat(recordDecorator)
                 .isInstanceOf(ProtoMetadataColumnRecordDecorator.class)

@@ -10,17 +10,21 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 
 public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
-    private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final GenerateExpression generateExpression;
+    private final String partitionColumnName;
+    private final String partitionColumnKey;
+    private final String tablePartitionByTimestampTimeUnit;
 
     public TimestampPartitioningStrategy(MaxComputeSinkConfig maxComputeSinkConfig) {
-        this.maxComputeSinkConfig = maxComputeSinkConfig;
+        this.partitionColumnName = maxComputeSinkConfig.getTablePartitionColumnName();
+        this.partitionColumnKey = maxComputeSinkConfig.getTablePartitionKey();
+        this.tablePartitionByTimestampTimeUnit = maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit();
         this.generateExpression = initializeGenerateExpression();
     }
 
     @Override
     public String getOriginalPartitionColumnName() {
-        return maxComputeSinkConfig.getTablePartitionKey();
+        return partitionColumnKey;
     }
 
     @Override
@@ -30,10 +34,9 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
 
     @Override
     public Column getPartitionColumn() {
-        Column column = Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), TypeInfoFactory.STRING)
+        Column column = Column.newBuilder(partitionColumnName, TypeInfoFactory.STRING)
                 .build();
-        column.setGenerateExpression(new TruncTime(maxComputeSinkConfig.getTablePartitionKey(),
-                maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit()));
+        column.setGenerateExpression(new TruncTime(partitionColumnKey, tablePartitionByTimestampTimeUnit));
         return column;
     }
 
@@ -42,14 +45,13 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
         PartitionSpec partitionSpec = new PartitionSpec();
         if (object instanceof Record) {
             Record record = (Record) object;
-            partitionSpec.set(maxComputeSinkConfig.getTablePartitionColumnName(), generateExpression.generate(record));
+            partitionSpec.set(partitionColumnName, generateExpression.generate(record));
         }
         return partitionSpec;
     }
 
     private GenerateExpression initializeGenerateExpression() {
-        return new TruncTime(maxComputeSinkConfig.getTablePartitionKey(),
-                maxComputeSinkConfig.getTablePartitionByTimestampTimeUnit());
+        return new TruncTime(partitionColumnKey, tablePartitionByTimestampTimeUnit);
     }
 
 }

@@ -23,6 +23,9 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     private final MessageParser protoMessageParser;
     private final PartitioningStrategy partitioningStrategy;
     private final SinkConfig sinkConfig;
+    private final String partitionFieldName;
+    private final boolean shouldReplaceOriginalColumn;
+    private final String schemaClass;
 
     public ProtoDataColumnRecordDecorator(RecordDecorator decorator,
                                           ProtobufConverterOrchestrator protobufConverterOrchestrator,
@@ -34,17 +37,24 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         this.protoMessageParser = messageParser;
         this.partitioningStrategy = partitioningStrategy;
         this.sinkConfig = sinkConfig;
+        this.partitionFieldName = Optional.ofNullable(partitioningStrategy)
+                .map(PartitioningStrategy::getOriginalPartitionColumnName)
+                .orElse(null);
+        this.shouldReplaceOriginalColumn = Optional.ofNullable(partitioningStrategy)
+                .map(PartitioningStrategy::shouldReplaceOriginalColumn)
+                .orElse(false);
+        this.schemaClass = sinkConfig.getSinkConnectorSchemaMessageMode() == SinkConnectorSchemaMessageMode.LOG_MESSAGE
+                ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
     }
 
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
-        String schemaClass = getSchemaClass();
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
         parsedMessage.validate(sinkConfig);
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();
         Map<Descriptors.FieldDescriptor, Object> fields = protoMessage.getAllFields();
         for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : fields.entrySet()) {
-            if (entry.getKey().getName().equals(getPartitionFieldName()) && shouldReplaceOriginalColumn()) {
+            if (entry.getKey().getName().equals(partitionFieldName) && shouldReplaceOriginalColumn) {
                 continue;
             }
             recordWrapper.getRecord()
@@ -60,23 +70,6 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
             partitionSpec = partitioningStrategy.getPartitionSpec(recordWrapper.getRecord());
         }
         return new RecordWrapper(recordWrapper.getRecord(), recordWrapper.getIndex(), recordWrapper.getErrorInfo(), partitionSpec);
-    }
-
-    private String getPartitionFieldName() {
-        return Optional.ofNullable(partitioningStrategy)
-                .map(PartitioningStrategy::getOriginalPartitionColumnName)
-                .orElse(null);
-    }
-
-    private boolean shouldReplaceOriginalColumn() {
-        return Optional.ofNullable(partitioningStrategy)
-                .map(PartitioningStrategy::shouldReplaceOriginalColumn)
-                .orElse(false);
-    }
-
-    private String getSchemaClass() {
-        return sinkConfig.getSinkConnectorSchemaMessageMode() == SinkConnectorSchemaMessageMode.LOG_MESSAGE
-                ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
     }
 
 }

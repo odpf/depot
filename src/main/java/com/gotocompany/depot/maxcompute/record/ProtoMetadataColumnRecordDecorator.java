@@ -14,6 +14,7 @@ import com.gotocompany.depot.maxcompute.util.MetadataUtil;
 import com.gotocompany.depot.message.Message;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,24 +22,28 @@ import java.util.stream.IntStream;
 
 public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
 
-    private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final MaxComputeSchemaCache maxComputeSchemaCache;
     private final Map<String, String> metadataTypePairs;
+    private final String maxcomputeMetadataNamespace;
+    private final List<TupleString> metadataColumnsTypes;
+    private final ZoneId zoneId;
 
     public ProtoMetadataColumnRecordDecorator(RecordDecorator recordDecorator,
                                               MaxComputeSinkConfig maxComputeSinkConfig,
                                               MaxComputeSchemaCache maxComputeSchemaCache) {
         super(recordDecorator);
-        this.maxComputeSinkConfig = maxComputeSinkConfig;
         this.maxComputeSchemaCache = maxComputeSchemaCache;
         this.metadataTypePairs = maxComputeSinkConfig.getMetadataColumnsTypes()
                 .stream()
                 .collect(Collectors.toMap(TupleString::getFirst, TupleString::getSecond));
+        this.maxcomputeMetadataNamespace = maxComputeSinkConfig.getMaxcomputeMetadataNamespace();
+        this.metadataColumnsTypes = maxComputeSinkConfig.getMetadataColumnsTypes();
+        this.zoneId = maxComputeSinkConfig.getZoneId();
     }
 
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
-        if (StringUtils.isNotBlank(maxComputeSinkConfig.getMaxcomputeMetadataNamespace())) {
+        if (StringUtils.isNotBlank(maxcomputeMetadataNamespace)) {
             appendNamespacedMetadata(recordWrapper.getRecord(), message);
         } else {
             appendMetadata(recordWrapper.getRecord(), message);
@@ -47,26 +52,26 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
     }
 
     private void appendNamespacedMetadata(Record record, Message message) {
-        Map<String, Object> metadata = message.getMetadata(maxComputeSinkConfig.getMetadataColumnsTypes());
+        Map<String, Object> metadata = message.getMetadata(metadataColumnsTypes);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
         StructTypeInfo typeInfo = (StructTypeInfo) maxComputeSchema.getTableSchema()
-                .getColumn(maxComputeSinkConfig.getMaxcomputeMetadataNamespace())
+                .getColumn(maxcomputeMetadataNamespace)
                 .getTypeInfo();
         List<Object> values = IntStream.range(0, typeInfo.getFieldCount())
                 .mapToObj(index -> {
                     Object metadataValue = metadata.get(typeInfo.getFieldNames().get(index));
-                    return MetadataUtil.getValidMetadataValue(metadataTypePairs.get(typeInfo.getFieldNames().get(index)), metadataValue, maxComputeSinkConfig);
+                    return MetadataUtil.getValidMetadataValue(metadataTypePairs.get(typeInfo.getFieldNames().get(index)), metadataValue, zoneId);
                 }).collect(Collectors.toList());
-        record.set(maxComputeSinkConfig.getMaxcomputeMetadataNamespace(), new SimpleStruct(typeInfo, values));
+        record.set(maxcomputeMetadataNamespace, new SimpleStruct(typeInfo, values));
     }
 
     private void appendMetadata(Record record, Message message) {
-        Map<String, Object> metadata = message.getMetadata(maxComputeSinkConfig.getMetadataColumnsTypes());
+        Map<String, Object> metadata = message.getMetadata(metadataColumnsTypes);
         for (Map.Entry<String, TypeInfo> entry : maxComputeSchemaCache.getMaxComputeSchema()
                 .getMetadataColumns()
                 .entrySet()) {
             Object value = metadata.get(entry.getKey());
-            record.set(entry.getKey(), MetadataUtil.getValidMetadataValue(metadataTypePairs.get(entry.getKey()), value, maxComputeSinkConfig));
+            record.set(entry.getKey(), MetadataUtil.getValidMetadataValue(metadataTypePairs.get(entry.getKey()), value, zoneId));
         }
     }
 
