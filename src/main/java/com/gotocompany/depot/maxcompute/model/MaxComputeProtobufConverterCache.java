@@ -32,10 +32,13 @@ public class MaxComputeProtobufConverterCache {
     }
 
     public TypeInfo getOrCreateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
-        return typeInfoCache.computeIfAbsent(fieldDescriptor.getFullName(), key -> {
-            ProtobufMaxComputeConverter protobufMaxComputeConverter = getConverter(fieldDescriptor);
-            return protobufMaxComputeConverter.convertTypeInfo(fieldDescriptor);
-        });
+        if (typeInfoCache.containsKey(fieldDescriptor.getFullName())) {
+            return typeInfoCache.get(fieldDescriptor.getFullName());
+        }
+        ProtobufMaxComputeConverter protobufMaxComputeConverter = getConverter(fieldDescriptor);
+        TypeInfo typeInfo = protobufMaxComputeConverter.convertTypeInfo(fieldDescriptor);
+        typeInfoCache.put(fieldDescriptor.getFullName(), typeInfo);
+        return typeInfo;
     }
 
     public TypeInfo getOrCreateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor, Supplier<TypeInfo> supplier) {
