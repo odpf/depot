@@ -11,6 +11,7 @@ public class MaxComputeMetrics extends SinkMetrics {
     public static final String MAXCOMPUTE_ERROR_TAG = "error=%s";
     public static final String MAXCOMPUTE_COMPRESSION_TAG = "compression=%s-%s";
     public static final String MAXCOMPUTE_UNKNOWN_FIELD_VALIDATION_TYPE_TAG = "unknown_field_validation_type=%s";
+    public static final String MAXCOMPUTE_SINK_THREAD_TAG = "sink_thread=%s";
 
     public MaxComputeMetrics(SinkConfig config) {
         super(config);
@@ -44,6 +45,10 @@ public class MaxComputeMetrics extends SinkMetrics {
 
     public String getMaxComputeUnknownFieldValidationLatencyMetric() {
         return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "unknown_field_validation_latency_milliseconds");
+    }
+
+    public String getMaxComputeStreamingInsertSessionCount() {
+        return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "streaming_insert_session_count");
     }
 
 }

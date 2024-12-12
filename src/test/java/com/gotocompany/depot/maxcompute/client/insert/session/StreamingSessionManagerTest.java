@@ -3,14 +3,33 @@ package com.gotocompany.depot.maxcompute.client.insert.session;
 import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class StreamingSessionManagerTest {
+
+    @Mock
+    private Instrumentation instrumentation;
+
+    @Mock
+    private MaxComputeMetrics maxComputeMetrics;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doNothing()
+                .when(instrumentation)
+                .captureCount(Mockito.any(), Mockito.any(), Mockito.any());
+    }
 
     @Test
     public void shouldCreateNewPartitionedSessionIfCacheIsEmpty() throws TunnelException {
@@ -39,7 +58,7 @@ public class StreamingSessionManagerTest {
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
         StreamingSessionManager partitionedStreamingSessionManager =
-                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 partitionedStreamingSessionManager.getSession("test_session");
@@ -76,7 +95,7 @@ public class StreamingSessionManagerTest {
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
         StreamingSessionManager partitionedStreamingSessionManager =
-                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 partitionedStreamingSessionManager.getSession("test_session");
@@ -118,7 +137,7 @@ public class StreamingSessionManagerTest {
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
         StreamingSessionManager partitionedStreamingSessionManager =
-                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 partitionedStreamingSessionManager.getSession("test_session");
@@ -154,7 +173,7 @@ public class StreamingSessionManagerTest {
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
         StreamingSessionManager nonPartitionedStreamingSessionManager =
-                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 nonPartitionedStreamingSessionManager.getSession("test_session");
@@ -187,7 +206,7 @@ public class StreamingSessionManagerTest {
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
         StreamingSessionManager nonPartitionedStreamingSessionManager =
-                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
                 nonPartitionedStreamingSessionManager.getSession("test_session");
@@ -223,7 +242,7 @@ public class StreamingSessionManagerTest {
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
         StreamingSessionManager nonPartitionedStreamingSessionManager =
-                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
+                StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         nonPartitionedStreamingSessionManager.getSession("test_session");
         nonPartitionedStreamingSessionManager.refreshSession("test_session");

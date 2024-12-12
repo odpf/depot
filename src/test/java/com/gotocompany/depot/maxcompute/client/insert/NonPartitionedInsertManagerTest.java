@@ -9,9 +9,12 @@ import com.gotocompany.depot.maxcompute.client.insert.session.StreamingSessionMa
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -22,6 +25,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class NonPartitionedInsertManagerTest {
+
+    @Mock
+    private Instrumentation instrumentation;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doNothing()
+                .when(instrumentation)
+                .captureCount(Mockito.any(), Mockito.any(), Mockito.any());
+    }
 
     @Test
     public void shouldFlushAllTheRecords() throws IOException, TunnelException {
@@ -67,7 +81,7 @@ public class NonPartitionedInsertManagerTest {
         when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.createNonPartitioned(
-                tableTunnel, maxComputeSinkConfig
+                tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics
         );
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
@@ -133,7 +147,7 @@ public class NonPartitionedInsertManagerTest {
         when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.createNonPartitioned(
-                tableTunnel, maxComputeSinkConfig
+                tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics
         );
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(
@@ -203,7 +217,7 @@ public class NonPartitionedInsertManagerTest {
         when(maxComputeMetrics.getMaxComputeFlushSizeMetric())
                 .thenReturn("flush_size");
         StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.createNonPartitioned(
-                tableTunnel, maxComputeSinkConfig
+                tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics
         ));
         NonPartitionedInsertManager nonPartitionedInsertManager = new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         List<RecordWrapper> recordWrappers = Collections.singletonList(

@@ -12,13 +12,25 @@ public class InsertManagerFactory {
                                                     TableTunnel tableTunnel,
                                                     Instrumentation instrumentation,
                                                     MaxComputeMetrics maxComputeMetrics) {
-        StreamingSessionManager streamingSessionManager = maxComputeSinkConfig.isTablePartitioningEnabled()
-                ? StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig) : StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig);
+        StreamingSessionManager streamingSessionManager = getStreamingSessionManager(maxComputeSinkConfig, tableTunnel, instrumentation, maxComputeMetrics);
         if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
             return new PartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         } else {
             return new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
         }
+    }
+
+    private static StreamingSessionManager getStreamingSessionManager(MaxComputeSinkConfig maxComputeSinkConfig,
+                                                                      TableTunnel tableTunnel,
+                                                                      Instrumentation instrumentation,
+                                                                      MaxComputeMetrics maxComputeMetrics) {
+        StreamingSessionManager streamingSessionManager;
+        if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
+            streamingSessionManager = StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        } else {
+            streamingSessionManager = StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+        }
+        return streamingSessionManager;
     }
 
 }
