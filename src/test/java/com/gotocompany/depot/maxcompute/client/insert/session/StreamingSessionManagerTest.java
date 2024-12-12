@@ -28,7 +28,7 @@ public class StreamingSessionManagerTest {
         MockitoAnnotations.initMocks(this);
         Mockito.doNothing()
                 .when(instrumentation)
-                .captureCount(Mockito.any(), Mockito.any(), Mockito.any());
+                .captureValue(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test

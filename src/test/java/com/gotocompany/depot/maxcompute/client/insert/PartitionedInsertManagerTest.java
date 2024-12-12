@@ -87,7 +87,6 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
@@ -160,7 +159,6 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
@@ -240,7 +238,6 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());

@@ -71,7 +71,6 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
-        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
@@ -137,7 +136,6 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
-        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
@@ -207,7 +205,6 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
-        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
         Mockito.doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());

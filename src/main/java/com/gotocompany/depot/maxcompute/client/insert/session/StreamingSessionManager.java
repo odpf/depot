@@ -68,7 +68,7 @@ public final class StreamingSessionManager {
     }
 
     public TableTunnel.StreamUploadSession getSession(String sessionId) {
-        instrumentation.captureCount(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount(), sessionCache.size(),
+        instrumentation.captureValue(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount(), (int) sessionCache.size(),
                 String.format(MaxComputeMetrics.MAXCOMPUTE_SINK_THREAD_TAG, Thread.currentThread().getName()));
         return sessionCache.getUnchecked(sessionId);
     }
