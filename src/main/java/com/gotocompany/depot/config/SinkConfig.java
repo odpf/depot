@@ -104,4 +104,7 @@ public interface SinkConfig extends Config {
     @DefaultValue("MESSAGE")
     ProtoUnknownFieldValidationType getSinkConnectorSchemaProtoUnknownFieldsValidation();
 
+    @Key("SINK_CONNECTOR_SCHEMA_PROTO_UNKNOWN_FIELDS_VALIDATION_INSTRUMENTATION_ENABLE")
+    @DefaultValue("false")
+    boolean getSinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable();
 }

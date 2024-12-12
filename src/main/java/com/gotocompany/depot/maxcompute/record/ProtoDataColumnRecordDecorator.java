@@ -33,6 +33,8 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     private final ProtoUnknownFieldValidationType protoUnknownFieldValidationType;
     private final Instrumentation instrumentation;
     private final MaxComputeMetrics maxComputeMetrics;
+    private final boolean sinkConnectorSchemaProtoAllowUnknownFieldsEnable;
+    private final boolean sinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable;
 
     public ProtoDataColumnRecordDecorator(RecordDecorator decorator,
                                           ProtobufConverterOrchestrator protobufConverterOrchestrator,
@@ -57,19 +59,23 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         this.protoUnknownFieldValidationType = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidation();
         this.instrumentation = instrumentation;
         this.maxComputeMetrics = maxComputeMetrics;
+        this.sinkConnectorSchemaProtoAllowUnknownFieldsEnable = sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable();
+        this.sinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable();
     }
 
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
-        if (!sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+        if (!sinkConnectorSchemaProtoAllowUnknownFieldsEnable) {
             Instant unknownFieldValidationStart = Instant.now();
             parsedMessage.validate(protoUnknownFieldValidationType);
-            instrumentation.captureDurationSince(
-                    maxComputeMetrics.getMaxComputeUnknownFieldValidationLatencyMetric(),
-                    unknownFieldValidationStart,
-                    String.format(MaxComputeMetrics.MAXCOMPUTE_UNKNOWN_FIELD_VALIDATION_TYPE_TAG, protoUnknownFieldValidationType)
-            );
+            if (sinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable) {
+                instrumentation.captureDurationSince(
+                        maxComputeMetrics.getMaxComputeUnknownFieldValidationLatencyMetric(),
+                        unknownFieldValidationStart,
+                        String.format(MaxComputeMetrics.MAXCOMPUTE_UNKNOWN_FIELD_VALIDATION_TYPE_TAG, protoUnknownFieldValidationType)
+                );
+            }
         }
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();
         Map<Descriptors.FieldDescriptor, Object> fields = protoMessage.getAllFields();
