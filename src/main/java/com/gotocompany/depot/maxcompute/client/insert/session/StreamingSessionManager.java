@@ -35,7 +35,7 @@ public final class StreamingSessionManager {
                         .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
                 instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeStreamingInsertSessionInitializationLatency(), start);
-                instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount());
+                instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCreatedCount());
                 return streamUploadSession;
             }
         };
@@ -61,7 +61,7 @@ public final class StreamingSessionManager {
                         .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
                 instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeStreamingInsertSessionInitializationLatency(), start);
-                instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount());
+                instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCreatedCount());
                 return streamUploadSession;
             }
         };

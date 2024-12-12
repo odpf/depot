@@ -46,8 +46,8 @@ public class MaxComputeMetrics extends SinkMetrics {
         return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "unknown_field_validation_latency_milliseconds");
     }
 
-    public String getMaxComputeStreamingInsertSessionCount() {
-        return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "streaming_insert_session_count");
+    public String getMaxComputeStreamingInsertSessionCreatedCount() {
+        return String.format("%s%s%s%s", getApplicationPrefix(), SINK_PREFIX, MAXCOMPUTE_SINK_PREFIX, "streaming_insert_session_created_count");
     }
 
     public String getMaxComputeStreamingInsertSessionInitializationLatency() {
