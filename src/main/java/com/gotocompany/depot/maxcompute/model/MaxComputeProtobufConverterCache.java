@@ -10,8 +10,8 @@ import com.gotocompany.depot.maxcompute.converter.ProtobufMaxComputeConverter;
 import com.gotocompany.depot.maxcompute.converter.StructProtobufMaxComputeConverter;
 import com.gotocompany.depot.maxcompute.converter.TimestampProtobufMaxComputeConverter;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import static com.google.protobuf.Descriptors.FieldDescriptor.Type.*;
@@ -25,8 +25,8 @@ public class MaxComputeProtobufConverterCache {
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     public MaxComputeProtobufConverterCache(MaxComputeSinkConfig maxComputeSinkConfig) {
-        this.protobufMaxComputeConverterMap = new HashMap<>();
-        this.typeInfoCache = new HashMap<>();
+        this.protobufMaxComputeConverterMap = new ConcurrentHashMap<>();
+        this.typeInfoCache = new ConcurrentHashMap<>();
         this.maxComputeSinkConfig = maxComputeSinkConfig;
         initMaxComputeConverterMap();
     }
