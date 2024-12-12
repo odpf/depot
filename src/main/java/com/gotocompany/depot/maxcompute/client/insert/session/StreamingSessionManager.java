@@ -10,19 +10,14 @@ import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 
+import java.time.Instant;
+
 public final class StreamingSessionManager {
 
     private final LoadingCache<String, TableTunnel.StreamUploadSession> sessionCache;
-    private final Instrumentation instrumentation;
-    private final MaxComputeMetrics maxComputeMetrics;
 
-    private StreamingSessionManager(LoadingCache<String, TableTunnel.StreamUploadSession> loadingCache,
-                                    Instrumentation instrumentation,
-                                    MaxComputeMetrics maxComputeMetrics
-                                    ) {
+    private StreamingSessionManager(LoadingCache<String, TableTunnel.StreamUploadSession> loadingCache) {
         this.sessionCache = loadingCache;
-        this.instrumentation = instrumentation;
-        this.maxComputeMetrics = maxComputeMetrics;
     }
 
     public static StreamingSessionManager createNonPartitioned(TableTunnel tableTunnel,
@@ -32,17 +27,21 @@ public final class StreamingSessionManager {
         CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
             public TableTunnel.StreamUploadSession load(String sessionId) throws TunnelException {
-                return tableTunnel.buildStreamUploadSession(
+                Instant start = Instant.now();
+                TableTunnel.StreamUploadSession streamUploadSession = tableTunnel.buildStreamUploadSession(
                                 maxComputeSinkConfig.getMaxComputeProjectId(),
                                 maxComputeSinkConfig.getMaxComputeTableName())
                         .allowSchemaMismatch(false)
                         .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
+                instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeStreamingInsertSessionInitializationLatency(), start);
+                instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount());
+                return streamUploadSession;
             }
         };
         return new StreamingSessionManager(CacheBuilder.newBuilder()
                 .maximumSize(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
-                .build(cacheLoader), instrumentation, maxComputeMetrics);
+                .build(cacheLoader));
     }
 
     public static StreamingSessionManager createPartitioned(TableTunnel tableTunnel,
@@ -52,7 +51,8 @@ public final class StreamingSessionManager {
         CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
             public TableTunnel.StreamUploadSession load(String partitionSpecKey) throws TunnelException {
-                return tableTunnel.buildStreamUploadSession(
+                Instant start = Instant.now();
+                TableTunnel.StreamUploadSession streamUploadSession = tableTunnel.buildStreamUploadSession(
                                 maxComputeSinkConfig.getMaxComputeProjectId(),
                                 maxComputeSinkConfig.getMaxComputeTableName())
                         .setCreatePartition(true)
@@ -60,16 +60,17 @@ public final class StreamingSessionManager {
                         .allowSchemaMismatch(false)
                         .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
+                instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeStreamingInsertSessionInitializationLatency(), start);
+                instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount());
+                return streamUploadSession;
             }
         };
         return new StreamingSessionManager(CacheBuilder.newBuilder()
                 .maximumSize(maxComputeSinkConfig.getStreamingInsertMaximumSessionCount())
-                .build(cacheLoader), instrumentation, maxComputeMetrics);
+                .build(cacheLoader));
     }
 
     public TableTunnel.StreamUploadSession getSession(String sessionId) {
-        instrumentation.captureValue(maxComputeMetrics.getMaxComputeStreamingInsertSessionCount(), (int) sessionCache.size(),
-                String.format(MaxComputeMetrics.MAXCOMPUTE_SINK_THREAD_TAG, Thread.currentThread().getName()));
         return sessionCache.getUnchecked(sessionId);
     }
 
