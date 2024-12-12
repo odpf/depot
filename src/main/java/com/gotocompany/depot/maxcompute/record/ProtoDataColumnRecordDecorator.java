@@ -13,8 +13,11 @@ import com.gotocompany.depot.message.MessageParser;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,12 +31,16 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     private final boolean shouldReplaceOriginalColumn;
     private final String schemaClass;
     private final ProtoUnknownFieldValidationType protoUnknownFieldValidationType;
+    private final Instrumentation instrumentation;
+    private final MaxComputeMetrics maxComputeMetrics;
 
     public ProtoDataColumnRecordDecorator(RecordDecorator decorator,
                                           ProtobufConverterOrchestrator protobufConverterOrchestrator,
                                           MessageParser messageParser,
                                           SinkConfig sinkConfig,
-                                          PartitioningStrategy partitioningStrategy) {
+                                          PartitioningStrategy partitioningStrategy,
+                                          Instrumentation instrumentation,
+                                          MaxComputeMetrics maxComputeMetrics) {
         super(decorator);
         this.protobufConverterOrchestrator = protobufConverterOrchestrator;
         this.protoMessageParser = messageParser;
@@ -48,13 +55,21 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         this.schemaClass = sinkConfig.getSinkConnectorSchemaMessageMode() == SinkConnectorSchemaMessageMode.LOG_MESSAGE
                 ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
         this.protoUnknownFieldValidationType = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidation();
+        this.instrumentation = instrumentation;
+        this.maxComputeMetrics = maxComputeMetrics;
     }
 
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);
         if (!sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+            Instant unknownFieldValidationStart = Instant.now();
             parsedMessage.validate(protoUnknownFieldValidationType);
+            instrumentation.captureDurationSince(
+                    maxComputeMetrics.getMaxComputeUnknownFieldValidationLatencyMetric(),
+                    unknownFieldValidationStart,
+                    String.format(MaxComputeMetrics.MAXCOMPUTE_UNKNOWN_FIELD_VALIDATION_TYPE_TAG, protoUnknownFieldValidationType)
+            );
         }
         com.google.protobuf.Message protoMessage = (com.google.protobuf.Message) parsedMessage.getRaw();
         Map<Descriptors.FieldDescriptor, Object> fields = protoMessage.getAllFields();

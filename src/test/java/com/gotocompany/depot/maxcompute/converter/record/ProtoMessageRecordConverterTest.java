@@ -28,6 +28,8 @@ import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -94,9 +96,13 @@ public class ProtoMessageRecordConverterTest {
         maxComputeSchemaCache = Mockito.mock(MaxComputeSchemaCache.class);
         MaxComputeSchema maxComputeSchema = maxComputeSchemaBuilder.build(descriptor);
         when(maxComputeSchemaCache.getMaxComputeSchema()).thenReturn(maxComputeSchema);
+        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
+        Mockito.doNothing().when(instrumentation)
+                .captureDurationSince(Mockito.any(), Mockito.any());
+        MaxComputeMetrics maxComputeMetrics = new MaxComputeMetrics(sinkConfig);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 protobufConverterOrchestrator,
-                protoMessageParser, sinkConfig, partitioningStrategy);
+                protoMessageParser, sinkConfig, partitioningStrategy, instrumentation, maxComputeMetrics);
         RecordDecorator metadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(
                 protoDataColumnRecordDecorator, maxComputeSinkConfig, maxComputeSchemaCache);
         protoMessageRecordConverter = new ProtoMessageRecordConverter(metadataColumnRecordDecorator, maxComputeSchemaCache);

@@ -25,6 +25,8 @@ import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.message.ParsedMessage;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
+import com.gotocompany.depot.metrics.Instrumentation;
+import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -307,12 +309,16 @@ public class ProtoDataColumnRecordDecoratorTest {
         when(parsedMessage.getRaw()).thenReturn(mockedMessage);
         when(protoMessageParser.parse(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(parsedMessage);
+        Instrumentation instrumentation = Mockito.mock(Instrumentation.class);
+        MaxComputeMetrics maxComputeMetrics = new MaxComputeMetrics(sinkConfig);
         protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(
                 recordDecorator,
                 protobufConverterOrchestrator,
                 protoMessageParser,
                 sinkConfig,
-                partitioningStrategy
+                partitioningStrategy,
+                instrumentation,
+                maxComputeMetrics
         );
     }
 

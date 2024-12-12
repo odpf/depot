@@ -67,7 +67,9 @@ public class MaxComputeSinkFactory {
                 messageParser,
                 partitioningStrategy,
                 maxComputeSinkConfig,
-                sinkConfig
+                sinkConfig,
+                new Instrumentation(statsDReporter, RecordDecorator.class),
+                maxComputeMetrics
         );
         ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
         return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter,
