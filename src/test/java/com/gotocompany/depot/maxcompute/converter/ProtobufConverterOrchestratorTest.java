@@ -28,8 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class ProtobufConverterOrchestratorTest {
@@ -137,7 +138,7 @@ public class ProtobufConverterOrchestratorTest {
         Field field1 = maxComputeProtobufConverterCache.getClass().getDeclaredField("typeInfoCache");
         field1.setAccessible(true);
         Map<String, TypeInfo> typeInfoCache = (Map<String, TypeInfo>) field1.get(maxComputeProtobufConverterCache);
-        assertTrue(!(typeInfoCache).isEmpty());
+        assertFalse((typeInfoCache).isEmpty());
 
         protobufConverterOrchestrator.clearCache();
 
