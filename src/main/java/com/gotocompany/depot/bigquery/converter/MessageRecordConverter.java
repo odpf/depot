@@ -36,11 +36,13 @@ public class MessageRecordConverter {
     private final MessageParser parser;
     private final BigQuerySinkConfig config;
     private final ProtoUnknownFieldValidationType unknownFieldValidationType;
+    private final boolean sinkConnectorSchemaProtoAllowUnknownFieldsEnable;
 
     public MessageRecordConverter(MessageParser parser, BigQuerySinkConfig config) {
         this.parser = parser;
         this.config = config;
         this.unknownFieldValidationType = config.getSinkConnectorSchemaProtoUnknownFieldsValidation();
+        this.sinkConnectorSchemaProtoAllowUnknownFieldsEnable = config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable();
     }
 
     public Records convert(List<Message> messages) {
@@ -71,7 +73,7 @@ public class MessageRecordConverter {
             String schemaClass = mode == SinkConnectorSchemaMessageMode.LOG_MESSAGE
                     ? config.getSinkConnectorSchemaProtoMessageClass() : config.getSinkConnectorSchemaProtoKeyClass();
             ParsedMessage parsedMessage = parser.parse(message, mode, schemaClass);
-            if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+            if (!sinkConnectorSchemaProtoAllowUnknownFieldsEnable) {
                 parsedMessage.validate(unknownFieldValidationType);
             }
             Map<String, Object> columns = getMapping(parsedMessage);

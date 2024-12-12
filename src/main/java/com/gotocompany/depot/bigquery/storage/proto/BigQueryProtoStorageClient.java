@@ -43,6 +43,7 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
     private final SinkConnectorSchemaMessageMode mode;
     private final ScheduledExecutorService messageParserChecker = Executors.newScheduledThreadPool(1);
     private final ProtoUnknownFieldValidationType protoUnknownFieldValidationType;
+    private final boolean sinkConnectorSchemaProtoAllowUnknownFieldsEnable;
 
     public BigQueryProtoStorageClient(BigQueryWriter writer, BigQuerySinkConfig config, MessageParser parser) {
         this.writer = (BigQueryProtoWriter) writer;
@@ -57,6 +58,7 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
                 MESSAGE_PARSER_CHECKER_FREQUENCY_SECONDS,
                 TimeUnit.SECONDS);
         this.protoUnknownFieldValidationType = config.getSinkConnectorSchemaProtoUnknownFieldsValidation();
+        this.sinkConnectorSchemaProtoAllowUnknownFieldsEnable = config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable();
     }
 
 
@@ -104,7 +106,7 @@ public class BigQueryProtoStorageClient implements BigQueryStorageClient {
 
     private DynamicMessage convert(Message message, Descriptors.Descriptor descriptor) throws IOException {
         ParsedMessage parsedMessage = parser.parse(message, mode, schemaClass);
-        if (!config.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable()) {
+        if (!sinkConnectorSchemaProtoAllowUnknownFieldsEnable) {
             parsedMessage.validate(protoUnknownFieldValidationType);
         }
         DynamicMessage.Builder messageBuilder = convert((DynamicMessage) parsedMessage.getRaw(), descriptor, true);
