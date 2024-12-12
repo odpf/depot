@@ -97,6 +97,13 @@ Scenario:
 * Type: `required`
 * Default: `MESSAGE`
 
+## `SINK_CONNECTOR_SCHEMA_PROTO_UNKNOWN_FIELDS_VALIDATION_INSTRUMENTATION_ENABLE`
+
+Enable instrumentation for unknown fields validation. Instrumentation itself will introduces some overhead, so it should be enabled when needed.
+
+* Example value: `true`
+* Type: `required`
+* Default: `false`
 
 ## `SINK_ADD_METADATA_ENABLED`
 
