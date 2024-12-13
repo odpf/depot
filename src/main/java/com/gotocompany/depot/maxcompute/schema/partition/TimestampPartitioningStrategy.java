@@ -23,7 +23,8 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * Get the original partition column name which is the key in the message payload
+     * Get the original partition column name which is the key in the message payload.
+     *
      * @return original partition column name
      */
     @Override
@@ -32,8 +33,8 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * Timestamp partitioning strategy does not replace the original column
-     * Original timestamp field is retained
+     * Timestamp partitioning strategy does not replace the original column.
+     * Original timestamp field is retained.
      *
      * @return false
      */
@@ -43,7 +44,7 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * Get the partition column
+     * Get the partition column.
      *
      * @return partition column
      */
@@ -56,7 +57,7 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * To get the PartitionSpec that uses built in spec generator based on the payload
+     * To get the PartitionSpec that uses built in spec generator based on the payload.
      *
      * @param object the object for which the partition spec is to be generated
      * @return partition spec

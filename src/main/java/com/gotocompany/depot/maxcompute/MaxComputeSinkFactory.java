@@ -72,7 +72,7 @@ public class MaxComputeSinkFactory {
                 maxComputeMetrics
         );
         ProtoMessageRecordConverter protoMessageRecordConverter = new ProtoMessageRecordConverter(recordDecorator, maxComputeSchemaCache);
-        return new MaxComputeSink(maxComputeClient, protoMessageRecordConverter,
+        return new MaxComputeSink(maxComputeClient.createInsertManager(), protoMessageRecordConverter,
                 new Instrumentation(statsDReporter, MaxComputeSink.class), maxComputeMetrics);
     }
 

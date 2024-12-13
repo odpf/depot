@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Decorator to convert protobuf message to maxcompute record
- * Populates the metadata column based on the depot Message payload
+ * Decorator to convert protobuf message to maxcompute record.
+ * Populates the metadata column based on the depot Message payload.
  */
 public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
 
@@ -46,8 +46,8 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
     }
 
     /**
-     * Process the record and message to append metadata to the record
-     * Apply namespaced metadata if maxcomputeMetadataNamespace is not empty
+     * Process the record and message to append metadata to the record.
+     * Apply namespaced metadata if maxcomputeMetadataNamespace is not empty.
      *
      * @param recordWrapper record to be populated
      * @param message depot message to get the metadata from

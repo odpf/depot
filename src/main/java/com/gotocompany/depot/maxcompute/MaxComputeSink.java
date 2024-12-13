@@ -6,7 +6,7 @@ import com.gotocompany.depot.SinkResponse;
 import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
 import com.gotocompany.depot.exception.SinkException;
-import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
+import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.converter.record.MessageRecordConverter;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MaxComputeSink implements Sink {
 
-    private final MaxComputeClient maxComputeClient;
+    private final InsertManager insertManager;
     private final MessageRecordConverter messageRecordConverter;
     private final Instrumentation instrumentation;
     private final MaxComputeMetrics maxComputeMetrics;
@@ -39,7 +39,7 @@ public class MaxComputeSink implements Sink {
         recordWrappers.getInvalidRecords()
                 .forEach(invalidRecord -> sinkResponse.getErrors().put(invalidRecord.getIndex(), invalidRecord.getErrorInfo()));
         try {
-            maxComputeClient.insert(recordWrappers.getValidRecords());
+            insertManager.insert(recordWrappers.getValidRecords());
         } catch (IOException | TunnelException e) {
             log.error("Error while inserting records to MaxCompute: ", e);
             sinkResponse.addErrors(recordWrappers.getValidRecords().stream().map(RecordWrapper::getIndex).collect(Collectors.toList()), new ErrorInfo(e, ErrorType.SINK_RETRYABLE_ERROR));

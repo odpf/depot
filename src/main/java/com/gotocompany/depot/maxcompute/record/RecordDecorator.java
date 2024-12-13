@@ -7,7 +7,7 @@ import com.gotocompany.depot.message.Message;
 import java.io.IOException;
 
 /**
- * Decorator to process the record and message
+ * Decorator to process the record and message.
  */
 public abstract class RecordDecorator {
 
@@ -18,8 +18,8 @@ public abstract class RecordDecorator {
     }
 
     /**
-     * Decorate the record with the message
-     * If a nested decorator is present, it will be called to decorate the record
+     * Decorate the record with the message.
+     * If a nested decorator is present, it will be called to decorate the record.
      *
      * @param recordWrapper record to be decorated
      * @param message depot message to be used for decoration

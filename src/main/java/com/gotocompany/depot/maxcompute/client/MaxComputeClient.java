@@ -6,20 +6,15 @@ import com.aliyun.odps.TableSchema;
 import com.aliyun.odps.account.Account;
 import com.aliyun.odps.account.AliyunAccount;
 import com.aliyun.odps.tunnel.TableTunnel;
-import com.aliyun.odps.tunnel.TunnelException;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.client.ddl.DdlManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
-import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * MaxComputeClient is a client to interact with MaxCompute.
@@ -33,7 +28,6 @@ public class MaxComputeClient {
     private Odps odps;
     private MaxComputeSinkConfig maxComputeSinkConfig;
     private TableTunnel tableTunnel;
-    private InsertManager insertManager;
     private DdlManager ddlManager;
     private MaxComputeMetrics maxComputeMetrics;
     private Instrumentation instrumentation;
@@ -46,12 +40,11 @@ public class MaxComputeClient {
         this.tableTunnel = new TableTunnel(odps);
         this.tableTunnel.setEndpoint(maxComputeSinkConfig.getMaxComputeTunnelUrl());
         this.maxComputeMetrics = maxComputeMetrics;
-        this.insertManager = initializeInsertManager();
         this.ddlManager = initializeDdlManager();
     }
 
     /**
-     * Retrieves the latest table schema definition from Alibaba MaxCompute backend
+     * Retrieves the latest table schema definition from Alibaba MaxCompute backend.
      *
      * @return the latest table schema
      */
@@ -64,8 +57,8 @@ public class MaxComputeClient {
     }
 
     /**
-     * Creates or updates the table schema in Alibaba MaxCompute
-     * Creates the table if it does not exist, updates the table if it exists
+     * Creates or updates the table schema in Alibaba MaxCompute.
+     * Creates the table if it does not exist, updates the table if it exists.
      *
      * @param tableSchema the table schema to be created or updated
      * @throws OdpsException if the table creation or update fails
@@ -75,14 +68,12 @@ public class MaxComputeClient {
     }
 
     /**
-     * Inserts records into the table in Alibaba MaxCompute
+     * Create new InsertManager instance.
      *
-     * @param recordWrappers the records to be inserted
-     * @throws TunnelException if the tunnel operation fails
-     * @throws IOException if the IO operation fails
+     * @return InsertManager instance
      */
-    public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
-        insertManager.insert(recordWrappers);
+    public InsertManager createInsertManager() {
+        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel, instrumentation, maxComputeMetrics);
     }
 
     private Odps initializeOdps() {
@@ -93,10 +84,6 @@ public class MaxComputeClient {
         odpsClient.setCurrentSchema(maxComputeSinkConfig.getMaxComputeSchema());
         odpsClient.setGlobalSettings(maxComputeSinkConfig.getOdpsGlobalSettings());
         return odpsClient;
-    }
-
-    private InsertManager initializeInsertManager() {
-        return InsertManagerFactory.createInsertManager(maxComputeSinkConfig, tableTunnel, instrumentation, maxComputeMetrics);
     }
 
     private DdlManager initializeDdlManager() {

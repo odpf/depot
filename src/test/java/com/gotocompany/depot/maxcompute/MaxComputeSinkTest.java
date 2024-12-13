@@ -6,7 +6,7 @@ import com.gotocompany.depot.SinkResponse;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.error.ErrorInfo;
 import com.gotocompany.depot.error.ErrorType;
-import com.gotocompany.depot.maxcompute.client.MaxComputeClient;
+import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.converter.record.MessageRecordConverter;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
@@ -51,12 +51,12 @@ public class MaxComputeSinkTest {
                 .thenReturn(1200);
         when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
+        InsertManager insertManager = Mockito.mock(InsertManager.class);
         Mockito.doNothing()
-                .when(maxComputeClient)
+                .when(insertManager)
                 .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -68,7 +68,7 @@ public class MaxComputeSinkTest {
 
         SinkResponse sinkResponse = maxComputeSink.pushToSink(messages);
 
-        Mockito.verify(maxComputeClient, Mockito.times(1)).insert(validRecords);
+        Mockito.verify(insertManager, Mockito.times(1)).insert(validRecords);
         Assertions.assertEquals(1, sinkResponse.getErrors().size());
         Assertions.assertEquals(sinkResponse.getErrors().get(1L).getException().getMessage(), "Invalid Schema");
         Assertions.assertEquals(sinkResponse.getErrors().get(1L).getErrorType(), ErrorType.DESERIALIZATION_ERROR);
@@ -95,15 +95,12 @@ public class MaxComputeSinkTest {
                 .thenReturn(1200);
         when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
-        Mockito.doNothing()
-                .when(maxComputeClient)
+        InsertManager insertManager = Mockito.mock(InsertManager.class);
+        Mockito.doThrow(new TunnelException("Failed establishing connection"))
+                .when(insertManager)
                 .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
-        Mockito.doThrow(new TunnelException("Failed establishing connection"))
-                .when(maxComputeClient)
-                .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -144,15 +141,12 @@ public class MaxComputeSinkTest {
                 .thenReturn(1200);
         when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
-        Mockito.doNothing()
-                .when(maxComputeClient)
-                .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
+        InsertManager insertManager = Mockito.mock(InsertManager.class);
         Mockito.doThrow(new IOException("Failed flushing"))
-                .when(maxComputeClient)
+                .when(insertManager)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -193,15 +187,12 @@ public class MaxComputeSinkTest {
                 .thenReturn(1200);
         when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
-        Mockito.doNothing()
-                .when(maxComputeClient)
-                .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
+        InsertManager insertManager = Mockito.mock(InsertManager.class);
         Mockito.doThrow(new RuntimeException("Unexpected Error"))
-                .when(maxComputeClient)
+                .when(insertManager)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -242,10 +233,10 @@ public class MaxComputeSinkTest {
                 .thenReturn(1200);
         when(maxComputeSinkConfig.getTableValidatorMaxPartitionKeysPerTable())
                 .thenReturn(1);
-        MaxComputeClient maxComputeClient = Mockito.spy(new MaxComputeClient(maxComputeSinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)));
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
+        InsertManager insertManager = Mockito.mock(InsertManager.class);
 
-        MaxComputeSink maxComputeSink = new MaxComputeSink(maxComputeClient, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
 
         assertDoesNotThrow(maxComputeSink::close);
     }

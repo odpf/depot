@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Decorator to convert protobuf message to maxcompute record
- * Populates the data column and partition column
+ * Decorator to convert protobuf message to maxcompute record.
+ * Populates the data column and partition column.
  */
 public class ProtoDataColumnRecordDecorator extends RecordDecorator {
 
@@ -68,7 +68,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
     }
 
     /**
-     * Converts protobuf message to maxcompute record, populating the data column and partition column
+     * Converts protobuf message to maxcompute record, populating the data column and partition column.
      *
      * @param recordWrapper record template to be populated
      * @param message protobuf raw message

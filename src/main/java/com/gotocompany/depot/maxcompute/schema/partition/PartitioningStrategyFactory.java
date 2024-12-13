@@ -23,9 +23,9 @@ public class PartitioningStrategyFactory {
     );
 
     /**
-     * Create a partitioning strategy based on the max compute sink config and the descriptor
-     * Create default partitioning strategy if schema key is non timestamp type
-     * Create timestamp partitioning strategy if schema key is timestamp type
+     * Create a partitioning strategy based on the max compute sink config and the descriptor.
+     * Create default partitioning strategy if schema key is non timestamp type.
+     * Create timestamp partitioning strategy if schema key is timestamp type.
      *
      * @param protobufConverterOrchestrator to check the type of the partition key
      * @param maxComputeSinkConfig sink config

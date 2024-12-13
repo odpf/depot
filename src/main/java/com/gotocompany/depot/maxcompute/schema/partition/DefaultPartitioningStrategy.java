@@ -16,7 +16,7 @@ public class DefaultPartitioningStrategy implements PartitioningStrategy {
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     /**
-     * Get the original partition column name which is the key in the message payload
+     * Get the original partition column name which is the key in the message payload.
      *
      * @return original partition column name
      */
@@ -26,7 +26,7 @@ public class DefaultPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * Default partitioning strategy replaces the original column hence no additional column is added
+     * Default partitioning strategy replaces the original column hence no additional column is added.
      *
      * @return true
      */
@@ -36,7 +36,7 @@ public class DefaultPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * Get the partition column
+     * Get the partition column.
      *
      * @return partition column
      */
@@ -47,7 +47,7 @@ public class DefaultPartitioningStrategy implements PartitioningStrategy {
     }
 
     /**
-     * To get the partitionSpec with the format of partitionColumnName=partitionValue
+     * To get the partitionSpec with the format of partitionColumnName=partitionValue.
      *
      * @param object the object for which the partition spec is to be generated
      * @return partition spec

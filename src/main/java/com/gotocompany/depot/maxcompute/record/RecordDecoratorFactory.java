@@ -12,8 +12,8 @@ import com.gotocompany.depot.metrics.MaxComputeMetrics;
 public class RecordDecoratorFactory {
 
     /**
-     * Create a record decorator based on the sink configuration
-     * Creates a nested decorator in case of metadata column being enabled
+     * Create a record decorator based on the sink configuration.
+     * Creates a nested decorator in case of metadata column being enabled.
      *
      * @param protobufConverterOrchestrator protobuf converter orchestrator to convert protobuf fields to maxcompute record
      * @param maxComputeSchemaCache maxcompute schema cache
