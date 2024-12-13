@@ -7,6 +7,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * This class provides utility methods to check if a protobuf message has unknown fields.
+ * This class is used in conjunction with ProtoUtils.hasUnknownField method to check if a protobuf message has unknown fields.
+ *
+ * Three types of validation are supported:
+ * 1. MESSAGE: Checks if the given object is a protobuf message that contains unknown fields.
+ * 2. MESSAGE_ARRAY_FIRST_INDEX: Checks if the given object is a protobuf message or a list of protobuf messages that contains unknown fields.
+ * 3. MESSAGE_ARRAY_FULL: Checks if the given object is a protobuf message or a list of protobuf messages that contains unknown fields.
+ */
 public enum ProtoUnknownFieldValidationType {
     MESSAGE {
         @Override
@@ -61,6 +70,7 @@ public enum ProtoUnknownFieldValidationType {
     };
 
     public abstract boolean shouldFilter(Object object);
+
     public abstract Stream<Message> getMapper(Object object);
 
     private static boolean isMessageOrMessageListType(Object object) {
