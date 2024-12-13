@@ -61,10 +61,7 @@ public class StreamingSessionManagerTest {
                 StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
-                partitionedStreamingSessionManager.getSession(new StreamingSessionManager.StreamingSessionCacheKey(
-                        "test_session",
-                        Thread.currentThread().getName()
-                ));
+                partitionedStreamingSessionManager.getSession("test_session");
 
         verify(tableTunnel, Mockito.times(1))
                 .buildStreamUploadSession("test_project", "test_table");
@@ -101,19 +98,9 @@ public class StreamingSessionManagerTest {
                 StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
-                partitionedStreamingSessionManager.getSession(
-                        new StreamingSessionManager.StreamingSessionCacheKey(
-                                "test_session",
-                                Thread.currentThread().getName()
-                        )
-                );
+                partitionedStreamingSessionManager.getSession("test_session");
         TableTunnel.StreamUploadSession secondStreamUploadSession =
-                partitionedStreamingSessionManager.getSession(
-                        new StreamingSessionManager.StreamingSessionCacheKey(
-                                "test_session",
-                                Thread.currentThread().getName()
-                        )
-                );
+                partitionedStreamingSessionManager.getSession("test_session");
 
         verify(tableTunnel, Mockito.times(1))
                 .buildStreamUploadSession("test_project", "test_table");
@@ -153,19 +140,9 @@ public class StreamingSessionManagerTest {
                 StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
-                partitionedStreamingSessionManager.getSession(
-                        new StreamingSessionManager.StreamingSessionCacheKey(
-                                "test_session",
-                                Thread.currentThread().getName()
-                        )
-                );
+                partitionedStreamingSessionManager.getSession("test_session");
         TableTunnel.StreamUploadSession secondStreamUploadSession =
-                partitionedStreamingSessionManager.getSession(
-                        new StreamingSessionManager.StreamingSessionCacheKey(
-                                "different_test_session",
-                                Thread.currentThread().getName()
-                        )
-                );
+                partitionedStreamingSessionManager.getSession("different_test_session");
 
         verify(tableTunnel, Mockito.times(2))
                 .buildStreamUploadSession("test_project", "test_table");
@@ -199,12 +176,7 @@ public class StreamingSessionManagerTest {
                 StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
-                nonPartitionedStreamingSessionManager.getSession(
-                        new StreamingSessionManager.StreamingSessionCacheKey(
-                                "test_session",
-                                Thread.currentThread().getName()
-                        )
-                );
+                nonPartitionedStreamingSessionManager.getSession("test_session");
 
         verify(tableTunnel, Mockito.times(1))
                 .buildStreamUploadSession("test_project", "test_table");
@@ -237,15 +209,9 @@ public class StreamingSessionManagerTest {
                 StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
         TableTunnel.StreamUploadSession streamUploadSession =
-                nonPartitionedStreamingSessionManager.getSession(new StreamingSessionManager.StreamingSessionCacheKey(
-                        "test_session",
-                        Thread.currentThread().getName()
-                ));
+                nonPartitionedStreamingSessionManager.getSession("test_session");
         TableTunnel.StreamUploadSession secondStreamUploadSession =
-                nonPartitionedStreamingSessionManager.getSession(new StreamingSessionManager.StreamingSessionCacheKey(
-                        "test_session",
-                        Thread.currentThread().getName()
-                ));
+                nonPartitionedStreamingSessionManager.getSession("test_session");
 
         verify(tableTunnel, Mockito.times(1))
                 .buildStreamUploadSession("test_project", "test_table");
@@ -278,14 +244,8 @@ public class StreamingSessionManagerTest {
         StreamingSessionManager nonPartitionedStreamingSessionManager =
                 StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
 
-        nonPartitionedStreamingSessionManager.getSession(new StreamingSessionManager.StreamingSessionCacheKey(
-                "test_session",
-                Thread.currentThread().getName()
-        ));
-        nonPartitionedStreamingSessionManager.refreshSession(new StreamingSessionManager.StreamingSessionCacheKey(
-                "test_session",
-                Thread.currentThread().getName()
-        ));
+        nonPartitionedStreamingSessionManager.getSession("test_session");
+        nonPartitionedStreamingSessionManager.refreshSession("test_session");
 
         verify(tableTunnel, Mockito.times(2))
                 .buildStreamUploadSession("test_project", "test_table");

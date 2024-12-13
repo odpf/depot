@@ -9,10 +9,6 @@ import com.google.common.cache.LoadingCache;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.time.Instant;
 
@@ -22,9 +18,9 @@ import java.time.Instant;
  */
 public final class StreamingSessionManager {
 
-    private final LoadingCache<StreamingSessionCacheKey, TableTunnel.StreamUploadSession> sessionCache;
+    private final LoadingCache<String, TableTunnel.StreamUploadSession> sessionCache;
 
-    private StreamingSessionManager(LoadingCache<StreamingSessionCacheKey, TableTunnel.StreamUploadSession> loadingCache) {
+    private StreamingSessionManager(LoadingCache<String, TableTunnel.StreamUploadSession> loadingCache) {
         this.sessionCache = loadingCache;
     }
 
@@ -41,9 +37,9 @@ public final class StreamingSessionManager {
                                                                MaxComputeSinkConfig maxComputeSinkConfig,
                                                                Instrumentation instrumentation,
                                                                MaxComputeMetrics maxComputeMetrics) {
-        CacheLoader<StreamingSessionCacheKey, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<StreamingSessionCacheKey, TableTunnel.StreamUploadSession>() {
+        CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
-            public TableTunnel.StreamUploadSession load(StreamingSessionCacheKey cacheKey) throws TunnelException {
+            public TableTunnel.StreamUploadSession load(String sessionId) throws TunnelException {
                 Instant start = Instant.now();
                 TableTunnel.StreamUploadSession streamUploadSession = tableTunnel.buildStreamUploadSession(
                                 maxComputeSinkConfig.getMaxComputeProjectId(),
@@ -78,21 +74,20 @@ public final class StreamingSessionManager {
                                                             MaxComputeSinkConfig maxComputeSinkConfig,
                                                             Instrumentation instrumentation,
                                                             MaxComputeMetrics maxComputeMetrics) {
-        CacheLoader<StreamingSessionCacheKey, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<StreamingSessionCacheKey, TableTunnel.StreamUploadSession>() {
+        CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
-            public TableTunnel.StreamUploadSession load(StreamingSessionCacheKey cacheKey) throws TunnelException {
+            public TableTunnel.StreamUploadSession load(String partitionSpecKey) throws TunnelException {
                 Instant start = Instant.now();
                 TableTunnel.StreamUploadSession streamUploadSession = tableTunnel.buildStreamUploadSession(
                                 maxComputeSinkConfig.getMaxComputeProjectId(),
                                 maxComputeSinkConfig.getMaxComputeTableName())
                         .setCreatePartition(true)
-                        .setPartitionSpec(cacheKey.getPartitionSpecKey())
+                        .setPartitionSpec(partitionSpecKey)
                         .allowSchemaMismatch(false)
                         .setSlotNum(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                         .build();
                 instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeStreamingInsertSessionInitializationLatency(), start);
                 instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCreatedCount());
-                instrumentation.logInfo("Created session {} by thread {}", cacheKey, Thread.currentThread().getName());
                 return streamUploadSession;
             }
         };
@@ -106,11 +101,11 @@ public final class StreamingSessionManager {
      * If the session is not present in the cache, a new session is created and returned.
      * Creation of the session is done using the cache loader provided during the creation of the StreamingSessionManager.
      *
-     * @param cacheKey combination of partition spec and thread name
+     * @param partitionSpec combination of partition spec
      * @return StreamUploadSession
      */
-    public TableTunnel.StreamUploadSession getSession(StreamingSessionCacheKey cacheKey) {
-        return sessionCache.getUnchecked(cacheKey);
+    public TableTunnel.StreamUploadSession getSession(String partitionSpec) {
+        return sessionCache.getUnchecked(partitionSpec);
     }
 
 
@@ -118,18 +113,10 @@ public final class StreamingSessionManager {
      * Refresh the session for the given cache key.
      * This is used whenever Table schema is updated.
      *
-     * @param streamingSessionCacheKey combination of partition spec and thread name
+     * @param partitionSpec combination of partition spec
      */
-    public void refreshSession(StreamingSessionCacheKey streamingSessionCacheKey) {
-        sessionCache.refresh(streamingSessionCacheKey);
+    public void refreshSession(String partitionSpec) {
+        sessionCache.refresh(partitionSpec);
     }
 
-    @RequiredArgsConstructor
-    @Getter
-    @EqualsAndHashCode
-    @ToString
-    public static class StreamingSessionCacheKey {
-        private final String partitionSpecKey;
-        private final String processId;
-    }
 }

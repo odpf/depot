@@ -43,18 +43,14 @@ public class NonPartitionedInsertManager extends InsertManager {
      */
     @Override
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
-        StreamingSessionManager.StreamingSessionCacheKey cacheKey = new StreamingSessionManager.StreamingSessionCacheKey(
-                NON_PARTITIONED,
-                Thread.currentThread().getName()
-        );
-        TableTunnel.StreamUploadSession streamUploadSession = streamingSessionManager.getSession(cacheKey);
+        TableTunnel.StreamUploadSession streamUploadSession = streamingSessionManager.getSession(NON_PARTITIONED);
         TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession);
         for (RecordWrapper recordWrapper : recordWrappers) {
             try {
                 recordPack.append(recordWrapper.getRecord());
             } catch (IOException e) {
                 log.error("Schema Mismatch, rebuilding the session", e);
-                streamingSessionManager.refreshSession(cacheKey);
+                streamingSessionManager.refreshSession(NON_PARTITIONED);
                 throw e;
             }
         }
