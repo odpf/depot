@@ -224,7 +224,7 @@ public class NonPartitionedInsertManagerTest {
         nonPartitionedInsertManager.insert(recordWrappers);
 
         verify(streamingSessionManager, Mockito.times(1))
-                .refreshSession(Mockito.anyString());
+                .refreshSession(Mockito.any());
     }
 
 }

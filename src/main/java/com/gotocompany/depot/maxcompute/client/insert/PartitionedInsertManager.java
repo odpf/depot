@@ -36,14 +36,20 @@ public class PartitionedInsertManager extends InsertManager {
         Map<String, List<RecordWrapper>> partitionSpecRecordWrapperMap = recordWrappers.stream()
                 .collect(Collectors.groupingBy(record -> record.getPartitionSpec().toString()));
         for (Map.Entry<String, List<RecordWrapper>> entry : partitionSpecRecordWrapperMap.entrySet()) {
-            TableTunnel.StreamUploadSession streamUploadSession = streamingSessionManager.getSession(entry.getKey());
+            StreamingSessionManager.StreamingSessionCacheKey cacheKey = new StreamingSessionManager.StreamingSessionCacheKey(
+                    entry.getKey(),
+                    Thread.currentThread().getName()
+            );
+            TableTunnel.StreamUploadSession streamUploadSession = streamingSessionManager.getSession(
+                    cacheKey
+            );
             TableTunnel.StreamRecordPack recordPack = newRecordPack(streamUploadSession);
             for (RecordWrapper recordWrapper : entry.getValue()) {
                 try {
                     recordPack.append(recordWrapper.getRecord());
                 } catch (IOException e) {
                     log.error("Schema Mismatch, clearing the session", e);
-                    streamingSessionManager.refreshSession(recordWrapper.getPartitionSpec().toString());
+                    streamingSessionManager.refreshSession(cacheKey);
                     throw e;
                 }
             }
