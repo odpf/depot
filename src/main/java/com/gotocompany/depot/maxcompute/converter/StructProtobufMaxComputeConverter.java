@@ -8,6 +8,9 @@ import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
+/**
+ * Converts protobuf struct to JSON string.
+ */
 public class StructProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
     private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";

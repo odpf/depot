@@ -15,7 +15,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAmount;
 
-
+/**
+ * Converts protobuf timestamp to LocalDateTime.
+ * LocalDateTime is the java compatible type for TIMESTAMP_NTZ type used in MaxCompute.
+ * It uses the configurable timezone to convert the epoch parsed from protobuf timestamp type.
+ */
 public class TimestampProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
     private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";

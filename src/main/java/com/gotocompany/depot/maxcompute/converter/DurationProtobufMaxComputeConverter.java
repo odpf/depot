@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Converts google.protobuf.Duration to MaxCompute Struct.
+ */
 public class DurationProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
     private static final String SECONDS = "seconds";

@@ -20,6 +20,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Decorator to convert protobuf message to maxcompute record
+ * Populates the metadata column based on the depot Message payload
+ */
 public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
 
     private final MaxComputeSchemaCache maxComputeSchemaCache;
@@ -41,6 +45,15 @@ public class ProtoMetadataColumnRecordDecorator extends RecordDecorator {
         this.zoneId = maxComputeSinkConfig.getZoneId();
     }
 
+    /**
+     * Process the record and message to append metadata to the record
+     * Apply namespaced metadata if maxcomputeMetadataNamespace is not empty
+     *
+     * @param recordWrapper record to be populated
+     * @param message depot message to get the metadata from
+     * @return recordWrapper with metadata appended
+     * @throws IOException if an error occurs while processing the record, such as descriptor mismatch
+     */
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         if (StringUtils.isNotBlank(maxcomputeMetadataNamespace)) {

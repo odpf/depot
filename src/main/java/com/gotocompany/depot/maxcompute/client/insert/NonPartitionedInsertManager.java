@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * NonPartitionedInsertManager is responsible for inserting non-partitioned records into MaxCompute.
+ */
 @Slf4j
 public class NonPartitionedInsertManager extends InsertManager {
 
@@ -30,6 +33,14 @@ public class NonPartitionedInsertManager extends InsertManager {
                 .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs());
     }
 
+    /**
+     * Insert records into MaxCompute.
+     * Each thread will have its own StreamUploadSession.
+     *
+     * @param recordWrappers list of records to insert
+     * @throws TunnelException if there is an error with the tunnel service, typically due to network issues
+     * @throws IOException typically thrown when issues such as schema mismatch occur
+     */
     @Override
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
         StreamingSessionManager.StreamingSessionCacheKey cacheKey = new StreamingSessionManager.StreamingSessionCacheKey(

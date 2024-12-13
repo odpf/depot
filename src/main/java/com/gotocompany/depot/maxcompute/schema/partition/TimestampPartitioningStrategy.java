@@ -22,16 +22,31 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
         this.generateExpression = initializeGenerateExpression();
     }
 
+    /**
+     * Get the original partition column name which is the key in the message payload
+     * @return original partition column name
+     */
     @Override
     public String getOriginalPartitionColumnName() {
         return partitionColumnKey;
     }
 
+    /**
+     * Timestamp partitioning strategy does not replace the original column
+     * Original timestamp field is retained
+     *
+     * @return false
+     */
     @Override
     public boolean shouldReplaceOriginalColumn() {
         return false;
     }
 
+    /**
+     * Get the partition column
+     *
+     * @return partition column
+     */
     @Override
     public Column getPartitionColumn() {
         Column column = Column.newBuilder(partitionColumnName, TypeInfoFactory.STRING)
@@ -40,6 +55,12 @@ public class TimestampPartitioningStrategy implements PartitioningStrategy {
         return column;
     }
 
+    /**
+     * To get the PartitionSpec that uses built in spec generator based on the payload
+     *
+     * @param object the object for which the partition spec is to be generated
+     * @return partition spec
+     */
     @Override
     public PartitionSpec getPartitionSpec(Object object) {
         PartitionSpec partitionSpec = new PartitionSpec();

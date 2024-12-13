@@ -20,6 +20,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 
+/**
+ * DdlManager is responsible for creating and updating MaxCompute tables.
+ */
 @Slf4j
 public class DdlManager {
 
@@ -37,6 +40,14 @@ public class DdlManager {
         this.tableValidator = new TableValidator(maxComputeSinkConfig);
     }
 
+    /**
+     * Creates or updates the MaxCompute table based on the table schema.
+     * Creates the table if it does not exist, otherwise updates the table schema.
+     * DDL operations are retried based on the configuration.
+     *
+     * @param tableSchema the table schema to create or update
+     * @throws OdpsException if the table creation or update fails
+     */
     public void createOrUpdateTable(TableSchema tableSchema) throws OdpsException {
         String projectName = maxComputeSinkConfig.getMaxComputeProjectId();
         String datasetName = maxComputeSinkConfig.getMaxComputeSchema();

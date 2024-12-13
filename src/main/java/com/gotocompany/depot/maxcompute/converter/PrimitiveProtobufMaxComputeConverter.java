@@ -14,6 +14,9 @@ import java.util.function.Function;
 
 import static com.google.protobuf.Descriptors.FieldDescriptor.Type.*;
 
+/**
+ * Handle the conversion of primitive protobuf types to MaxCompute compatible format
+ */
 public class PrimitiveProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
     private static final Map<Descriptors.FieldDescriptor.Type, TypeInfo> PROTO_TYPE_MAP;

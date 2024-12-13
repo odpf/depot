@@ -15,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+/**
+ * Wrapper class that listens to schema updates and updates the MaxCompute table schema.
+ * It also caches the MaxCompute schema.
+ */
 @Slf4j
 public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
 
@@ -34,6 +38,12 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
         this.maxComputeClient = maxComputeClient;
     }
 
+    /**
+     * Get the MaxCompute schema. This schema is single source of truth for MaxCompute table schema.
+     * It is updated whenever the protobuf schema is updated.
+     *
+     * @return MaxComputeSchema
+     */
     public MaxComputeSchema getMaxComputeSchema() {
         synchronized (this) {
             if (maxComputeSchema == null) {
@@ -43,12 +53,20 @@ public class MaxComputeSchemaCache extends DepotStencilUpdateListener {
         return maxComputeSchema;
     }
 
+    /**
+     * Update the MaxCompute table schema based on the new protobuf schema from stencil.
+     *
+     * @param newDescriptor new protobuf class descriptors
+     */
     @Override
     public synchronized void onSchemaUpdate(Map<String, Descriptors.Descriptor> newDescriptor) {
         Descriptors.Descriptor descriptor = newDescriptor.get(getSchemaClass());
         updateMaxComputeTableSchema(descriptor);
     }
 
+    /**
+     * Update the MaxCompute table schema based on the protobuf schema fetched from message parser.
+     */
     @Override
     public synchronized void updateSchema() {
         Map<String, Descriptors.Descriptor> descriptorMap = ((ProtoMessageParser) getMessageParser()).getDescriptorMap();

@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * PartitionedInsertManager is responsible for inserting partitioned records into MaxCompute.
+ */
 @Slf4j
 public class PartitionedInsertManager extends InsertManager {
 
@@ -31,6 +34,14 @@ public class PartitionedInsertManager extends InsertManager {
                 .timeout(super.getMaxComputeSinkConfig().getMaxComputeRecordPackFlushTimeoutMs());
     }
 
+    /**
+     * Insert records into MaxCompute.
+     * Each thread will have its own StreamUploadSession for each partitionSpec handled by the thread.
+     *
+     * @param recordWrappers list of records to insert
+     * @throws TunnelException if there is an error with the tunnel service, typically due to network issues
+     * @throws IOException typically thrown when issues such as schema mismatch occur
+     */
     @Override
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
         Map<String, List<RecordWrapper>> partitionSpecRecordWrapperMap = recordWrappers.stream()

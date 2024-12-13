@@ -5,6 +5,11 @@ import com.aliyun.odps.type.PrimitiveTypeInfo;
 import com.aliyun.odps.type.StructTypeInfo;
 import com.aliyun.odps.type.TypeInfo;
 
+/**
+ * Utility class to check the type of {@link TypeInfo} objects.
+ * This class is deprecated and will be removed in future releases once official support for schema evolution is added.
+ */
+@Deprecated
 public class TypeInfoUtils {
     public static boolean isPrimitiveType(TypeInfo typeInfo) {
         return typeInfo instanceof PrimitiveTypeInfo;

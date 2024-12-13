@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * InsertManager is responsible for inserting records into MaxCompute.
+ */
 @RequiredArgsConstructor
 @Getter
 public abstract class InsertManager {
@@ -22,8 +25,23 @@ public abstract class InsertManager {
     private final Instrumentation instrumentation;
     private final MaxComputeMetrics maxComputeMetrics;
 
+    /**
+     * Insert records into MaxCompute.
+     * @param recordWrappers list of records to insert
+     * @throws TunnelException if there is an error with the tunnel service, typically due to network issues
+     * @throws IOException typically thrown when issues such as schema mismatch occur
+     */
     public abstract void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException;
 
+    /**
+     * Create a new record pack for streaming insert.
+     * Record pack encloses the records to be inserted.
+     *
+     * @param streamUploadSession session for streaming insert
+     * @return TableTunnel.StreamRecordPack
+     * @throws IOException typically thrown when issues such as schema mismatch occur
+     * @throws TunnelException if there is an error with the tunnel service, typically due to network issues
+     */
     protected TableTunnel.StreamRecordPack newRecordPack(TableTunnel.StreamUploadSession streamUploadSession) throws IOException, TunnelException {
         if (!maxComputeSinkConfig.isStreamingInsertCompressEnabled()) {
             return streamUploadSession.newRecordPack();
@@ -33,6 +51,12 @@ public abstract class InsertManager {
                 maxComputeSinkConfig.getMaxComputeCompressionStrategy()));
     }
 
+    /**
+     * Instrument the insert operation.
+     *
+     * @param start start time of the operation
+     * @param flushResult result of the flush operation
+     */
     protected void instrument(Instant start, TableTunnel.FlushResult flushResult) {
         instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeOperationTotalMetric(),
                 String.format(MaxComputeMetrics.MAXCOMPUTE_API_TAG, MaxComputeMetrics.MaxComputeAPIType.TABLE_INSERT));

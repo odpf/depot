@@ -15,22 +15,43 @@ public class DefaultPartitioningStrategy implements PartitioningStrategy {
     private final TypeInfo typeInfo;
     private final MaxComputeSinkConfig maxComputeSinkConfig;
 
+    /**
+     * Get the original partition column name which is the key in the message payload
+     *
+     * @return original partition column name
+     */
     @Override
     public String getOriginalPartitionColumnName() {
         return maxComputeSinkConfig.getTablePartitionKey();
     }
 
+    /**
+     * Default partitioning strategy replaces the original column hence no additional column is added
+     *
+     * @return true
+     */
     @Override
     public boolean shouldReplaceOriginalColumn() {
         return true;
     }
 
+    /**
+     * Get the partition column
+     *
+     * @return partition column
+     */
     @Override
     public Column getPartitionColumn() {
         return Column.newBuilder(maxComputeSinkConfig.getTablePartitionColumnName(), typeInfo)
                 .build();
     }
 
+    /**
+     * To get the partitionSpec with the format of partitionColumnName=partitionValue
+     *
+     * @param object the object for which the partition spec is to be generated
+     * @return partition spec
+     */
     @Override
     public PartitionSpec getPartitionSpec(Object object) {
         if (object == null) {

@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Converts google.protobuf.Message to MaxCompute Struct.
+ */
 @Setter
 public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 

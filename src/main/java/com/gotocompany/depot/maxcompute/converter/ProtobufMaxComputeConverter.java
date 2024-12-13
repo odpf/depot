@@ -52,7 +52,7 @@ public interface ProtobufMaxComputeConverter {
     /**
      * Converts a proto payload to a format that can be used by the MaxCompute SDK.
      * @param protoPayload the proto payload to convert, containing field descriptor, the actual object and level
-     * @return
+     * @return the converted object
      */
     default Object convertPayload(ProtoPayload protoPayload) {
         if (!protoPayload.getFieldDescriptor().isRepeated()) {
@@ -66,7 +66,7 @@ public interface ProtobufMaxComputeConverter {
     /**
      * Converts a singular proto payload to a format that can be used by the MaxCompute SDK.
      * @param protoPayload the proto payload to convert, containing field descriptor, the actual object and level
-     * @return
+     * @return the converted object
      */
     Object convertSingularPayload(ProtoPayload protoPayload);
 

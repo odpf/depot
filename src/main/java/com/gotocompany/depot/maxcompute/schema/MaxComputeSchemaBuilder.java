@@ -24,6 +24,13 @@ public class MaxComputeSchemaBuilder {
     private final MaxComputeSinkConfig maxComputeSinkConfig;
     private final PartitioningStrategy partitioningStrategy;
 
+    /**
+     * Build MaxCompute schema from protobuf descriptor.
+     * Converting the protobuf types in to MaxCompute types.
+     *
+     * @param descriptor Protobuf descriptor
+     * @return MaxComputeSchema object encloses the TableSchema and metadata columns
+     */
     public MaxComputeSchema build(Descriptors.Descriptor descriptor) {
         List<Column> metadataColumns = buildMetadataColumns();
         TableSchema.Builder tableSchemaBuilder = com.aliyun.odps.TableSchema.builder()

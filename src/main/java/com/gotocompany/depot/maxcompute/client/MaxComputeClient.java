@@ -21,6 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * MaxComputeClient is a client to interact with MaxCompute.
+ * It provides methods to execute table creation and update and inserting records into MaxCompute.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
@@ -46,6 +50,11 @@ public class MaxComputeClient {
         this.ddlManager = initializeDdlManager();
     }
 
+    /**
+     * Retrieves the latest table schema definition from Alibaba MaxCompute backend
+     *
+     * @return the latest table schema
+     */
     public TableSchema getLatestTableSchema() {
         return odps.tables()
                 .get(maxComputeSinkConfig.getMaxComputeProjectId(),
@@ -54,10 +63,24 @@ public class MaxComputeClient {
                 .getSchema();
     }
 
+    /**
+     * Creates or updates the table schema in Alibaba MaxCompute
+     * Creates the table if it does not exist, updates the table if it exists
+     *
+     * @param tableSchema the table schema to be created or updated
+     * @throws OdpsException if the table creation or update fails
+     */
     public void createOrUpdateTable(TableSchema tableSchema) throws OdpsException {
         ddlManager.createOrUpdateTable(tableSchema);
     }
 
+    /**
+     * Inserts records into the table in Alibaba MaxCompute
+     *
+     * @param recordWrappers the records to be inserted
+     * @throws TunnelException if the tunnel operation fails
+     * @throws IOException if the IO operation fails
+     */
     public void insert(List<RecordWrapper> recordWrappers) throws TunnelException, IOException {
         insertManager.insert(recordWrappers);
     }

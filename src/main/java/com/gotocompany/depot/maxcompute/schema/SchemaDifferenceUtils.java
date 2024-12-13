@@ -20,6 +20,11 @@ import static com.gotocompany.depot.maxcompute.util.TypeInfoUtils.isPrimitiveTyp
 import static com.gotocompany.depot.maxcompute.util.TypeInfoUtils.isStructArrayType;
 import static com.gotocompany.depot.maxcompute.util.TypeInfoUtils.isStructType;
 
+/**
+ * Utility class to get the schema difference between two {@link TableSchema} objects.
+ * This class is deprecated and will be removed in future releases once official support for schema evolution is added.
+ */
+@Deprecated
 public class SchemaDifferenceUtils {
 
     private static final String ALTER_TABLE_QUERY_TEMPLATE = "ALTER TABLE %s.%s ADD COLUMN IF NOT EXISTS %s;";

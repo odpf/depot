@@ -21,6 +21,10 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Decorator to convert protobuf message to maxcompute record
+ * Populates the data column and partition column
+ */
 public class ProtoDataColumnRecordDecorator extends RecordDecorator {
 
     private final ProtobufConverterOrchestrator protobufConverterOrchestrator;
@@ -63,6 +67,14 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         this.sinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable();
     }
 
+    /**
+     * Converts protobuf message to maxcompute record, populating the data column and partition column
+     *
+     * @param recordWrapper record template to be populated
+     * @param message protobuf raw message
+     * @return populated record
+     * @throws IOException if an error occurs while processing the message
+     */
     @Override
     public RecordWrapper process(RecordWrapper recordWrapper, Message message) throws IOException {
         ParsedMessage parsedMessage = protoMessageParser.parse(message, sinkConfig.getSinkConnectorSchemaMessageMode(), schemaClass);

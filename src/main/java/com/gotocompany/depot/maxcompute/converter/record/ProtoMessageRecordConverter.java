@@ -18,12 +18,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * ProtoMessageRecordConverter converts a list of proto messages to RecordWrappers
+ */
 @RequiredArgsConstructor
 public class ProtoMessageRecordConverter implements MessageRecordConverter {
 
     private final RecordDecorator recordDecorator;
     private final MaxComputeSchemaCache maxComputeSchemaCache;
 
+    /**
+     * Converts a list of messages to RecordWrappers
+     * MaxComputeSchema is used to create the Record object, which is used to represent logical structure of a row in a table
+     *
+     * @param messages list of proto messages
+     * @return RecordWrappers encapsulating valid and invalid records
+     */
     @Override
     public RecordWrappers convert(List<Message> messages) {
         MaxComputeSchema maxComputeSchema = maxComputeSchemaCache.getMaxComputeSchema();
