@@ -64,13 +64,15 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
         Map<Descriptors.FieldDescriptor, Object> payloadFields = dynamicMessage.getAllFields();
         protoPayload.getFieldDescriptor().getMessageType().getFields().forEach(innerFieldDescriptor -> {
             ProtobufMaxComputeConverter converter = maxComputeProtobufConverterCache.getConverter(innerFieldDescriptor);
-            Object unconvertedInnerValue;
             if (!payloadFields.containsKey(innerFieldDescriptor)) {
-                unconvertedInnerValue = isProtoUnsetFieldDefaultValueEnable ? dynamicMessage.getField(innerFieldDescriptor) : null;
-            } else {
-                unconvertedInnerValue = payloadFields.get(innerFieldDescriptor);
+                if (isProtoUnsetFieldDefaultValueEnable) {
+                    values.add(converter.convertPayload(new ProtoPayload(innerFieldDescriptor, dynamicMessage.getField(innerFieldDescriptor), false)));
+                } else {
+                    values.add(null);
+                }
+                return;
             }
-            values.add(converter.convertPayload(new ProtoPayload(innerFieldDescriptor, unconvertedInnerValue, false)));
+            values.add(converter.convertPayload(new ProtoPayload(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor), false)));
         });
         TypeInfo typeInfo = convertTypeInfo(protoPayload.getFieldDescriptor());
         StructTypeInfo structTypeInfo = (StructTypeInfo) (typeInfo instanceof ArrayTypeInfo ? ((ArrayTypeInfo) typeInfo).getElementTypeInfo() : typeInfo);
