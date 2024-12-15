@@ -78,6 +78,8 @@ public class ProtoMessageRecordConverterTest {
         when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
         when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
         when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable())
+                .thenReturn(false);
         protobufConverterOrchestrator = new ProtobufConverterOrchestrator(maxComputeSinkConfig);
         protoMessageParser = Mockito.mock(ProtoMessageParser.class);
         ParsedMessage parsedMessage = Mockito.mock(ParsedMessage.class);
@@ -102,7 +104,7 @@ public class ProtoMessageRecordConverterTest {
         MaxComputeMetrics maxComputeMetrics = new MaxComputeMetrics(sinkConfig);
         RecordDecorator protoDataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 protobufConverterOrchestrator,
-                protoMessageParser, sinkConfig, partitioningStrategy, instrumentation, maxComputeMetrics);
+                protoMessageParser, sinkConfig, maxComputeSinkConfig, partitioningStrategy, instrumentation, maxComputeMetrics);
         RecordDecorator metadataColumnRecordDecorator = new ProtoMetadataColumnRecordDecorator(
                 protoDataColumnRecordDecorator, maxComputeSinkConfig, maxComputeSchemaCache);
         protoMessageRecordConverter = new ProtoMessageRecordConverter(metadataColumnRecordDecorator, maxComputeSchemaCache);

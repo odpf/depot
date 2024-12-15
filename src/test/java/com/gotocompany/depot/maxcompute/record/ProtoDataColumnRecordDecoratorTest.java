@@ -34,7 +34,9 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +61,8 @@ public class ProtoDataColumnRecordDecoratorTest {
         when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
         when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
         when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable())
+                .thenReturn(false);
         SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
         when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
         instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, null, getMockedMessage());
@@ -88,6 +92,79 @@ public class ProtoDataColumnRecordDecoratorTest {
                                 new SimpleStruct(expectedArrayStructElementTypeInfo, Arrays.asList("name_2", 50f))
                         ),
                         expectedLocalDateTime});
+    }
+
+    @Test
+    public void decorateShouldProcessDataColumnToRecordWithDefaultEmptyValueNonTimestampPartitioned() throws IOException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("id");
+        when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("id");
+        when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
+        when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable())
+                .thenReturn(true);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        PartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING, maxComputeSinkConfig);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, defaultPartitioningStrategy, TestMaxComputeRecord.MaxComputeRecord.newBuilder()
+                .build());
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaBuilder.build(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = TestMaxComputeRecord.MaxComputeRecord.newBuilder()
+                .build();
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+        LocalDateTime zeroEpochDateTime = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+
+        RecordWrapper decoratedRecordWrapper = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        assertThat(decoratedRecordWrapper.getRecord())
+                .extracting("values")
+                .isEqualTo(new Object[]{new ArrayList<>(), zeroEpochDateTime});
+        assertThat(decoratedRecordWrapper.getPartitionSpec().toString())
+                .isEqualTo("id='__NULL__'");
+    }
+
+    @Test
+    public void decorateShouldProcessDataColumnToRecordWithDefaultEmptyValueWithTimestampPartitioned() throws IOException {
+        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
+        when(maxComputeSinkConfig.getTablePartitionKey()).thenReturn("timestamp");
+        when(maxComputeSinkConfig.getTablePartitionColumnName()).thenReturn("__partition_key");
+        when(maxComputeSinkConfig.getMaxcomputeMetadataNamespace()).thenReturn("__kafka_metadata");
+        when(maxComputeSinkConfig.isTablePartitioningEnabled()).thenReturn(Boolean.TRUE);
+        when(maxComputeSinkConfig.shouldAddMetadata()).thenReturn(Boolean.FALSE);
+        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
+        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
+        when(maxComputeSinkConfig.getMaxPastYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.getMaxFutureYearEventTimeDifference()).thenReturn(999);
+        when(maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable())
+                .thenReturn(true);
+        SinkConfig sinkConfig = Mockito.mock(SinkConfig.class);
+        when(sinkConfig.getSinkConnectorSchemaMessageMode()).thenReturn(SinkConnectorSchemaMessageMode.LOG_MESSAGE);
+        PartitioningStrategy defaultPartitioningStrategy = new DefaultPartitioningStrategy(TypeInfoFactory.STRING, maxComputeSinkConfig);
+        instantiateProtoDataColumnRecordDecorator(sinkConfig, maxComputeSinkConfig, null, defaultPartitioningStrategy, TestMaxComputeRecord.MaxComputeRecord.newBuilder()
+                .build());
+        MaxComputeSchema maxComputeSchema = maxComputeSchemaBuilder.build(DESCRIPTOR);
+        Record record = new ArrayRecord(maxComputeSchema.getTableSchema());
+        RecordWrapper recordWrapper = new RecordWrapper(record, 0, null, null);
+        TestMaxComputeRecord.MaxComputeRecord maxComputeRecord = TestMaxComputeRecord.MaxComputeRecord.newBuilder()
+                .build();
+        Message message = new Message(null, maxComputeRecord.toByteArray());
+
+        RecordWrapper decoratedRecordWrapper = protoDataColumnRecordDecorator.decorate(recordWrapper, message);
+
+        assertThat(decoratedRecordWrapper.getRecord())
+                .extracting("values")
+                .isEqualTo(new Object[]{"", new ArrayList<>()});
+        assertThat(decoratedRecordWrapper.getPartitionSpec().toString())
+                .isEqualTo("__partition_key='__NULL__'", LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC));
     }
 
     @Test
@@ -316,6 +393,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 protobufConverterOrchestrator,
                 protoMessageParser,
                 sinkConfig,
+                maxComputeSinkConfig,
                 partitioningStrategy,
                 instrumentation,
                 maxComputeMetrics

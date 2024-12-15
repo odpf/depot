@@ -7,6 +7,7 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
+import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.model.MaxComputeProtobufConverterCache;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import lombok.Setter;
@@ -23,9 +24,12 @@ import java.util.stream.Collectors;
 public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
     private final MaxComputeProtobufConverterCache maxComputeProtobufConverterCache;
+    private final boolean isProtoUnsetFieldDefaultValueEnable;
 
-    public MessageProtobufMaxComputeConverter(MaxComputeProtobufConverterCache maxComputeProtobufConverterCache) {
+    public MessageProtobufMaxComputeConverter(MaxComputeProtobufConverterCache maxComputeProtobufConverterCache,
+                                              MaxComputeSinkConfig maxComputeSinkConfig) {
         this.maxComputeProtobufConverterCache = maxComputeProtobufConverterCache;
+        this.isProtoUnsetFieldDefaultValueEnable = maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable();
     }
 
     @Override
@@ -59,13 +63,14 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
         List<Object> values = new ArrayList<>();
         Map<Descriptors.FieldDescriptor, Object> payloadFields = dynamicMessage.getAllFields();
         protoPayload.getFieldDescriptor().getMessageType().getFields().forEach(innerFieldDescriptor -> {
+            ProtobufMaxComputeConverter converter = maxComputeProtobufConverterCache.getConverter(innerFieldDescriptor);
+            Object unconvertedInnerValue;
             if (!payloadFields.containsKey(innerFieldDescriptor)) {
-                values.add(null);
-                return;
+                unconvertedInnerValue = isProtoUnsetFieldDefaultValueEnable ? dynamicMessage.getField(innerFieldDescriptor) : null;
+            } else {
+                unconvertedInnerValue = payloadFields.get(innerFieldDescriptor);
             }
-            Object mappedInnerValue = maxComputeProtobufConverterCache.getConverter(innerFieldDescriptor)
-                    .convertPayload(new ProtoPayload(innerFieldDescriptor, payloadFields.get(innerFieldDescriptor), false));
-            values.add(mappedInnerValue);
+            values.add(converter.convertPayload(new ProtoPayload(innerFieldDescriptor, unconvertedInnerValue, false)));
         });
         TypeInfo typeInfo = convertTypeInfo(protoPayload.getFieldDescriptor());
         StructTypeInfo structTypeInfo = (StructTypeInfo) (typeInfo instanceof ArrayTypeInfo ? ((ArrayTypeInfo) typeInfo).getElementTypeInfo() : typeInfo);
