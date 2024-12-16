@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 import static com.google.protobuf.Descriptors.FieldDescriptor.Type.*;
 
 public class MaxComputeProtobufConverterCache {
-    
     private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
     private static final String GOOGLE_PROTOBUF_DURATION = "google.protobuf.Duration";
     private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";
