@@ -46,7 +46,7 @@ dependencies {
     implementation(group: 'com.google.cloud', name: 'google-cloud-bigtable', version: '2.24.1') {
         exclude group: "io.grpc"
     }
-    implementation (group: 'com.aliyun.odps', name: 'odps-sdk-core', version: '0.51.0-public.rc1') {
+    implementation (group: 'com.aliyun.odps', name: 'odps-sdk-core', version: '0.51.0-public') {
         exclude group: "com.google"
         exclude group: "io.grpc"
     }
