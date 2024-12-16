@@ -17,9 +17,9 @@ public class InsertManagerFactory {
      * Each InsertManager uses a StreamingSessionManager to manage the streaming session.
      *
      * @param maxComputeSinkConfig configuration for MaxCompute sink
-     * @param tableTunnel tunnel service for MaxCompute
-     * @param instrumentation metrics instrumentation
-     * @param maxComputeMetrics metrics for MaxCompute
+     * @param tableTunnel          tunnel service for MaxCompute
+     * @param instrumentation      metrics instrumentation
+     * @param maxComputeMetrics    metrics for MaxCompute
      * @return InsertManager
      */
     public static InsertManager createInsertManager(MaxComputeSinkConfig maxComputeSinkConfig,
@@ -38,13 +38,10 @@ public class InsertManagerFactory {
                                                                       TableTunnel tableTunnel,
                                                                       Instrumentation instrumentation,
                                                                       MaxComputeMetrics maxComputeMetrics) {
-        StreamingSessionManager streamingSessionManager;
         if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
-            streamingSessionManager = StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
-        } else {
-            streamingSessionManager = StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+            return StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
         }
-        return streamingSessionManager;
+        return StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
     }
 
 }
