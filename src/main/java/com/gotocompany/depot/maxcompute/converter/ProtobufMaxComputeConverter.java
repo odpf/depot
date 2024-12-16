@@ -18,7 +18,8 @@ public interface ProtobufMaxComputeConverter {
      * @return the corresponding MaxCompute TypeInfo
      */
     default TypeInfo convertTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
-        return wrapTypeInfo(fieldDescriptor, convertSingularTypeInfo(fieldDescriptor));
+        TypeInfo typeInfo = convertSingularTypeInfo(fieldDescriptor);
+        return fieldDescriptor.isRepeated() ? TypeInfoFactory.getArrayTypeInfo(typeInfo) : typeInfo;
     }
 
     /**
@@ -29,17 +30,6 @@ public interface ProtobufMaxComputeConverter {
      * @return the corresponding MaxCompute TypeInfo for the singular field
      */
     TypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor);
-
-    /**
-     * Wraps the singular TypeInfo with array type handling if the field is repeated.
-     *
-     * @param fieldDescriptor the Protobuf field descriptor
-     * @param typeInfo the singular TypeInfo to wrap
-     * @return the wrapped TypeInfo, handling repeated fields as arrays
-     */
-    default TypeInfo wrapTypeInfo(Descriptors.FieldDescriptor fieldDescriptor, TypeInfo typeInfo) {
-        return fieldDescriptor.isRepeated() ? TypeInfoFactory.getArrayTypeInfo(typeInfo) : typeInfo;
-    }
 
     /**
      * Checks if the converter can handle the given Protobuf field descriptor.

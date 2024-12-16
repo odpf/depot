@@ -31,7 +31,7 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
     @Override
     public TypeInfo convertTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
         return maxComputeProtobufConverterCache.getOrCreateTypeInfo(fieldDescriptor,
-                () -> wrapTypeInfo(fieldDescriptor, convertSingularTypeInfo(fieldDescriptor)));
+                () -> ProtobufMaxComputeConverter.super.convertTypeInfo(fieldDescriptor));
     }
 
     @Override
