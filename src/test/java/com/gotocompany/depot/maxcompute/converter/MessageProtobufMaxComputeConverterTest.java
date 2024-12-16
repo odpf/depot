@@ -18,10 +18,8 @@ import org.mockito.Mockito;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -39,10 +37,9 @@ public class MessageProtobufMaxComputeConverterTest {
     public void init() {
         MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
         when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        when(maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable()).thenReturn(false);
         when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
         when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
-        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(new MaxComputeProtobufConverterCache(maxComputeSinkConfig), maxComputeSinkConfig);
+        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(new MaxComputeProtobufConverterCache(maxComputeSinkConfig));
     }
 
     @Test
@@ -123,50 +120,6 @@ public class MessageProtobufMaxComputeConverterTest {
         assertThat(object)
                 .extracting("typeInfo", "values")
                 .containsExactly(expectedStructTypeInfo, expectedStructValues);
-    }
-
-    @Test
-    public void shouldConvertToStructWithDefaultValue() {
-        MaxComputeSinkConfig maxComputeSinkConfig = Mockito.mock(MaxComputeSinkConfig.class);
-        when(maxComputeSinkConfig.getZoneId()).thenReturn(ZoneId.of("UTC"));
-        when(maxComputeSinkConfig.isProtoUnsetFieldDefaultValueEnable()).thenReturn(true);
-        when(maxComputeSinkConfig.getValidMinTimestamp()).thenReturn(LocalDateTime.parse("1970-01-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME));
-        when(maxComputeSinkConfig.getValidMaxTimestamp()).thenReturn(LocalDateTime.parse("9999-01-01T23:59:59", DateTimeFormatter.ISO_DATE_TIME));
-        messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(new MaxComputeProtobufConverterCache(maxComputeSinkConfig), maxComputeSinkConfig);
-        TestMaxComputeTypeInfo.TestBuyer message = TestMaxComputeTypeInfo.TestBuyer.newBuilder()
-                .build();
-        TestMaxComputeTypeInfo.TestBuyerWrapper wrapper = TestMaxComputeTypeInfo.TestBuyerWrapper
-                .newBuilder()
-                .setBuyer(message)
-                .build();
-        StructTypeInfo durationTypeInfo = TypeInfoFactory.getStructTypeInfo(Arrays.asList("seconds", "nanos"), Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT));
-        StructTypeInfo itemTypeInfo = TypeInfoFactory.getStructTypeInfo(Arrays.asList("id", "quantity"), Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.INT));
-        StructTypeInfo cartTypeInfo = TypeInfoFactory.getStructTypeInfo(
-                Arrays.asList("cart_id", "items", "created_at", "cart_age"),
-                Arrays.asList(TypeInfoFactory.STRING, TypeInfoFactory.getArrayTypeInfo(itemTypeInfo), TypeInfoFactory.TIMESTAMP_NTZ, durationTypeInfo)
-        );
-        StructTypeInfo expectedStructTypeInfo = TypeInfoFactory.getStructTypeInfo(
-                Arrays.asList("name", "cart", "created_at"),
-                Arrays.asList(TypeInfoFactory.STRING, cartTypeInfo, TypeInfoFactory.TIMESTAMP_NTZ)
-        );
-        List<Object> expectedStructValues = Arrays.asList(
-                "",
-                new SimpleStruct(cartTypeInfo, Arrays.asList(
-                        "",
-                        new ArrayList<>(),
-                        LocalDateTime.ofEpochSecond(0, 0, java.time.ZoneOffset.UTC),
-                                new SimpleStruct(durationTypeInfo, Arrays.asList(0, 0)))),
-                LocalDateTime.ofEpochSecond(0, 0, java.time.ZoneOffset.UTC)
-        );
-
-        Object object = messageProtobufMaxComputeConverter.convertPayload(new ProtoPayload(payloadDescriptor.getFields().get(0), wrapper.getField(payloadDescriptor.getFields().get(0)), true));
-
-        assertThat(object)
-                .extracting("typeInfo")
-                .isEqualTo(expectedStructTypeInfo);
-        assertThat(object)
-                .extracting("values")
-                .matches(values -> Objects.equals(values.toString(), expectedStructValues.toString()));
     }
 
 }

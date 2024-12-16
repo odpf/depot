@@ -38,7 +38,6 @@ public class RecordDecoratorFactory {
                 protobufConverterOrchestrator,
                 messageParser,
                 sinkConfig,
-                maxComputeSinkConfig,
                 partitioningStrategy,
                 instrumentation,
                 maxComputeMetrics);

@@ -89,7 +89,7 @@ public class MaxComputeProtobufConverterCache {
         protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_TIMESTAMP, new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig));
         protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_DURATION, new DurationProtobufMaxComputeConverter());
         protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_STRUCT, new StructProtobufMaxComputeConverter());
-        MessageProtobufMaxComputeConverter messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(this, maxComputeSinkConfig);
+        MessageProtobufMaxComputeConverter messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(this);
         protobufMaxComputeConverterMap.put(MESSAGE.toString(), messageProtobufMaxComputeConverter);
     }
 

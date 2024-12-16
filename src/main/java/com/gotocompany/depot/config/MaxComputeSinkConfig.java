@@ -34,10 +34,6 @@ public interface MaxComputeSinkConfig extends Config {
     @DefaultValue("")
     String getMaxcomputeMetadataNamespace();
 
-    @Key("SINK_MAXCOMPUTE_PROTO_UNSET_FIELD_DEFAULT_VALUE_ENABLE")
-    @DefaultValue("false")
-    boolean isProtoUnsetFieldDefaultValueEnable();
-
     @Key("SINK_MAXCOMPUTE_ADD_METADATA_ENABLED")
     @DefaultValue("true")
     boolean shouldAddMetadata();

@@ -48,15 +48,6 @@ Supported types are `string`, `integer`, `long`, `timestamp`, `float`, `double`,
 * Example value: `topic=string,partition=integer,offset=integer,timestamp=timestamp`
 * Type: `optional`
 
-## SINK_MAXCOMPUTE_PROTO_UNSET_FIELD_DEFAULT_VALUE_ENABLE
-
-Configuration for enabling the default value for unset fields in the protobuf message. This config will be used for enabling the default value for unset fields in the protobuf message.
-Otherwise, the unset fields will be set to null.
-
-* Example value: `true`
-* Type: `required`
-* Default value: `false`
-
 ## SINK_MAXCOMPUTE_SCHEMA
 
 Contains the schema of the MaxCompute table. Schema is a dataset grouping of table columns. Further documentation on MaxCompute [Schema](https://www.alibabacloud.com/help/en/maxcompute/user-guide/schemas).
