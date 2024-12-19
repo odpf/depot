@@ -26,22 +26,13 @@ public class InsertManagerFactory {
                                                     TableTunnel tableTunnel,
                                                     Instrumentation instrumentation,
                                                     MaxComputeMetrics maxComputeMetrics) {
-        StreamingSessionManager streamingSessionManager = getStreamingSessionManager(maxComputeSinkConfig, tableTunnel, instrumentation, maxComputeMetrics);
         if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
-            return new PartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+            StreamingSessionManager partitionedStreamingSessionManager = StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+            return new PartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, partitionedStreamingSessionManager);
         } else {
-            return new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, streamingSessionManager);
+            StreamingSessionManager nonPartitionedStreamingSessionManager = StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
+            return new NonPartitionedInsertManager(maxComputeSinkConfig, instrumentation, maxComputeMetrics, nonPartitionedStreamingSessionManager);
         }
-    }
-
-    private static StreamingSessionManager getStreamingSessionManager(MaxComputeSinkConfig maxComputeSinkConfig,
-                                                                      TableTunnel tableTunnel,
-                                                                      Instrumentation instrumentation,
-                                                                      MaxComputeMetrics maxComputeMetrics) {
-        if (maxComputeSinkConfig.isTablePartitioningEnabled()) {
-            return StreamingSessionManager.createPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
-        }
-        return StreamingSessionManager.createNonPartitioned(tableTunnel, maxComputeSinkConfig, instrumentation, maxComputeMetrics);
     }
 
 }
