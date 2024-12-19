@@ -18,21 +18,26 @@ public class MaxComputeProtobufConverterCache {
     private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
     private static final String GOOGLE_PROTOBUF_DURATION = "google.protobuf.Duration";
     private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";
-    private static final Set<String> SUPPORTED_PRIMITIVE_PROTO_TYPES = Sets.newHashSet(
-            BYTES.toString(), STRING.toString(), ENUM.toString(), DOUBLE.toString(), FLOAT.toString(),
-            BOOL.toString(), INT64.toString(), UINT64.toString(), INT32.toString(), UINT32.toString(),
-            FIXED64.toString(), FIXED32.toString(), SFIXED32.toString(), SFIXED64.toString(),
-            SINT32.toString(), SINT64.toString());
+    private static final Set<Descriptors.FieldDescriptor.Type> SUPPORTED_PRIMITIVE_PROTO_TYPES = Sets.newHashSet(
+            BYTES, STRING, ENUM, DOUBLE, FLOAT, BOOL,
+            INT64, INT32,
+            UINT64, UINT32,
+            FIXED64, FIXED32,
+            SFIXED64, SFIXED32,
+            SINT64, SINT32);
 
     private final Map<String, ProtobufMaxComputeConverter> protobufMaxComputeConverterMap;
     private final Map<String, TypeInfo> typeInfoCache;
-    private final MaxComputeSinkConfig maxComputeSinkConfig;
 
     public MaxComputeProtobufConverterCache(MaxComputeSinkConfig maxComputeSinkConfig) {
         this.protobufMaxComputeConverterMap = new ConcurrentHashMap<>();
         this.typeInfoCache = new ConcurrentHashMap<>();
-        this.maxComputeSinkConfig = maxComputeSinkConfig;
-        initMaxComputeConverterMap();
+        PrimitiveProtobufMaxComputeConverter primitiveProtobufMaxComputeConverter = new PrimitiveProtobufMaxComputeConverter();
+        SUPPORTED_PRIMITIVE_PROTO_TYPES.forEach(type -> protobufMaxComputeConverterMap.put(type.toString(), primitiveProtobufMaxComputeConverter));
+        protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_TIMESTAMP, new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig));
+        protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_DURATION, new DurationProtobufMaxComputeConverter());
+        protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_STRUCT, new StructProtobufMaxComputeConverter());
+        protobufMaxComputeConverterMap.put(MESSAGE.toString(), new MessageProtobufMaxComputeConverter(this));
     }
 
     public TypeInfo getOrCreateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
@@ -55,12 +60,19 @@ public class MaxComputeProtobufConverterCache {
     }
 
     public ProtobufMaxComputeConverter getConverter(Descriptors.FieldDescriptor fieldDescriptor) {
-        ProtobufMaxComputeConverter protobufMaxComputeConverter = null;
-        if (fieldDescriptor.getType().equals(MESSAGE)) {
-            protobufMaxComputeConverter = protobufMaxComputeConverterMap.get(fieldDescriptor.getMessageType().getFullName());
+        if (fieldDescriptor.getType() == MESSAGE) {
+            switch (fieldDescriptor.getMessageType().getFullName()) {
+                case GOOGLE_PROTOBUF_TIMESTAMP:
+                    return protobufMaxComputeConverterMap.get(GOOGLE_PROTOBUF_TIMESTAMP);
+                case GOOGLE_PROTOBUF_DURATION:
+                    return protobufMaxComputeConverterMap.get(GOOGLE_PROTOBUF_DURATION);
+                case GOOGLE_PROTOBUF_STRUCT:
+                    return protobufMaxComputeConverterMap.get(GOOGLE_PROTOBUF_STRUCT);
+                default:
+                    return protobufMaxComputeConverterMap.get(MESSAGE.toString());
+            }
         }
-        protobufMaxComputeConverter = protobufMaxComputeConverter != null ? protobufMaxComputeConverter
-                : protobufMaxComputeConverterMap.get(fieldDescriptor.getType().toString());
+        ProtobufMaxComputeConverter protobufMaxComputeConverter = protobufMaxComputeConverterMap.get(fieldDescriptor.getType().toString());
         if (protobufMaxComputeConverter == null) {
             throw new IllegalArgumentException("Unsupported type: " + fieldDescriptor.getType());
         }
@@ -69,16 +81,6 @@ public class MaxComputeProtobufConverterCache {
 
     public void clearCache() {
         typeInfoCache.clear();
-    }
-
-    private void initMaxComputeConverterMap() {
-        PrimitiveProtobufMaxComputeConverter primitiveProtobufMaxComputeConverter =
-                new PrimitiveProtobufMaxComputeConverter();
-        SUPPORTED_PRIMITIVE_PROTO_TYPES.forEach(type -> protobufMaxComputeConverterMap.put(type, primitiveProtobufMaxComputeConverter));
-        protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_TIMESTAMP, new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig));
-        protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_DURATION, new DurationProtobufMaxComputeConverter());
-        protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_STRUCT, new StructProtobufMaxComputeConverter());
-        protobufMaxComputeConverterMap.put(MESSAGE.toString(), new MessageProtobufMaxComputeConverter(this));
     }
 
 }
