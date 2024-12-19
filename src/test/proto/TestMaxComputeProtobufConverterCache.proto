@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+
+package com.gotocompany.depot;
+
+message TestMaxComputeProtobufConverterCache {
+  string string_field = 1;
+  repeated string repeated_string_field = 2;
+  TestMaxComputeProtobufConverterCacheInnerMessage inner_message_field = 3;
+  google.protobuf.Timestamp timestamp_field = 4;
+  google.protobuf.Duration duration_field = 5;
+  google.protobuf.Struct struct_field = 6;
+  google.protobuf.Empty unsupported_empty_field = 7;
+}
+
+message TestMaxComputeProtobufConverterCacheInnerMessage {
+  string string_field = 1;
+}
