@@ -22,7 +22,6 @@ import java.time.temporal.TemporalAmount;
  */
 public class TimestampProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
-    private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";
     private static final long DAYS_IN_YEAR = 365;

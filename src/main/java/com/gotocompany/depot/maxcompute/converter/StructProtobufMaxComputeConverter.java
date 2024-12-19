@@ -13,7 +13,6 @@ import com.gotocompany.depot.maxcompute.model.ProtoPayload;
  */
 public class StructProtobufMaxComputeConverter implements ProtobufMaxComputeConverter {
 
-    private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";
     private final JsonFormat.Printer printer = JsonFormat.printer()
             .preservingProtoFieldNames()
             .omittingInsignificantWhitespace();

@@ -19,7 +19,6 @@ public class DurationProtobufMaxComputeConverter implements ProtobufMaxComputeCo
 
     private static final String SECONDS = "seconds";
     private static final String NANOS = "nanos";
-    private static final String GOOGLE_PROTOBUF_DURATION = "google.protobuf.Duration";
     private static final List<String> FIELD_NAMES = Arrays.asList(SECONDS, NANOS);
     private static final List<TypeInfo> TYPE_INFOS = Arrays.asList(TypeInfoFactory.BIGINT, TypeInfoFactory.INT);
 
