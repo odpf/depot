@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import static com.google.protobuf.Descriptors.FieldDescriptor.Type.*;
+import static java.util.Objects.isNull;
 
 public class MaxComputeProtobufConverterCache {
 
@@ -35,21 +36,21 @@ public class MaxComputeProtobufConverterCache {
     }
 
     public TypeInfo getOrCreateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor) {
-        if (typeInfoCache.containsKey(fieldDescriptor.getFullName())) {
-            return typeInfoCache.get(fieldDescriptor.getFullName());
+        TypeInfo typeInfo = typeInfoCache.get(fieldDescriptor.getFullName());
+        if (isNull(typeInfo)) {
+            ProtobufMaxComputeConverter protobufMaxComputeConverter = getConverter(fieldDescriptor);
+            typeInfo = protobufMaxComputeConverter.convertTypeInfo(fieldDescriptor);
+            typeInfoCache.put(fieldDescriptor.getFullName(), typeInfo);
         }
-        ProtobufMaxComputeConverter protobufMaxComputeConverter = getConverter(fieldDescriptor);
-        TypeInfo typeInfo = protobufMaxComputeConverter.convertTypeInfo(fieldDescriptor);
-        typeInfoCache.put(fieldDescriptor.getFullName(), typeInfo);
         return typeInfo;
     }
 
     public TypeInfo getOrCreateTypeInfo(Descriptors.FieldDescriptor fieldDescriptor, Supplier<TypeInfo> supplier) {
-        if (typeInfoCache.containsKey(fieldDescriptor.getFullName())) {
-            return typeInfoCache.get(fieldDescriptor.getFullName());
+        TypeInfo typeInfo = typeInfoCache.get(fieldDescriptor.getFullName());
+        if (isNull(typeInfo)) {
+            typeInfo = supplier.get();
+            typeInfoCache.put(fieldDescriptor.getFullName(), typeInfo);
         }
-        TypeInfo typeInfo = supplier.get();
-        typeInfoCache.put(fieldDescriptor.getFullName(), typeInfo);
         return typeInfo;
     }
 
