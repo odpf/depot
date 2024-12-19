@@ -55,12 +55,6 @@ public class TimestampProtobufMaxComputeConverter implements ProtobufMaxComputeC
     }
 
     @Override
-    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
-        return Descriptors.FieldDescriptor.Type.MESSAGE.equals(fieldDescriptor.getType())
-                && fieldDescriptor.getMessageType().getFullName().equals(GOOGLE_PROTOBUF_TIMESTAMP);
-    }
-
-    @Override
     public Object convertSingularPayload(ProtoPayload protoPayload) {
         Message message = (Message) protoPayload.getParsedObject();
         long seconds = (long) message.getField(message.getDescriptorForType().findFieldByName(SECONDS));

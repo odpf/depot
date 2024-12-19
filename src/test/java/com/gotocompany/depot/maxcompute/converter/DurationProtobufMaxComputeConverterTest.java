@@ -14,8 +14,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class DurationProtobufMaxComputeConverterTest {
 
@@ -31,24 +29,6 @@ public class DurationProtobufMaxComputeConverterTest {
         TypeInfo typeInfo = durationProtobufMaxComputeConverter.convertTypeInfo(fieldDescriptor);
 
         assertEquals("STRUCT<`seconds`:BIGINT,`nanos`:INT>", typeInfo.getTypeName());
-    }
-
-    @Test
-    public void shouldReturnTrueForDuration() {
-        Descriptors.FieldDescriptor fieldDescriptor = descriptor.getFields().get(DURATION_INDEX);
-
-        boolean canConvert = durationProtobufMaxComputeConverter.canConvert(fieldDescriptor);
-
-        assertTrue(canConvert);
-    }
-
-    @Test
-    public void shouldReturnFalseForNonDuration() {
-        Descriptors.FieldDescriptor fieldDescriptor = descriptor.getFields().get(0);
-
-        boolean canConvert = durationProtobufMaxComputeConverter.canConvert(fieldDescriptor);
-
-        assertFalse(canConvert);
     }
 
     @Test

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class StructProtobufMaxComputeConverterTest {
@@ -66,17 +65,6 @@ public class StructProtobufMaxComputeConverterTest {
         TypeInfo typeInfo = structProtobufMaxComputeConverter.convertTypeInfo(descriptor.getFields().get(STRUCT_INDEX));
 
         assertEquals(TypeInfoFactory.STRING, typeInfo);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCanConvertIsCalledWithStructFieldDescriptor() {
-        assertTrue(structProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(STRUCT_INDEX)));
-    }
-
-    @Test
-    public void shouldReturnFalseWhenCanConvertIsCalledWithNonStructFieldDescriptor() {
-        assertFalse(structProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(0)));
-        assertFalse(structProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(1)));
     }
 
 }

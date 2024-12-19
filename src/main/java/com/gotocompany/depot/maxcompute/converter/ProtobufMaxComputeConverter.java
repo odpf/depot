@@ -32,14 +32,6 @@ public interface ProtobufMaxComputeConverter {
     TypeInfo convertSingularTypeInfo(Descriptors.FieldDescriptor fieldDescriptor);
 
     /**
-     * Checks if the converter can handle the given Protobuf field descriptor.
-     *
-     * @param fieldDescriptor the Protobuf field descriptor to check
-     * @return true if the converter can handle the field descriptor, false otherwise
-     */
-    boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor);
-
-    /**
      * Converts a proto payload to a format that can be used by the MaxCompute SDK.
      * @param protoPayload the proto payload to convert, containing field descriptor, the actual object and level
      * @return the converted object

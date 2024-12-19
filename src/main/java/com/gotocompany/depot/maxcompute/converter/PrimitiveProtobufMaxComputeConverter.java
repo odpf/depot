@@ -56,11 +56,6 @@ public class PrimitiveProtobufMaxComputeConverter implements ProtobufMaxComputeC
     }
 
     @Override
-    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
-        return PROTO_TYPE_MAP.containsKey(fieldDescriptor.getType());
-    }
-
-    @Override
     public Object convertSingularPayload(ProtoPayload protoPayload) {
         return PROTO_PAYLOAD_MAPPER_MAP.getOrDefault(protoPayload.getFieldDescriptor().getType(), Function.identity())
                 .apply(protoPayload.getParsedObject());

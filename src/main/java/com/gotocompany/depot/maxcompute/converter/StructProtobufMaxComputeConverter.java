@@ -24,12 +24,6 @@ public class StructProtobufMaxComputeConverter implements ProtobufMaxComputeConv
     }
 
     @Override
-    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
-        return fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.MESSAGE
-                && fieldDescriptor.getMessageType().getFullName().equals(GOOGLE_PROTOBUF_STRUCT);
-    }
-
-    @Override
     public Object convertSingularPayload(ProtoPayload protoPayload) {
         try {
             return printer.print((Message) protoPayload.getParsedObject());

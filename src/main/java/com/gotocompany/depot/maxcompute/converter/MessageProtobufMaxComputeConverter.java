@@ -48,11 +48,6 @@ public class MessageProtobufMaxComputeConverter implements ProtobufMaxComputeCon
     }
 
     @Override
-    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
-        return Descriptors.FieldDescriptor.Type.MESSAGE.equals(fieldDescriptor.getType());
-    }
-
-    @Override
     public Object convertSingularPayload(ProtoPayload protoPayload) {
         Message dynamicMessage = (Message) protoPayload.getParsedObject();
         List<Object> values = new ArrayList<>();

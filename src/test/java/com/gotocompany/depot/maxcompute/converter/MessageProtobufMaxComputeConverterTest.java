@@ -22,8 +22,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class MessageProtobufMaxComputeConverterTest {
@@ -51,16 +49,6 @@ public class MessageProtobufMaxComputeConverterTest {
 
         assertEquals(expectedFirstMessageTypeRepresentation, firstMessageFieldTypeInfo.toString());
         assertEquals(expectedSecondMessageTypeRepresentation, secondMessageFieldTypeInfo.toString());
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCanConvertIsCalledWithMessageFieldDescriptor() {
-        assertTrue(messageProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(1)));
-    }
-
-    @Test
-    public void shouldReturnFalseWhenCanConvertIsCalledWithNonMessageFieldDescriptor() {
-        assertFalse(messageProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(0)));
     }
 
     @Test

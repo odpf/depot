@@ -21,8 +21,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class TimestampProtobufMaxComputeConverterTest {
@@ -51,17 +49,6 @@ public class TimestampProtobufMaxComputeConverterTest {
         TypeInfo typeInfo = timestampProtobufMaxComputeConverter.convertTypeInfo(descriptor.getFields().get(TIMESTAMP_INDEX));
 
         assertEquals(TypeInfoFactory.TIMESTAMP_NTZ, typeInfo);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCanConvertIsCalledWithTimestampFieldDescriptor() {
-        assertTrue(timestampProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(TIMESTAMP_INDEX)));
-    }
-
-    @Test
-    public void shouldReturnFalseWhenCanConvertIsCalledWithNonTimestampFieldDescriptor() {
-        assertFalse(timestampProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(0)));
-        assertFalse(timestampProtobufMaxComputeConverter.canConvert(descriptor.getFields().get(1)));
     }
 
     @Test

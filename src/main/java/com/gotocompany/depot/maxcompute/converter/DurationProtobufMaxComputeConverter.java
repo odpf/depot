@@ -29,12 +29,6 @@ public class DurationProtobufMaxComputeConverter implements ProtobufMaxComputeCo
     }
 
     @Override
-    public boolean canConvert(Descriptors.FieldDescriptor fieldDescriptor) {
-        return fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.MESSAGE
-                && fieldDescriptor.getMessageType().getFullName().equals(GOOGLE_PROTOBUF_DURATION);
-    }
-
-    @Override
     public Object convertSingularPayload(ProtoPayload protoPayload) {
         List<Object> values = getValues((Message) protoPayload.getParsedObject());
         return new SimpleStruct((StructTypeInfo) convertSingularTypeInfo(protoPayload.getFieldDescriptor()), values);
