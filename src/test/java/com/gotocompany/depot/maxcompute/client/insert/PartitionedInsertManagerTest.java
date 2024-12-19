@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +33,7 @@ public class PartitionedInsertManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -87,7 +88,7 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.createPartitioned(
@@ -159,7 +160,7 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
         StreamingSessionManager streamingSessionManager = StreamingSessionManager.createPartitioned(
@@ -238,7 +239,7 @@ public class PartitionedInsertManagerTest {
                 firstPartitionRecordWrapper,
                 secondPartitionRecordWrapper
         );
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
         StreamingSessionManager streamingSessionManager = Mockito.spy(StreamingSessionManager.createPartitioned(

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +33,7 @@ public class NonPartitionedInsertManagerTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -71,7 +72,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
         MaxComputeMetrics maxComputeMetrics = Mockito.mock(MaxComputeMetrics.class);
@@ -136,7 +137,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
         MaxComputeMetrics maxComputeMetrics = Mockito.mock(MaxComputeMetrics.class);
@@ -205,7 +206,7 @@ public class NonPartitionedInsertManagerTest {
                 .thenReturn(1);
         when(maxComputeSinkConfig.getStreamingInsertTunnelSlotCountPerSession())
                 .thenReturn(1L);
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureCount(Mockito.anyString(), Mockito.anyLong());
         MaxComputeMetrics maxComputeMetrics = Mockito.mock(MaxComputeMetrics.class);

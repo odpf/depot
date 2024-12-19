@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -202,7 +203,7 @@ public class MaxComputeSchemaCacheTest {
                 maxComputeClient
         );
         maxComputeSchemaCache.setMessageParser(protoMessageParser);
-        Mockito.doThrow(new OdpsException("Invalid schema"))
+        doThrow(new OdpsException("Invalid schema"))
                 .when(maxComputeClient)
                 .createOrUpdateTable(Mockito.any());
 

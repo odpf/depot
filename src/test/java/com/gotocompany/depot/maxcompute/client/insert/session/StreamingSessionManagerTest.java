@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +27,7 @@ public class StreamingSessionManagerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.doNothing()
+        doNothing()
                 .when(instrumentation)
                 .captureValue(Mockito.any(), Mockito.any(), Mockito.any());
     }
