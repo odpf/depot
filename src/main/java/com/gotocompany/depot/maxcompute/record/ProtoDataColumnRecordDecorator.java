@@ -15,6 +15,7 @@ import com.gotocompany.depot.message.ProtoUnknownFieldValidationType;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -45,7 +46,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
                                           MessageParser messageParser,
                                           SinkConfig sinkConfig,
                                           PartitioningStrategy partitioningStrategy,
-                                          Instrumentation instrumentation,
+                                          StatsDReporter statsDReporter,
                                           MaxComputeMetrics maxComputeMetrics) {
         super(decorator);
         this.protobufConverterOrchestrator = protobufConverterOrchestrator;
@@ -61,7 +62,7 @@ public class ProtoDataColumnRecordDecorator extends RecordDecorator {
         this.schemaClass = sinkConfig.getSinkConnectorSchemaMessageMode() == SinkConnectorSchemaMessageMode.LOG_MESSAGE
                 ? sinkConfig.getSinkConnectorSchemaProtoMessageClass() : sinkConfig.getSinkConnectorSchemaProtoKeyClass();
         this.protoUnknownFieldValidationType = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidation();
-        this.instrumentation = instrumentation;
+        this.instrumentation = new Instrumentation(statsDReporter, this.getClass());
         this.maxComputeMetrics = maxComputeMetrics;
         this.sinkConnectorSchemaProtoAllowUnknownFieldsEnable = sinkConfig.getSinkConnectorSchemaProtoAllowUnknownFieldsEnable();
         this.sinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable = sinkConfig.getSinkConnectorSchemaProtoUnknownFieldsValidationInstrumentationEnable();

@@ -6,8 +6,8 @@ import com.gotocompany.depot.maxcompute.converter.ProtobufConverterOrchestrator;
 import com.gotocompany.depot.maxcompute.schema.MaxComputeSchemaCache;
 import com.gotocompany.depot.maxcompute.schema.partition.PartitioningStrategy;
 import com.gotocompany.depot.message.MessageParser;
-import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 
 public class RecordDecoratorFactory {
 
@@ -21,7 +21,7 @@ public class RecordDecoratorFactory {
      * @param partitioningStrategy partitioning strategy
      * @param maxComputeSinkConfig maxcompute sink configuration
      * @param sinkConfig sink configuration
-     * @param instrumentation instrumentation
+     * @param statsDReporter statsd reporter
      * @param maxComputeMetrics maxcompute metrics
      * @return record decorator
      */
@@ -32,14 +32,14 @@ public class RecordDecoratorFactory {
             PartitioningStrategy partitioningStrategy,
             MaxComputeSinkConfig maxComputeSinkConfig,
             SinkConfig sinkConfig,
-            Instrumentation instrumentation,
+            StatsDReporter statsDReporter,
             MaxComputeMetrics maxComputeMetrics) {
         RecordDecorator dataColumnRecordDecorator = new ProtoDataColumnRecordDecorator(null,
                 protobufConverterOrchestrator,
                 messageParser,
                 sinkConfig,
                 partitioningStrategy,
-                instrumentation,
+                statsDReporter,
                 maxComputeMetrics);
         if (!maxComputeSinkConfig.shouldAddMetadata()) {
             return dataColumnRecordDecorator;

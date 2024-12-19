@@ -27,6 +27,7 @@ import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
 import com.gotocompany.depot.message.proto.ProtoMessageParser;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -317,7 +318,7 @@ public class ProtoDataColumnRecordDecoratorTest {
                 protoMessageParser,
                 sinkConfig,
                 partitioningStrategy,
-                instrumentation,
+                Mockito.mock(StatsDReporter.class),
                 maxComputeMetrics
         );
     }

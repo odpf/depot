@@ -13,7 +13,7 @@ import com.gotocompany.depot.maxcompute.model.RecordWrappers;
 import com.gotocompany.depot.message.Message;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
-import lombok.RequiredArgsConstructor;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -21,7 +21,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Slf4j
 public class MaxComputeSink implements Sink {
 
@@ -29,6 +28,17 @@ public class MaxComputeSink implements Sink {
     private final MessageRecordConverter messageRecordConverter;
     private final Instrumentation instrumentation;
     private final MaxComputeMetrics maxComputeMetrics;
+
+    public MaxComputeSink(InsertManager insertManager,
+                          MessageRecordConverter messageRecordConverter,
+                          StatsDReporter statsDReporter,
+                          MaxComputeMetrics maxComputeMetrics) {
+        this.insertManager = insertManager;
+        this.messageRecordConverter = messageRecordConverter;
+        this.maxComputeMetrics = maxComputeMetrics;
+        this.instrumentation = new Instrumentation(statsDReporter, this.getClass());
+    }
+
 
     @Override
     public SinkResponse pushToSink(List<Message> messages) throws SinkException {

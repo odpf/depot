@@ -3,8 +3,8 @@ package com.gotocompany.depot.maxcompute.record;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.config.SinkConfig;
 import com.gotocompany.depot.message.SinkConnectorSchemaMessageMode;
-import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -23,7 +23,7 @@ public class RecordDecoratorFactoryTest {
 
         RecordDecorator recordDecorator = RecordDecoratorFactory.createRecordDecorator(
                 null, null, null, null,
-                maxComputeSinkConfig, sinkConfig, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class)
+                maxComputeSinkConfig, sinkConfig, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class)
         );
 
         assertThat(recordDecorator)
@@ -42,7 +42,7 @@ public class RecordDecoratorFactoryTest {
 
         RecordDecorator recordDecorator = RecordDecoratorFactory.createRecordDecorator(
                 null, null, null,
-                null, maxComputeSinkConfig, sinkConfig, Mockito.mock(Instrumentation.class),
+                null, maxComputeSinkConfig, sinkConfig, Mockito.mock(StatsDReporter.class),
                 Mockito.mock(MaxComputeMetrics.class)
         );
 

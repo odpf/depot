@@ -12,6 +12,7 @@ import com.gotocompany.depot.maxcompute.client.insert.InsertManager;
 import com.gotocompany.depot.maxcompute.client.insert.InsertManagerFactory;
 import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,10 @@ public class MaxComputeClient {
     private Instrumentation instrumentation;
 
     public MaxComputeClient(MaxComputeSinkConfig maxComputeSinkConfig,
-                            Instrumentation instrumentation, MaxComputeMetrics maxComputeMetrics) {
+                            StatsDReporter statsDReporter,
+                            MaxComputeMetrics maxComputeMetrics) {
         this.maxComputeSinkConfig = maxComputeSinkConfig;
-        this.instrumentation = instrumentation;
+        this.instrumentation = new Instrumentation(statsDReporter, this.getClass());
         this.odps = initializeOdps();
         this.tableTunnel = new TableTunnel(odps);
         this.tableTunnel.setEndpoint(maxComputeSinkConfig.getMaxComputeTunnelUrl());

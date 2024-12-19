@@ -11,8 +11,8 @@ import com.gotocompany.depot.maxcompute.converter.record.MessageRecordConverter;
 import com.gotocompany.depot.maxcompute.model.RecordWrapper;
 import com.gotocompany.depot.maxcompute.model.RecordWrappers;
 import com.gotocompany.depot.message.Message;
-import com.gotocompany.depot.metrics.Instrumentation;
 import com.gotocompany.depot.metrics.MaxComputeMetrics;
+import com.gotocompany.depot.metrics.StatsDReporter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -56,7 +56,7 @@ public class MaxComputeSinkTest {
                 .when(insertManager)
                 .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
-        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -100,7 +100,7 @@ public class MaxComputeSinkTest {
                 .when(insertManager)
                 .insert(Mockito.anyList());
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
-        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -146,7 +146,7 @@ public class MaxComputeSinkTest {
         Mockito.doThrow(new IOException("Failed flushing"))
                 .when(insertManager)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -192,7 +192,7 @@ public class MaxComputeSinkTest {
         Mockito.doThrow(new RuntimeException("Unexpected Error"))
                 .when(insertManager)
                 .insert(Mockito.anyList());
-        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class));
         List<Message> messages = Arrays.asList(
                 new Message("key1".getBytes(StandardCharsets.UTF_8), "message1".getBytes(StandardCharsets.UTF_8)),
                 new Message("key2".getBytes(StandardCharsets.UTF_8), "invalidMessage2".getBytes(StandardCharsets.UTF_8))
@@ -236,7 +236,7 @@ public class MaxComputeSinkTest {
         MessageRecordConverter messageRecordConverter = Mockito.mock(MessageRecordConverter.class);
         InsertManager insertManager = Mockito.mock(InsertManager.class);
 
-        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(Instrumentation.class), Mockito.mock(MaxComputeMetrics.class));
+        MaxComputeSink maxComputeSink = new MaxComputeSink(insertManager, messageRecordConverter, Mockito.mock(StatsDReporter.class), Mockito.mock(MaxComputeMetrics.class));
 
         assertDoesNotThrow(maxComputeSink::close);
     }
