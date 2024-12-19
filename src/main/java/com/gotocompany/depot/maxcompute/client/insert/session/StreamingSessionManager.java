@@ -15,6 +15,7 @@ import java.time.Instant;
 /**
  * StreamingSessionManager manages the streaming insert sessions for MaxCompute.
  * Streaming Insert Sessions are reused when the partition spec is the same.
+ * Streaming sessions are created by TableTunnel service. Read more about it here: <a href="https://www.alibabacloud.com/help/en/maxcompute/user-guide/tabletunnel">Alibaba MaxCompute Table Tunnel</a>
  */
 public final class StreamingSessionManager {
 
@@ -39,7 +40,7 @@ public final class StreamingSessionManager {
                                                                MaxComputeMetrics maxComputeMetrics) {
         CacheLoader<String, TableTunnel.StreamUploadSession> cacheLoader = new CacheLoader<String, TableTunnel.StreamUploadSession>() {
             @Override
-            public TableTunnel.StreamUploadSession load(String sessionId) throws TunnelException {
+            public TableTunnel.StreamUploadSession load(String partitionSpecKey) throws TunnelException {
                 return buildStreamSession(getBaseStreamSessionBuilder(tableTunnel, maxComputeSinkConfig), instrumentation, maxComputeMetrics);
             }
         };
@@ -101,11 +102,11 @@ public final class StreamingSessionManager {
         sessionCache.refresh(partitionSpec);
     }
 
-    private static TableTunnel.StreamUploadSession buildStreamSession(TableTunnel.StreamUploadSession.Builder streamSessionBuilder,
+    private static TableTunnel.StreamUploadSession buildStreamSession(TableTunnel.StreamUploadSession.Builder streamUploadSessionBuilder,
                                                                       Instrumentation instrumentation,
                                                                       MaxComputeMetrics maxComputeMetrics) throws TunnelException {
         Instant start = Instant.now();
-        TableTunnel.StreamUploadSession streamUploadSession = streamSessionBuilder.build();
+        TableTunnel.StreamUploadSession streamUploadSession = streamUploadSessionBuilder.build();
         instrumentation.captureDurationSince(maxComputeMetrics.getMaxComputeStreamingInsertSessionInitializationLatency(), start);
         instrumentation.incrementCounter(maxComputeMetrics.getMaxComputeStreamingInsertSessionCreatedCount());
         return streamUploadSession;
