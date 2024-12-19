@@ -7,7 +7,6 @@ import com.aliyun.odps.type.TypeInfo;
 import com.aliyun.odps.type.TypeInfoFactory;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
-import com.gotocompany.depot.maxcompute.model.MaxComputeProtobufConverterCache;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 import lombok.Setter;
 

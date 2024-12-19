@@ -1,15 +1,9 @@
-package com.gotocompany.depot.maxcompute.model;
+package com.gotocompany.depot.maxcompute.converter;
 
 import com.aliyun.odps.type.TypeInfo;
 import com.google.common.collect.Sets;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.converter.DurationProtobufMaxComputeConverter;
-import com.gotocompany.depot.maxcompute.converter.MessageProtobufMaxComputeConverter;
-import com.gotocompany.depot.maxcompute.converter.PrimitiveProtobufMaxComputeConverter;
-import com.gotocompany.depot.maxcompute.converter.ProtobufMaxComputeConverter;
-import com.gotocompany.depot.maxcompute.converter.StructProtobufMaxComputeConverter;
-import com.gotocompany.depot.maxcompute.converter.TimestampProtobufMaxComputeConverter;
 
 import java.util.Map;
 import java.util.Set;

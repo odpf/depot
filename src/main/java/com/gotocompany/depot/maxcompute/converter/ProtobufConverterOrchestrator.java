@@ -3,7 +3,6 @@ package com.gotocompany.depot.maxcompute.converter;
 import com.aliyun.odps.type.TypeInfo;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.model.MaxComputeProtobufConverterCache;
 import com.gotocompany.depot.maxcompute.model.ProtoPayload;
 
 /**

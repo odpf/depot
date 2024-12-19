@@ -13,7 +13,6 @@ import com.google.protobuf.Value;
 
 import com.gotocompany.depot.TestMaxComputeTypeInfo;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
-import com.gotocompany.depot.maxcompute.model.MaxComputeProtobufConverterCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
