@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  *
  * Three types of validation are supported:
  * 1. MESSAGE: Checks if the given object is a protobuf message that contains unknown fields.
- * 2. MESSAGE_ARRAY_FIRST_INDEX: Checks if the given object is a protobuf message or a list of protobuf messages that contains unknown fields.
+ * 2. MESSAGE_ARRAY_FIRST_INDEX: Checks if the given object is a protobuf message or a list of protobuf messages that contains unknown fields only on the first element.
  * 3. MESSAGE_ARRAY_FULL: Checks if the given object is a protobuf message or a list of protobuf messages that contains unknown fields.
  */
 public enum ProtoUnknownFieldValidationType {
