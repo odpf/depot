@@ -1,6 +1,7 @@
 package com.gotocompany.depot.maxcompute.model;
 
 import com.aliyun.odps.type.TypeInfo;
+import com.google.common.collect.Sets;
 import com.google.protobuf.Descriptors;
 import com.gotocompany.depot.config.MaxComputeSinkConfig;
 import com.gotocompany.depot.maxcompute.converter.DurationProtobufMaxComputeConverter;
@@ -11,15 +12,22 @@ import com.gotocompany.depot.maxcompute.converter.StructProtobufMaxComputeConver
 import com.gotocompany.depot.maxcompute.converter.TimestampProtobufMaxComputeConverter;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import static com.google.protobuf.Descriptors.FieldDescriptor.Type.*;
 
 public class MaxComputeProtobufConverterCache {
+
     private static final String GOOGLE_PROTOBUF_TIMESTAMP = "google.protobuf.Timestamp";
     private static final String GOOGLE_PROTOBUF_DURATION = "google.protobuf.Duration";
     private static final String GOOGLE_PROTOBUF_STRUCT = "google.protobuf.Struct";
+    private static final Set<String> SUPPORTED_PRIMITIVE_PROTO_TYPES = Sets.newHashSet(
+            BYTES.toString(), STRING.toString(), ENUM.toString(), DOUBLE.toString(), FLOAT.toString(),
+            BOOL.toString(), INT64.toString(), UINT64.toString(), INT32.toString(), UINT32.toString(),
+            FIXED64.toString(), FIXED32.toString(), SFIXED32.toString(), SFIXED64.toString(),
+            SINT32.toString(), SINT64.toString());
 
     private final Map<String, ProtobufMaxComputeConverter> protobufMaxComputeConverterMap;
     private final Map<String, TypeInfo> typeInfoCache;
@@ -71,27 +79,11 @@ public class MaxComputeProtobufConverterCache {
     private void initMaxComputeConverterMap() {
         PrimitiveProtobufMaxComputeConverter primitiveProtobufMaxComputeConverter =
                 new PrimitiveProtobufMaxComputeConverter();
-        protobufMaxComputeConverterMap.put(BYTES.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(STRING.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(ENUM.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(DOUBLE.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(FLOAT.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(BOOL.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(INT64.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(UINT64.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(INT32.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(UINT32.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(FIXED64.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(FIXED32.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(SFIXED32.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(SFIXED64.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(SINT32.toString(), primitiveProtobufMaxComputeConverter);
-        protobufMaxComputeConverterMap.put(SINT64.toString(), primitiveProtobufMaxComputeConverter);
+        SUPPORTED_PRIMITIVE_PROTO_TYPES.forEach(type -> protobufMaxComputeConverterMap.put(type, primitiveProtobufMaxComputeConverter));
         protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_TIMESTAMP, new TimestampProtobufMaxComputeConverter(maxComputeSinkConfig));
         protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_DURATION, new DurationProtobufMaxComputeConverter());
         protobufMaxComputeConverterMap.put(GOOGLE_PROTOBUF_STRUCT, new StructProtobufMaxComputeConverter());
-        MessageProtobufMaxComputeConverter messageProtobufMaxComputeConverter = new MessageProtobufMaxComputeConverter(this);
-        protobufMaxComputeConverterMap.put(MESSAGE.toString(), messageProtobufMaxComputeConverter);
+        protobufMaxComputeConverterMap.put(MESSAGE.toString(), new MessageProtobufMaxComputeConverter(this));
     }
 
 }
